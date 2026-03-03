@@ -1,9 +1,11 @@
 from typing import Any, List
-from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, UploadFile, File
 from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 import json
+import os
+import tempfile
 import io
 
 from app.db.session import get_db
@@ -35,11 +37,87 @@ async def create_exam(
     db: AsyncSession = Depends(get_db),
     exam_in: ExamCreate,
 ) -> Any:
-    exam = Exam(**exam_in.model_dump())
+    exam_data = exam_in.model_dump()
+    exam_data["slug"] = Exam.generate_slug()
+    exam = Exam(**exam_data)
     db.add(exam)
     await db.commit()
     await db.refresh(exam)
     return exam
+
+
+@router.post("/import-questions")
+async def import_questions_from_file(
+    file: UploadFile = File(...),
+):
+    """
+    Upload a .docx or .pdf file (max 10MB) and extract questions.
+    Returns a list of parsed questions for review before adding to an exam.
+    """
+    MAX_SIZE = 10 * 1024 * 1024  # 10 MB
+    allowed_types = (".docx", ".pdf")
+
+    if not file.filename:
+        raise HTTPException(status_code=400, detail="No file provided")
+
+    ext = os.path.splitext(file.filename)[1].lower()
+    if ext not in allowed_types:
+        raise HTTPException(status_code=400, detail="Only .docx and .pdf files are supported")
+
+    contents = await file.read()
+    if len(contents) > MAX_SIZE:
+        raise HTTPException(status_code=400, detail="File exceeds 10MB limit")
+
+    # Write to temp file for parsing
+    with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as tmp:
+        tmp.write(contents)
+        tmp_path = tmp.name
+
+    try:
+        from app.core.document_parser import parse_file
+        parsed = parse_file(tmp_path)
+        return {
+            "filename": file.filename,
+            "total_questions": len(parsed),
+            "questions": [
+                {
+                    "number": q.number,
+                    "content": q.content,
+                    "options": q.options,
+                    "correct_answer": q.correct_answer,
+                    "type": q.type,
+                }
+                for q in parsed
+            ],
+        }
+    except Exception as e:
+        raise HTTPException(status_code=422, detail=f"Failed to parse file: {str(e)}")
+    finally:
+        os.unlink(tmp_path)
+
+
+@router.get("/by-slug/{slug}")
+async def get_exam_by_slug(
+    *,
+    db: AsyncSession = Depends(get_db),
+    slug: str,
+) -> Any:
+    """
+    Public endpoint: get exam info by slug for the per-exam landing page.
+    """
+    result = await db.execute(select(Exam).where(Exam.slug == slug))
+    exam = result.scalars().first()
+    if not exam:
+        raise HTTPException(status_code=404, detail="Exam not found")
+    return {
+        "id": exam.id,
+        "title": exam.title,
+        "description": exam.description,
+        "slug": exam.slug,
+        "start_time": str(exam.start_time),
+        "duration": exam.duration,
+        "is_published": exam.is_published,
+    }
 
 @router.get("/{exam_id}", response_model=ExamSchema)
 async def read_exam(

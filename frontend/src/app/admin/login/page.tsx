@@ -1,11 +1,13 @@
 "use client";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import LanguageToggle from "@/components/LanguageToggle";
+import ThemeToggle from "@/components/ThemeToggle";
+import Link from "next/link";
 
-export default function AdminLoginPage() {
+function AdminLoginForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const callbackUrl = searchParams.get("callbackUrl") || "/admin";
@@ -50,74 +52,101 @@ export default function AdminLoginPage() {
     };
 
     return (
-        <div className="min-h-screen bg-neutral-900 flex flex-col justify-center py-12 sm:px-6 lg:px-8 font-sans">
-            {/* Language toggle top-right */}
-            <div className="absolute top-6 right-6">
+        <div className="min-h-screen bg-[var(--bg-primary)] flex flex-col justify-center py-12 sm:px-6 lg:px-8 font-sans">
+            {/* Toggles top-right */}
+            <div className="absolute top-6 right-6 flex items-center space-x-3">
+                <ThemeToggle />
                 <LanguageToggle />
             </div>
 
-            <div className="sm:mx-auto sm:w-full sm:max-w-md animate-fade-in">
-                <div className="flex justify-center mb-6">
-                    <div className="w-12 h-12 bg-indigo-600 rounded flex items-center justify-center shadow-lg">
-                        <span className="text-white font-bold text-xl">EO</span>
-                    </div>
+            <div className="sm:mx-auto sm:w-full sm:max-w-md animate-fade-in text-center relative z-10">
+                <div className="inline-flex justify-center items-center w-14 h-14 rounded-2xl mb-6 shadow-lg" style={{ background: 'var(--accent-gradient)' }}>
+                    <span className="text-white font-bold text-2xl tracking-tighter">EO</span>
                 </div>
-                <h2 className="mt-2 text-center text-3xl font-bold tracking-tight text-white">
+                <h2 className="text-center text-3xl font-bold tracking-tight text-[var(--text-primary)]">
                     {t("admin.login.title")}
                 </h2>
-                <p className="mt-2 text-center text-sm text-neutral-400">
+                <p className="mt-2 text-center text-sm text-[var(--text-secondary)]">
                     {t("admin.login.subtitle")}
                 </p>
             </div>
 
-            <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-                <div className="bg-neutral-800 py-8 px-4 shadow-2xl sm:rounded-2xl sm:px-10 border border-neutral-700">
+            <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md relative z-10">
+                <div className="surface-card py-8 px-4 sm:px-10 border-t-4 border-t-[var(--accent-primary)] shadow-2xl">
                     <form className="space-y-6" onSubmit={handleSubmit}>
                         {error && (
-                            <div className="bg-red-900/50 text-red-200 p-3 rounded-lg text-sm border border-red-800">
+                            <div className="p-3 rounded-lg text-sm" style={{ background: 'rgba(239, 68, 68, 0.1)', color: 'var(--status-danger)', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
                                 {error}
                             </div>
                         )}
                         <div>
-                            <label className="block text-sm font-medium text-neutral-300">{t("admin.login.username")}</label>
-                            <div className="mt-1">
-                                <input
-                                    type="text"
-                                    required
-                                    value={username}
-                                    onChange={(e) => setUsername(e.target.value)}
-                                    className="block w-full appearance-none rounded-lg bg-neutral-900 border border-neutral-700 px-3 py-2 text-white placeholder-neutral-500 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
-                                    placeholder="admin"
-                                />
-                            </div>
+                            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">{t("admin.login.username")}</label>
+                            <input
+                                type="text"
+                                required
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                className="block w-full appearance-none rounded-lg border px-3 py-2 sm:text-sm transition-all focus:outline-none focus:ring-2"
+                                style={{
+                                    background: 'var(--bg-primary)',
+                                    borderColor: 'var(--border-default)',
+                                    color: 'var(--text-primary)'
+                                }}
+                                onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--accent-primary)'; e.currentTarget.style.boxShadow = '0 0 0 2px var(--accent-glow)'; }}
+                                onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border-default)'; e.currentTarget.style.boxShadow = 'none'; }}
+                                placeholder="admin"
+                            />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-neutral-300">{t("admin.login.password")}</label>
-                            <div className="mt-1">
-                                <input
-                                    type="password"
-                                    required
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    className="block w-full appearance-none rounded-lg bg-neutral-900 border border-neutral-700 px-3 py-2 text-white placeholder-neutral-500 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
-                                    placeholder="••••••••"
-                                />
-                            </div>
+                            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">{t("admin.login.password")}</label>
+                            <input
+                                type="password"
+                                required
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="block w-full appearance-none rounded-lg border px-3 py-2 sm:text-sm transition-all focus:outline-none focus:ring-2"
+                                style={{
+                                    background: 'var(--bg-primary)',
+                                    borderColor: 'var(--border-default)',
+                                    color: 'var(--text-primary)'
+                                }}
+                                onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--accent-primary)'; e.currentTarget.style.boxShadow = '0 0 0 2px var(--accent-glow)'; }}
+                                onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border-default)'; e.currentTarget.style.boxShadow = 'none'; }}
+                                placeholder="••••••••"
+                            />
                         </div>
 
                         <div>
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className="flex w-full justify-center rounded-lg border border-transparent bg-indigo-600 py-2.5 px-4 text-sm font-medium text-white shadow-sm shadow-indigo-900/50 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-neutral-800 disabled:opacity-50 transition-all"
+                                className="accent-btn flex w-full justify-center py-2.5 px-4 disabled:opacity-50"
                             >
                                 {isLoading ? t("app.processing") : t("admin.login.submit")}
                             </button>
                         </div>
+
+                        <div className="text-sm text-center pt-2">
+                            <span className="text-[var(--text-secondary)]">{t("admin.login.noAccount")} </span>
+                            <Link href="/admin/register" className="font-medium hover:underline transition-colors" style={{ color: 'var(--accent-primary)' }}>
+                                {t("admin.login.switchRegister")}
+                            </Link>
+                        </div>
                     </form>
                 </div>
             </div>
+
+            {/* Background decorative blob */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-[var(--accent-glow)] rounded-full blur-[100px] -z-10 opacity-30 pointer-events-none"></div>
         </div>
+    );
+}
+
+export default function AdminLoginPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-[var(--bg-primary)]" />}>
+            <AdminLoginForm />
+        </Suspense>
     );
 }

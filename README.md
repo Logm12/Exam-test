@@ -11,6 +11,7 @@ The platform uses a decoupled architecture: a FastAPI backend for business logic
 - Schedule exams with configurable start times and durations
 - View submission metrics, scores, and violation logs
 - Real-time dashboard with cheating alert monitoring
+- Automated question extraction from `.docx` and `.pdf` files (MyAloha-style formatting)
 - Bilingual interface (Vietnamese / English)
 
 ### Student Side
@@ -19,6 +20,7 @@ The platform uses a decoupled architecture: a FastAPI backend for business logic
 - Anti-cheating enforcement during exams (fullscreen, tab monitoring, clipboard blocking)
 - Auto-save every 10 seconds via Redis
 - Auto-submit on timer expiry or violation threshold
+- Slug-based public exam landing pages for standardized access
 
 ### Security
 - JWT-based authentication via NextAuth.js

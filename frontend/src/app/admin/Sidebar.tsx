@@ -21,11 +21,14 @@ export default function Sidebar() {
     ];
 
     return (
-        <aside className="w-64 bg-white border-r border-neutral-200 flex flex-col justify-between">
+        <aside className="w-64 bg-[var(--bg-secondary)] border-r border-[var(--border-subtle)] flex flex-col justify-between transition-colors shadow-sm">
             <div>
-                <div className="h-16 flex items-center px-6 border-b border-neutral-100">
-                    <h1 className="text-xl font-bold tracking-tight text-indigo-600">
-                        Exam<span className="text-neutral-900">OS</span>
+                <div className="h-16 flex items-center px-6 border-b border-[var(--border-subtle)] bg-[var(--bg-primary)]">
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center shadow-md bg-[var(--accent-gradient)] text-white mr-3">
+                        <span className="font-bold text-sm">EO</span>
+                    </div>
+                    <h1 className="text-xl font-bold tracking-tight text-[var(--accent-primary)]">
+                        Exam<span className="text-[var(--text-primary)]">OS</span>
                     </h1>
                 </div>
                 <nav className="p-4 space-y-1">
@@ -38,9 +41,9 @@ export default function Sidebar() {
                             <Link
                                 key={item.href}
                                 href={item.href}
-                                className={`block px-4 py-2 text-sm font-medium rounded-md transition-colors ${isActive
-                                    ? "text-indigo-700 bg-indigo-50/50"
-                                    : "text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50"
+                                className={`block px-4 py-2.5 text-sm font-medium rounded-lg transition-all ${isActive
+                                    ? "text-[var(--accent-primary)] bg-[var(--accent-glow)] border border-[var(--border-accent)]"
+                                    : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)] border border-transparent"
                                     }`}
                             >
                                 {item.name}
@@ -50,10 +53,11 @@ export default function Sidebar() {
                 </nav>
             </div>
 
-            <div className="p-4 border-t border-neutral-100">
+            <div className="p-4 border-t border-[var(--border-subtle)]">
                 <button
                     onClick={() => signOut({ callbackUrl: "/admin/login" })}
-                    className="w-full flex items-center px-4 py-2 text-sm font-medium rounded-md text-red-600 hover:bg-red-50 transition-colors"
+                    className="w-full flex items-center justify-center px-4 py-2.5 text-sm font-medium rounded-lg text-[var(--status-danger)] hover:bg-[var(--surface-hover)] transition-colors border border-transparent hover:border-[var(--status-danger)]"
+                    style={{ background: 'rgba(220, 38, 38, 0.05)' }}
                 >
                     {t("admin.sidebar.logout")}
                 </button>

@@ -2,6 +2,28 @@
 
 All notable changes to ExamOS are documented here.
 
+## [1.3.0] - 2026-03-03
+
+### Added
+- Automated question extraction from .docx and .pdf files (regex-based document parser)
+- Slug-based public exam landing pages for direct access and sharing
+- Secure self-registration portal for both Student and Admin roles
+- Persistent theme system with automatic day/night switching and manual override
+- Full localization (Vietnamese/English) for all student and admin touchpoints
+- Enhanced session management with automatic redirects for authenticated users
+
+### Changed
+- Refactored admin exam builder to support file imports
+- Improved exam timer synchronization logic to ensure backend-frontend consistency
+- Optimized toggle components (Language/Theme) for stable hydration
+
+### Fixed
+- Hydration mismatches in LanguageToggle and ThemeToggle components
+- Backend dependency conflicts preventing server startup (google-auth, fastapi-limiter)
+- NaN duration bug in admin exam configuration forms
+- Student dashboard fetch failures during server-side rendering
+- Exam submission button responsiveness and z-index interference
+
 ## [1.2.0] - 2026-02-27
 
 ### Added

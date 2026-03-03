@@ -34,6 +34,15 @@ const translations: Record<string, Record<Locale, string>> = {
     "student.duration": { vi: "Phút", en: "Min" },
     "student.starts": { vi: "Bắt đầu:", en: "Starts:" },
 
+    // Đăng ký sinh viên
+    "register.title": { vi: "Tạo tài khoản mới", en: "Create an account" },
+    "register.subtitle": { vi: "Đăng ký tài khoản thí sinh ExamOS", en: "Register a student account on ExamOS" },
+    "register.confirmPassword": { vi: "Xác nhận mật khẩu", en: "Confirm Password" },
+    "register.hasAccount": { vi: "Đã có tài khoản?", en: "Already have an account?" },
+    "register.success": { vi: "Tạo tài khoản thành công!", en: "Account created successfully!" },
+    "register.redirecting": { vi: "Đang chuyển hướng đến trang đăng nhập...", en: "Redirecting to login..." },
+    "register.error.passwordMismatch": { vi: "Mật khẩu xác nhận không khớp.", en: "Passwords do not match." },
+
     // Đăng nhập sinh viên
     "login.title": { vi: "Cổng thí sinh ExamOS", en: "ExamOS Student Portal" },
     "login.subtitle": { vi: "Hệ thống thi trắc nghiệm trực tuyến", en: "Online examination system" },
@@ -42,9 +51,9 @@ const translations: Record<string, Record<Locale, string>> = {
     "login.error.invalid": { vi: "Tên đăng nhập hoặc mật khẩu không chính xác.", en: "Incorrect username or password." },
     "login.error.accessDenied": { vi: "Bạn không có quyền truy cập trang đó.", en: "You don't have permission to access that page." },
     "login.error.failed": { vi: "Lỗi xác thực", en: "Authentication failed" },
-    "login.switchRegister": { vi: "Chưa có tài khoản? Đăng ký", en: "Need an account? Register" },
-    "login.switchLogin": { vi: "Đã có tài khoản? Đăng nhập", en: "Already have an account? Sign in" },
-    "login.orContinue": { vi: "Hoặc đăng nhập bằng", en: "Or continue with" },
+    "login.noAccount": { vi: "Chưa có tài khoản?", en: "Don't have an account?" },
+    "login.switchRegister": { vi: "Đăng ký ngay", en: "Register now" },
+    "login.orContinue": { vi: "Hoặc tiếp tục với", en: "Or continue with" },
 
     // Đăng nhập quản trị
     "admin.login.title": { vi: "ExamOS Quản trị", en: "ExamOS Admin" },
@@ -54,7 +63,18 @@ const translations: Record<string, Record<Locale, string>> = {
     "admin.login.submit": { vi: "Đăng nhập truy cập hệ thống", en: "Sign in to access system" },
     "admin.login.error.access": { vi: "Bạn không có quyền truy cập trang quản trị.", en: "You don't have admin access." },
     "admin.login.error.invalid": { vi: "Tài khoản hoặc mật khẩu không chính xác.", en: "Incorrect username or password." },
-    "admin.login.error.system": { vi: "Lỗi đăng nhập hệ thống", en: "System login error" },
+    "admin.login.error.system": { vi: "Lỗi hệ thống", en: "System error" },
+    "admin.login.noAccount": { vi: "Không có quyền quản trị?", en: "No admin privileges?" },
+    "admin.login.switchRegister": { vi: "Đăng ký quyền quản trị", en: "Register as Admin" },
+
+    // Đăng ký quản trị
+    "admin.register.title": { vi: "Tạo tài khoản Quản trị", en: "Create Admin Account" },
+    "admin.register.subtitle": { vi: "Cấp quyền quản trị viên mới", en: "Provision a new admin account" },
+    "admin.register.submit": { vi: "Tạo tài khoản Quản trị", en: "Create Admin" },
+    "admin.register.confirmPassword": { vi: "Xác nhận mật khẩu", en: "Confirm Password" },
+    "admin.register.hasAccount": { vi: "Bạn đã là quản trị viên?", en: "Already an admin?" },
+    "admin.register.switchLogin": { vi: "Đăng nhập ngay", en: "Log in now" },
+    "admin.register.success": { vi: "Đã tạo tài khoản quản trị!", en: "Admin account created!" },
 
     // Bảng điều khiển quản trị
     "admin.portal": { vi: "Cổng Quản trị", en: "Admin Portal" },
@@ -121,6 +141,64 @@ const translations: Record<string, Record<Locale, string>> = {
     "exam.receipt.desc": { vi: "Bài làm của bạn đã được ghi nhận thành công.", en: "Your assessment has been successfully recorded." },
     "exam.receipt.timestamp": { vi: "Thời gian nộp", en: "Timestamp" },
     "exam.receipt.returnDashboard": { vi: "Quay lại trang chủ", en: "Return to Dashboard" },
+
+    // Exam landing (per-exam public page)
+    "exam.landing.rules": { vi: "Quy định khi thi", en: "Exam Rules" },
+    "exam.landing.rule1": { vi: "Bài thi chạy chế độ toàn màn hình. Chuyển tab sẽ bị ghi nhận và cảnh báo.", en: "The exam runs in fullscreen mode. Tab switching will be logged and warned." },
+    "exam.landing.rule2": { vi: "Chuyển tab quá 3 lần sẽ bị nộp bài tự động và kết thúc bài thi.", en: "Switching tabs more than 3 times will auto-submit and end your exam." },
+    "exam.landing.rule3": { vi: "Đồng hồ đếm ngược không thể tạm dừng. Đảm bảo kết nối mạng ổn định.", en: "The countdown timer cannot be paused. Ensure a stable internet connection." },
+
+    // Anti-cheat warnings
+    "anticheat.warning.title": { vi: "Cảnh báo!", en: "Warning!" },
+    "anticheat.warning.tabswitch": { vi: "Bạn đã chuyển tab. Đây là lần thứ {count}/3. Chuyển tab thêm {remaining} lần sẽ tự động nộp bài.", en: "You switched tabs. This is violation {count}/3. {remaining} more will auto-submit." },
+    "anticheat.warning.autosubmit": { vi: "Bạn đã vi phạm quá 3 lần. Bài thi đã được nộp tự động.", en: "You exceeded 3 violations. Your exam has been auto-submitted." },
+    "anticheat.warning.understood": { vi: "Đã hiểu", en: "Understood" },
+
+    // Import questions
+    "import.title": { vi: "Nhập đề từ file", en: "Import from File" },
+    "import.description": { vi: "Tải lên file Word (.docx) hoặc PDF để tự động trích xuất câu hỏi.", en: "Upload a Word (.docx) or PDF file to auto-extract questions." },
+    "import.dropzone": { vi: "Kéo thả file vào đây hoặc bấm để chọn", en: "Drag and drop a file here, or click to select" },
+    "import.maxSize": { vi: "Tối đa 10MB, định dạng .docx hoặc .pdf", en: "Max 10MB, .docx or .pdf format" },
+    "import.processing": { vi: "Đang xử lý file...", en: "Processing file..." },
+    "import.found": { vi: "Tìm thấy {count} câu hỏi", en: "Found {count} questions" },
+    "import.addSelected": { vi: "Thêm câu hỏi đã chọn", en: "Add Selected Questions" },
+    "import.error": { vi: "Không thể đọc file. Vui lòng kiểm tra định dạng.", en: "Cannot read file. Please check the format." },
+
+    // Quản lý đề thi (Admin)
+    "admin.exams.title": { vi: "Bộ sưu tập đề thi", en: "Exams Collection" },
+    "admin.exams.subtitle": { vi: "Quản lý tất cả các bài kiểm tra trong hệ thống.", en: "Manage all examinations in the system." },
+    "admin.exams.createNew": { vi: "Tạo bài thi mới", en: "Create New Exam" },
+    "admin.exams.noExams": { vi: "Chưa có bài thi nào", en: "No exams yet" },
+    "admin.exams.createFirst": { vi: "Tạo bài thi đầu tiên", en: "Create the first exam" },
+    "admin.exams.table.title": { vi: "Tiêu đề", en: "Title" },
+    "admin.exams.table.duration": { vi: "Thời lượng", en: "Duration" },
+    "admin.exams.table.status": { vi: "Trạng thái", en: "Status" },
+    "admin.exams.table.startTime": { vi: "Thời gian bắt đầu", en: "Start Time" },
+    "admin.exams.table.actions": { vi: "Thao tác", en: "Actions" },
+    "admin.exams.confirmDelete": { vi: "Bạn có chắc chắn muốn xóa bài thi này?", en: "Are you sure you want to delete this exam?" },
+    "admin.exams.delete": { vi: "Xóa", en: "Delete" },
+    "admin.exams.edit": { vi: "Sửa", en: "Edit" },
+    "admin.exams.published": { vi: "Đã xuất bản", en: "Published" },
+    "admin.exams.draft": { vi: "Nháp", en: "Draft" },
+
+    // Tạo đề thi mới
+    "admin.exams.new.title": { vi: "Tạo bài thi mới", en: "Create New Exam" },
+    "admin.exams.new.subtitle": { vi: "Cấu hình chi tiết bài thi và xây dựng ngân hàng câu hỏi.", en: "Configure exam details and build your question bank." },
+    "admin.exams.new.details": { vi: "Thông tin cơ bản", en: "Exam Details" },
+    "admin.exams.new.examTitle": { vi: "Tiêu đề bài thi", en: "Exam Title" },
+    "admin.exams.new.duration": { vi: "Thời lượng (Phút)", en: "Duration (Minutes)" },
+    "admin.exams.new.questionsBank": { vi: "Ngân hàng câu hỏi", en: "Questions Bank" },
+    "admin.exams.new.addQuestion": { vi: "+ Thêm câu hỏi", en: "+ Add Question" },
+    "admin.exams.new.multipleChoice": { vi: "Trắc nghiệm", en: "Multiple Choice" },
+    "admin.exams.new.shortAnswer": { vi: "Tự luận ngắn", en: "Short Answer" },
+    "admin.exams.new.questionContent": { vi: "Nội dung câu hỏi...", en: "Question content..." },
+    "admin.exams.new.option": { vi: "Đáp án", en: "Option" },
+    "admin.exams.new.expectedAnswer": { vi: "Đáp án mong đợi (sẽ được chấm thủ công nếu không khớp)", en: "Expected correct answer (will be manually graded if not matched)" },
+    "admin.exams.new.noQuestions": { vi: "Chưa có câu hỏi nào", en: "No questions yet" },
+    "admin.exams.new.addFirst": { vi: "Thêm câu hỏi đầu tiên", en: "Add the first question" },
+    "admin.exams.new.publishing": { vi: "Đang xuất bản...", en: "Publishing..." },
+    "admin.exams.new.publish": { vi: "Xuất bản bài thi", en: "Publish Exam" },
+    "admin.exams.new.failed": { vi: "Tạo bài thi thất bại", en: "Failed to create exam" },
 };
 
 export function t(key: string, locale: Locale): string {

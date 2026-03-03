@@ -29,6 +29,7 @@ The main requirements were handling concurrent exam sessions without data loss. 
 - Admins create exams with multiple-choice and short-answer questions
 - Configurable start times and durations
 - Instant grading for objective question types
+- **Automated Question Extraction**: Integrated a regex-based document parser supporting `.docx` and `.pdf` uploads, allowing admins to import entire exams in seconds via standardized formatting (similar to MyAloha).
 
 ### Student Portal
 - Public landing page with separate login paths for students and admins
@@ -65,6 +66,10 @@ The main requirements were handling concurrent exam sessions without data loss. 
 4. **Node.js IPv6 Resolution**: Node 18+ resolves `localhost` to IPv6 by default, but FastAPI listens on IPv4. This caused SSR fetches to fail. Fixed by explicitly mapping to `127.0.0.1` in server-side requests.
 
 5. **Middleware Naming in Next.js 16**: Next.js 16 uses `proxy.ts` instead of `middleware.ts`. Having both files caused a crash. Resolved by keeping only `proxy.ts`.
+
+6. **Hydration Mismatch in UI Components**: Locale-dependent components (like `LanguageToggle`) caused hydration errors because the server-rendered locale did not always match the client's `localStorage` value. Resolved by implementing a `mounted` state hook to defer state-dependent rendering until the component is mounted on the client.
+
+7. **Backend Service Instability**: Missing core dependencies (`google-auth`, `fastapi-limiter`) prevented the backend from initializing correctly in certain environments. Fixed by standardizing the virtual environment setup and ensuring all requirements are strictly locked.
 
 ## 5. Conclusion
 

@@ -43,7 +43,7 @@ async def login(
     if not user or not verify_password(form_data.password, user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Incorrect email or password",
+            detail="Incorrect username or password",
         )
     
     access_token = create_access_token(subject=user.id)

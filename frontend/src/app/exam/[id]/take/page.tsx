@@ -1,9 +1,11 @@
 "use client";
 import { useState, useEffect, useCallback, use } from "react";
 import { useRouter } from "next/navigation";
+import { useSession, signIn } from "next-auth/react";
 import { fetcher } from "@/lib/api";
-import { LanguageProvider, useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import LanguageToggle from "@/components/LanguageToggle";
+import ThemeToggle from "@/components/ThemeToggle";
 
 type OptionMap = { [key: string]: string };
 
@@ -14,36 +16,49 @@ type Question = {
     options: OptionMap;
 };
 
-type Exam = {
+type ExamData = {
     id: number;
     title: string;
     duration: number;
 };
 
-function useAntiCheat(examId: number, durationMinutes: number, maxViolations: number = 3, onViolationLimit: () => void) {
+/* ==================== ANTI-CHEAT HOOK ==================== */
+function useAntiCheat(durationMinutes: number, maxViolations: number, onAutoSubmit: () => void) {
     const [timeLeft, setTimeLeft] = useState(durationMinutes * 60);
     const [warnings, setWarnings] = useState(0);
+    const [showWarning, setShowWarning] = useState(false);
 
+    // Sync timeLeft when durationMinutes changes (e.g. after exam data loads)
     useEffect(() => {
-        if (warnings >= maxViolations) {
-            onViolationLimit();
+        if (durationMinutes > 0) {
+            setTimeLeft(durationMinutes * 60);
         }
-    }, [warnings, maxViolations, onViolationLimit]);
+    }, [durationMinutes]);
 
+    // Timer countdown
     useEffect(() => {
         if (timeLeft <= 0) return;
         const timer = setInterval(() => setTimeLeft((t) => t - 1), 1000);
         return () => clearInterval(timer);
     }, [timeLeft]);
 
+    // Tab switch and blur detection
     useEffect(() => {
         const handleVisibilityChange = () => {
             if (document.hidden) {
-                setWarnings((w) => w + 1);
+                setWarnings((w) => {
+                    const next = w + 1;
+                    return next;
+                });
+                setShowWarning(true);
             }
         };
         const handleBlur = () => {
-            setWarnings((w) => w + 1);
+            setWarnings((w) => {
+                const next = w + 1;
+                return next;
+            });
+            setShowWarning(true);
         };
         document.addEventListener("visibilitychange", handleVisibilityChange);
         window.addEventListener("blur", handleBlur);
@@ -53,6 +68,14 @@ function useAntiCheat(examId: number, durationMinutes: number, maxViolations: nu
         };
     }, []);
 
+    // Auto-submit on exceeding max violations
+    useEffect(() => {
+        if (warnings >= maxViolations) {
+            onAutoSubmit();
+        }
+    }, [warnings, maxViolations, onAutoSubmit]);
+
+    // Block right-click, copy, paste
     useEffect(() => {
         const preventDefault = (e: Event) => e.preventDefault();
         document.addEventListener("contextmenu", preventDefault);
@@ -65,13 +88,67 @@ function useAntiCheat(examId: number, durationMinutes: number, maxViolations: nu
         };
     }, []);
 
-    return { timeLeft, warnings };
+    const dismissWarning = () => setShowWarning(false);
+
+    return { timeLeft, warnings, showWarning, dismissWarning };
 }
 
+/* ==================== WARNING MODAL ==================== */
+function WarningModal({ warnings, maxViolations, onDismiss, t }: {
+    warnings: number;
+    maxViolations: number;
+    onDismiss: () => void;
+    t: (key: string) => string;
+}) {
+    const remaining = maxViolations - warnings;
+    const isAutoSubmit = warnings >= maxViolations;
+
+    const message = isAutoSubmit
+        ? t("anticheat.warning.autosubmit")
+        : t("anticheat.warning.tabswitch")
+            .replace("{count}", String(warnings))
+            .replace("{remaining}", String(remaining));
+
+    return (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center">
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+            <div className="relative surface-card p-8 max-w-md mx-4 text-center space-y-4" style={{ borderRadius: 'var(--radius-xl)' }}>
+                <div className="w-16 h-16 mx-auto rounded-full flex items-center justify-center" style={{ background: 'rgba(239,68,68,0.1)' }}>
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--status-danger)" strokeWidth="2">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                        <line x1="12" y1="9" x2="12" y2="13" />
+                        <line x1="12" y1="17" x2="12.01" y2="17" />
+                    </svg>
+                </div>
+                <h2 className="text-xl font-bold text-[var(--text-primary)]">{t("anticheat.warning.title")}</h2>
+                <p className="text-sm text-[var(--text-secondary)] leading-relaxed">{message}</p>
+                <div className="flex items-center justify-center gap-2 text-xs text-[var(--text-muted)]">
+                    {Array.from({ length: maxViolations }).map((_, i) => (
+                        <div
+                            key={i}
+                            className="w-3 h-3 rounded-full transition-colors"
+                            style={{ background: i < warnings ? 'var(--status-danger)' : 'var(--border-default)' }}
+                        />
+                    ))}
+                </div>
+                {!isAutoSubmit && (
+                    <button
+                        onClick={onDismiss}
+                        className="accent-btn px-6 py-2.5 text-sm mt-2"
+                    >
+                        {t("anticheat.warning.understood")}
+                    </button>
+                )}
+            </div>
+        </div>
+    );
+}
+
+/* ==================== EXAM CONTENT ==================== */
 function ExamContent({ examId }: { examId: string }) {
     const { t } = useLanguage();
     const router = useRouter();
-    const [exam, setExam] = useState<Exam | null>(null);
+    const [exam, setExam] = useState<ExamData | null>(null);
     const [questions, setQuestions] = useState<Question[]>([]);
     const [answers, setAnswers] = useState<Record<number, string>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -120,11 +197,14 @@ function ExamContent({ examId }: { examId: string }) {
         }
     }, [exam, answers, isSubmitting, router, t]);
 
-    const { timeLeft, warnings } = useAntiCheat(
-        exam?.id || 0,
+    const handleAutoSubmit = useCallback(() => {
+        submitExam(true, 3);
+    }, [submitExam]);
+
+    const { timeLeft, warnings, showWarning, dismissWarning } = useAntiCheat(
         exam?.duration || 60,
         3,
-        () => submitExam(true, 3)
+        handleAutoSubmit
     );
 
     const formatTime = (seconds: number) => {
@@ -140,39 +220,59 @@ function ExamContent({ examId }: { examId: string }) {
     }, [timeLeft, exam, isSubmitting, isLoading, submitExam, warnings]);
 
     if (isLoading) {
-        return <div className="min-h-screen flex items-center justify-center font-sans bg-neutral-50"><div className="animate-pulse bg-neutral-200 h-12 w-48 rounded-lg"></div></div>;
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-[var(--bg-primary)]">
+                <div className="animate-pulse h-12 w-48 rounded-lg" style={{ background: 'var(--surface-card)' }} />
+            </div>
+        );
     }
 
     if (!exam) return null;
 
     return (
-        <div className="min-h-screen bg-neutral-50 flex flex-col font-sans select-none">
-            <header className="bg-neutral-900 border-b border-black text-white sticky top-0 z-40 shadow-md">
+        <div className="min-h-screen bg-[var(--bg-primary)] flex flex-col font-sans select-none">
+            {/* Warning Modal */}
+            {showWarning && (
+                <WarningModal
+                    warnings={warnings}
+                    maxViolations={3}
+                    onDismiss={dismissWarning}
+                    t={t}
+                />
+            )}
+
+            {/* Header */}
+            <header className="sticky top-0 z-40 border-b border-[var(--border-subtle)]" style={{ background: 'var(--surface-overlay)' }}>
                 <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
                     <div className="flex items-center space-x-4">
-                        <div className="font-semibold tracking-tight text-sm">
+                        <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'var(--accent-gradient)' }}>
+                            <span className="text-white font-bold text-xs">EO</span>
+                        </div>
+                        <div className="font-semibold tracking-tight text-sm text-[var(--text-primary)]">
                             {exam.title}
                         </div>
                     </div>
-                    <div className="flex items-center space-x-4">
+                    <div className="flex items-center space-x-3">
                         {warnings > 0 && (
-                            <div className="text-xs font-semibold bg-red-500/20 text-red-500 px-3 py-1 rounded-full border border-red-500/50 flex items-center">
-                                <span className="mr-2 font-bold">!</span>
-                                {warnings} {warnings > 1 ? t("exam.take.warnings") : t("exam.take.warning")}
+                            <div className="text-xs font-semibold px-3 py-1 rounded-full border flex items-center" style={{ background: 'rgba(239,68,68,0.1)', color: 'var(--status-danger)', borderColor: 'rgba(239,68,68,0.3)' }}>
+                                <svg className="mr-1.5" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
+                                {warnings}/3
                             </div>
                         )}
-                        <LanguageToggle className="text-white border-white/30 hover:bg-white/10" />
-                        <div className={`font-mono text-xl font-bold ${timeLeft < 300 ? 'text-red-400 animate-pulse' : 'text-green-400'}`}>
+                        <ThemeToggle />
+                        <LanguageToggle />
+                        <div className={`font-mono text-lg font-bold ${timeLeft < 300 ? 'animate-pulse' : ''}`} style={{ color: timeLeft < 300 ? 'var(--status-danger)' : 'var(--status-success)' }}>
                             {formatTime(timeLeft)}
                         </div>
                         <button
-                            onClick={() => {
+                            onClick={(e) => {
+                                e.stopPropagation();
                                 if (confirm(t("exam.take.confirmSubmit"))) {
                                     submitExam(false, warnings);
                                 }
                             }}
                             disabled={isSubmitting}
-                            className="bg-white text-black hover:bg-neutral-200 px-5 py-2 rounded font-medium text-sm transition-colors disabled:opacity-50"
+                            className="accent-btn px-5 py-2 text-sm disabled:opacity-50 cursor-pointer relative z-[60]"
                         >
                             {isSubmitting ? t("exam.take.submitting") : t("exam.take.finishExam")}
                         </button>
@@ -180,13 +280,14 @@ function ExamContent({ examId }: { examId: string }) {
                 </div>
             </header>
 
-            <main className="flex-1 max-w-4xl w-full mx-auto px-6 py-12 animate-fade-in space-y-12 pb-32">
+            {/* Questions */}
+            <main className="flex-1 max-w-4xl w-full mx-auto px-6 py-12 space-y-8 pb-32">
                 {questions.map((q, index) => (
-                    <div key={q.id} className="bg-white p-8 rounded-2xl border border-neutral-200 shadow-sm relative" id={`q-${q.id}`}>
-                        <div className="absolute -top-4 -left-4 w-10 h-10 bg-indigo-600 text-white rounded-xl shadow-lg border border-indigo-700 flex items-center justify-center font-bold text-lg select-none">
+                    <div key={q.id} className="surface-card p-8 relative" id={`q-${q.id}`}>
+                        <div className="absolute -top-3 -left-3 w-9 h-9 rounded-xl flex items-center justify-center font-bold text-sm text-white select-none" style={{ background: 'var(--accent-gradient)', boxShadow: '0 4px 14px var(--accent-glow)' }}>
                             {index + 1}
                         </div>
-                        <div className="text-lg font-medium text-neutral-900 leading-relaxed pl-4 mb-8">
+                        <div className="text-base font-medium text-[var(--text-primary)] leading-relaxed pl-4 mb-6">
                             {q.content}
                         </div>
                         <div className="pl-4">
@@ -196,9 +297,10 @@ function ExamContent({ examId }: { examId: string }) {
                                         <label
                                             key={optKey}
                                             className={`flex items-start space-x-4 p-4 rounded-xl border-2 cursor-pointer transition-all ${answers[q.id] === optKey
-                                                ? 'border-indigo-600 bg-indigo-50 shadow-sm'
-                                                : 'border-neutral-100 bg-white hover:border-neutral-300 hover:bg-neutral-50'
+                                                ? 'border-[var(--accent-primary)]'
+                                                : 'border-[var(--border-subtle)] hover:border-[var(--text-muted)]'
                                                 }`}
+                                            style={answers[q.id] === optKey ? { background: 'var(--accent-glow)' } : {}}
                                         >
                                             <div className="flex items-center h-6">
                                                 <input
@@ -207,12 +309,12 @@ function ExamContent({ examId }: { examId: string }) {
                                                     value={optKey}
                                                     checked={answers[q.id] === optKey}
                                                     onChange={(e) => setAnswers(prev => ({ ...prev, [q.id]: e.target.value }))}
-                                                    className="w-4 h-4 text-indigo-600 focus:ring-indigo-600 border-neutral-300"
+                                                    className="w-4 h-4 accent-[var(--accent-primary)]"
                                                 />
                                             </div>
                                             <div className="flex-1">
-                                                <span className="font-bold text-neutral-900 mr-2">{optKey}.</span>
-                                                <span className="text-neutral-700">{optText}</span>
+                                                <span className="font-bold text-[var(--text-primary)] mr-2">{optKey}.</span>
+                                                <span className="text-[var(--text-secondary)]">{optText}</span>
                                             </div>
                                         </label>
                                     ))}
@@ -224,10 +326,10 @@ function ExamContent({ examId }: { examId: string }) {
                                         placeholder={t("exam.take.typeAnswer")}
                                         value={answers[q.id] || ""}
                                         onChange={(e) => setAnswers(prev => ({ ...prev, [q.id]: e.target.value }))}
-                                        className="w-full rounded-xl border-2 border-neutral-200 focus:border-indigo-600 focus:ring-0 p-4 font-mono text-sm resize-none transition-colors outline-none"
+                                        className="w-full rounded-xl border-2 border-[var(--border-default)] focus:border-[var(--accent-primary)] p-4 font-mono text-sm resize-none transition-colors outline-none bg-[var(--bg-primary)] text-[var(--text-primary)]"
                                         spellCheck={false}
                                     />
-                                    <div className="text-xs text-neutral-400 font-medium text-right">
+                                    <div className="text-xs text-[var(--text-muted)] font-medium text-right">
                                         {(answers[q.id] || "").length} {t("exam.take.characters")}
                                     </div>
                                 </div>
@@ -237,10 +339,16 @@ function ExamContent({ examId }: { examId: string }) {
                 ))}
 
                 {questions.length === 0 && (
-                    <div className="text-center py-20 bg-white rounded-2xl border border-neutral-200 shadow-sm">
-                        <p className="text-neutral-500">{t("exam.take.noQuestions")}</p>
+                    <div className="text-center py-20 surface-card">
+                        <p className="text-[var(--text-secondary)]">{t("exam.take.noQuestions")}</p>
                     </div>
                 )}
+                <div className="bg-neutral-50 p-4 rounded-xl border border-neutral-100 flex justify-between items-center text-sm">
+                    <span className="text-neutral-500">{t("exam.receipt.timestamp")}</span>
+                    <span className="font-mono font-medium text-neutral-900" suppressHydrationWarning>
+                        {typeof window !== "undefined" ? new Date().toLocaleString() : ""}
+                    </span>
+                </div>
             </main>
         </div>
     );
@@ -248,9 +356,22 @@ function ExamContent({ examId }: { examId: string }) {
 
 export default function ExamEngine({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
-    return (
-        <LanguageProvider>
-            <ExamContent examId={id} />
-        </LanguageProvider>
-    );
+    const { status } = useSession();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (status === "unauthenticated") {
+            router.push(`/login?callbackUrl=/exam/${id}`);
+        }
+    }, [status, router, id]);
+
+    if (status === "loading" || status === "unauthenticated") {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-[var(--bg-primary)]">
+                <div className="animate-pulse h-12 w-48 rounded-lg" style={{ background: 'var(--surface-card)' }} />
+            </div>
+        );
+    }
+
+    return <ExamContent examId={id} />;
 }

@@ -13,6 +13,7 @@ class ThemeConfig(BaseModel):
 # Shared properties
 class ExamBase(BaseModel):
     title: str
+    description: Optional[str] = None
     duration: int
     is_published: Optional[bool] = False
     start_time: datetime
@@ -25,11 +26,13 @@ class ExamCreate(ExamBase):
 # Properties to update
 class ExamUpdate(ExamBase):
     title: Optional[str] = None
+    description: Optional[str] = None
     duration: Optional[int] = None
     start_time: Optional[datetime] = None
 
 class ExamInDBBase(ExamBase):
     id: int
+    slug: Optional[str] = None
     created_at: datetime
 
     class Config:
@@ -37,3 +40,4 @@ class ExamInDBBase(ExamBase):
 
 class Exam(ExamInDBBase):
     pass
+

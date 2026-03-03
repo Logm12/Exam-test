@@ -1,6 +1,6 @@
 "use client";
-import { useState, startTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, startTransition } from "react";
+import { useRouter, useParams } from "next/navigation";
 import { fetcher } from "@/lib/api";
 import { useLanguage } from "@/contexts/LanguageContext";
 import ImportQuestionsModal from "@/components/exam/ImportQuestionsModal";
@@ -8,20 +8,42 @@ import ImportQuestionsModal from "@/components/exam/ImportQuestionsModal";
 type OptionMap = { [key: string]: string };
 
 interface QuestionForm {
+    id?: number;
     content: string;
     type: "multiple_choice" | "short_answer";
     options: OptionMap;
     correct_answer: string;
 }
 
-export default function CreateExam() {
+export default function EditExam() {
     const { t } = useLanguage();
     const router = useRouter();
+    const params = useParams();
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [examTitle, setExamTitle] = useState("");
     const [examDuration, setExamDuration] = useState(60);
     const [questions, setQuestions] = useState<QuestionForm[]>([]);
     const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+
+    useEffect(() => {
+        const loadExamData = async () => {
+            try {
+                const exam = await fetcher(`/exams/${params.id}`);
+                setExamTitle(exam.title);
+                setExamDuration(exam.duration);
+
+                const qData = await fetcher(`/questions/exam/${params.id}`);
+                setQuestions(qData || []);
+            } catch (err) {
+                console.error(err);
+                alert("Failed to load exam data");
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        if (params.id) loadExamData();
+    }, [params.id]);
 
     const addQuestion = () => {
         setQuestions([
@@ -67,25 +89,33 @@ export default function CreateExam() {
         setIsSubmitting(true);
 
         try {
-            // Create Exam First
-            const examPayload = {
-                title: examTitle,
-                duration: examDuration,
-                start_time: new Date().toISOString(),
-                is_published: true
-            };
-
-            const newExam = await fetcher("/exams/", {
-                method: "POST",
-                body: JSON.stringify(examPayload)
+            // Update Exam
+            await fetcher(`/exams/${params.id}`, {
+                method: "PUT",
+                body: JSON.stringify({
+                    title: examTitle,
+                    duration: examDuration,
+                    is_published: true
+                })
             });
 
+            // For simplicity, we delete all old questions and re-insert 
+            // Better: diff and update/create/delete
+            // But per current backend, questions belong to exam_id
+
+            // Delete existing
+            try {
+                const oldQs = await fetcher(`/questions/exam/${params.id}`);
+                await Promise.all(oldQs.map((q: any) => fetcher(`/questions/${q.id}`, { method: "DELETE" })));
+            } catch (e) { }
+
+            // Add new
             const qPromises = questions.map((q) =>
                 fetcher("/questions/", {
                     method: "POST",
                     body: JSON.stringify({
                         ...q,
-                        exam_id: newExam.id
+                        exam_id: parseInt(params.id as string)
                     })
                 })
             );
@@ -98,18 +128,20 @@ export default function CreateExam() {
 
         } catch (error) {
             console.error(error);
-            alert(t("admin.exams.new.failed"));
+            alert("Failed to update exam");
         } finally {
             setIsSubmitting(false);
         }
     };
+
+    if (isLoading) return <div className="p-8 text-center text-[var(--text-muted)] animate-pulse">Loading...</div>;
 
     return (
         <div className="max-w-4xl mx-auto pb-20 animate-fade-in space-y-8 text-[var(--text-primary)]">
             <div className="flex justify-between items-center">
                 <div>
                     <h1 className="text-3xl font-semibold tracking-tight text-[var(--text-primary)]">
-                        {t("admin.exams.new.title")}
+                        {t("admin.exams.edit")}
                     </h1>
                     <p className="text-sm text-[var(--text-secondary)] mt-2">
                         {t("admin.exams.new.subtitle")}
@@ -118,7 +150,7 @@ export default function CreateExam() {
                 <button
                     type="button"
                     onClick={() => setIsImportModalOpen(true)}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg border border-[var(--border-accent)] text-[var(--accent-primary)] hover:bg-[var(--accent-glow)] transition-all text-sm font-medium shadow-sm hover:shadow-md"
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg border border-[var(--border-accent)] text-[var(--accent-primary)] hover:bg-[var(--accent-glow)] transition-all text-sm font-medium"
                 >
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
                     {t("import.title")}
@@ -138,7 +170,6 @@ export default function CreateExam() {
                                 type="text"
                                 required
                                 className="w-full px-4 py-2 border border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--accent-primary)] focus:border-[var(--accent-primary)] outline-none transition-shadow bg-[var(--bg-primary)] text-[var(--text-primary)]"
-                                placeholder="e.g. Midterm 2026"
                                 value={examTitle}
                                 onChange={(e) => setExamTitle(e.target.value)}
                             />
@@ -180,7 +211,6 @@ export default function CreateExam() {
                                     type="button"
                                     onClick={() => removeQuestion(qIndex)}
                                     className="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--status-danger)] p-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                                    title="Remove Question"
                                 >
                                     ✕
                                 </button>
@@ -250,26 +280,16 @@ export default function CreateExam() {
                                 </div>
                             </div>
                         ))}
-
-                        {questions.length === 0 && (
-                            <div className="text-center py-12 border-2 border-dashed border-[var(--border-subtle)] rounded-2xl">
-                                <p className="text-sm text-[var(--text-secondary)] mb-2">{t("admin.exams.new.noQuestions")}</p>
-                                <button type="button" onClick={addQuestion} className="text-[var(--accent-primary)] text-sm font-medium hover:underline">
-                                    {t("admin.exams.new.addFirst")}
-                                </button>
-                            </div>
-                        )}
                     </div>
                 </section>
 
-                {/* Submit Bar */}
                 <div className="fixed bottom-0 left-64 right-0 p-4 bg-[var(--surface-overlay)] backdrop-blur-md border-t border-[var(--border-subtle)] flex justify-end px-8 z-20">
                     <button
                         type="submit"
                         disabled={isSubmitting || questions.length === 0}
                         className="accent-btn px-8 py-2.5 rounded-lg text-sm font-medium shadow-lg transition-all"
                     >
-                        {isSubmitting ? t("admin.exams.new.publishing") : t("admin.exams.new.publish")}
+                        {isSubmitting ? t("app.processing") : t("admin.exams.edit")}
                     </button>
                 </div>
             </form>
@@ -278,6 +298,7 @@ export default function CreateExam() {
                 isOpen={isImportModalOpen}
                 onClose={() => setIsImportModalOpen(false)}
                 onImport={handleImport}
+                examId={parseInt(params.id as string)}
             />
         </div>
     );

@@ -1,17 +1,26 @@
 "use client";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { LanguageProvider, useLanguage } from "@/contexts/LanguageContext";
 import LanguageToggle from "@/components/LanguageToggle";
-import { fetcher } from "@/lib/api";
+import ThemeToggle from "@/components/ThemeToggle";
+import Link from "next/link";
+import { useEffect } from "react";
 
 function LoginForm() {
     const router = useRouter();
+    const { status } = useSession();
     const searchParams = useSearchParams();
     const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
     const errorParam = searchParams.get("error");
     const { t } = useLanguage();
+
+    useEffect(() => {
+        if (status === "authenticated") {
+            router.push(callbackUrl === "/login" ? "/dashboard" : callbackUrl);
+        }
+    }, [status, router, callbackUrl]);
 
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -24,25 +33,12 @@ function LoginForm() {
                 : ""
     );
 
-    const [isRegistering, setIsRegistering] = useState(false);
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
         setError("");
 
         try {
-            if (isRegistering) {
-                await fetcher("/auth/register", {
-                    method: "POST",
-                    body: JSON.stringify({
-                        username,
-                        password,
-                        role: "student"
-                    })
-                });
-            }
-
             const result = await signIn("credentials", {
                 username,
                 password,
@@ -64,86 +60,102 @@ function LoginForm() {
     };
 
     return (
-        <div className="min-h-screen bg-neutral-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 font-sans">
-            {/* Language toggle top-right */}
-            <div className="absolute top-6 right-6">
+        <div className="min-h-screen bg-[var(--bg-primary)] flex flex-col justify-center py-12 sm:px-6 lg:px-8 font-sans">
+            {/* Toggles top-right */}
+            <div className="absolute top-6 right-6 flex items-center space-x-3">
+                <ThemeToggle />
                 <LanguageToggle />
             </div>
 
-            <div className="sm:mx-auto sm:w-full sm:max-w-md animate-fade-in">
-                <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-neutral-900">
+            <div className="sm:mx-auto sm:w-full sm:max-w-md animate-fade-in text-center relative z-10">
+                <div className="inline-flex justify-center items-center w-14 h-14 rounded-2xl mb-6 shadow-lg" style={{ background: 'var(--accent-gradient)' }}>
+                    <span className="text-white font-bold text-2xl tracking-tighter">EO</span>
+                </div>
+                <h2 className="text-center text-3xl font-bold tracking-tight text-[var(--text-primary)]">
                     {t("login.title")}
                 </h2>
-                <p className="mt-2 text-center text-sm text-neutral-600">
+                <p className="mt-2 text-center text-sm text-[var(--text-secondary)]">
                     {t("login.subtitle")}
                 </p>
             </div>
 
-            <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-                <div className="bg-white py-8 px-4 shadow-xl shadow-neutral-200/50 sm:rounded-2xl sm:px-10 border border-neutral-100">
+            <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md relative z-10">
+                <div className="surface-card py-8 px-4 sm:px-10">
                     <form className="space-y-6" onSubmit={handleSubmit}>
                         {error && (
-                            <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm border border-red-100">
+                            <div className="p-3 rounded-lg text-sm" style={{ background: 'rgba(239, 68, 68, 0.1)', color: 'var(--status-danger)', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
                                 {error}
                             </div>
                         )}
                         <div>
-                            <label className="block text-sm font-medium text-neutral-700">{t("login.username")}</label>
-                            <div className="mt-1">
-                                <input
-                                    type="text"
-                                    required
-                                    value={username}
-                                    onChange={(e) => setUsername(e.target.value)}
-                                    className="block w-full appearance-none rounded-lg border border-neutral-300 px-3 py-2 placeholder-neutral-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                                />
-                            </div>
+                            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">{t("login.username")}</label>
+                            <input
+                                type="text"
+                                required
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                className="block w-full appearance-none rounded-lg border px-3 py-2 sm:text-sm transition-all focus:outline-none focus:ring-2"
+                                style={{
+                                    background: 'var(--bg-primary)',
+                                    borderColor: 'var(--border-default)',
+                                    color: 'var(--text-primary)'
+                                }}
+                                onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--accent-primary)'; e.currentTarget.style.boxShadow = '0 0 0 2px var(--accent-glow)'; }}
+                                onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border-default)'; e.currentTarget.style.boxShadow = 'none'; }}
+                            />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-neutral-700">{t("login.password")}</label>
-                            <div className="mt-1">
-                                <input
-                                    type="password"
-                                    required
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    className="block w-full appearance-none rounded-lg border border-neutral-300 px-3 py-2 placeholder-neutral-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                                />
-                            </div>
+                            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">{t("login.password")}</label>
+                            <input
+                                type="password"
+                                required
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="block w-full appearance-none rounded-lg border px-3 py-2 sm:text-sm transition-all focus:outline-none focus:ring-2"
+                                style={{
+                                    background: 'var(--bg-primary)',
+                                    borderColor: 'var(--border-default)',
+                                    color: 'var(--text-primary)'
+                                }}
+                                onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--accent-primary)'; e.currentTarget.style.boxShadow = '0 0 0 2px var(--accent-glow)'; }}
+                                onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border-default)'; e.currentTarget.style.boxShadow = 'none'; }}
+                            />
                         </div>
 
                         <div>
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className="flex w-full justify-center rounded-lg border border-transparent bg-indigo-600 py-2.5 px-4 text-sm font-medium text-white shadow-sm shadow-indigo-200 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 transition-all"
+                                className="accent-btn flex w-full justify-center py-2.5 px-4 disabled:opacity-50"
                             >
-                                {isLoading ? t("app.processing") : isRegistering ? t("app.register") : t("app.signIn")}
+                                {isLoading ? t("app.processing") : t("app.signIn")}
                             </button>
                         </div>
 
                         <div className="text-sm text-center">
-                            <button type="button" onClick={() => setIsRegistering(!isRegistering)} className="text-indigo-600 font-medium hover:underline cursor-pointer transition-colors">
-                                {isRegistering ? t("login.switchLogin") : t("login.switchRegister")}
-                            </button>
+                            <span className="text-[var(--text-secondary)]">{t("login.noAccount")} </span>
+                            <Link href="/register" className="font-medium hover:underline transition-colors" style={{ color: 'var(--accent-primary)' }}>
+                                {t("login.switchRegister")}
+                            </Link>
                         </div>
                     </form>
 
                     <div className="mt-8">
                         <div className="relative">
                             <div className="absolute inset-0 flex items-center">
-                                <div className="w-full border-t border-neutral-200"></div>
+                                <div className="w-full border-t" style={{ borderColor: 'var(--border-subtle)' }}></div>
                             </div>
                             <div className="relative flex justify-center text-sm">
-                                <span className="bg-white px-2 text-neutral-500">{t("login.orContinue")}</span>
+                                <span className="px-2 text-[var(--text-muted)]" style={{ background: 'var(--surface-card)' }}>{t("login.orContinue")}</span>
                             </div>
                         </div>
 
                         <div className="mt-6 grid grid-cols-1 gap-3">
                             <button
                                 onClick={() => signIn("google", { callbackUrl })}
-                                className="flex w-full items-center justify-center gap-3 rounded-lg border border-neutral-300 bg-white px-4 py-2.5 text-sm font-medium text-neutral-700 shadow-sm hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all"
+                                className="flex w-full items-center justify-center gap-3 rounded-lg border px-4 py-2.5 text-sm font-medium transition-all focus:outline-none focus:ring-2 disabled:opacity-50 cursor-pointer hover:bg-[var(--surface-hover)]"
+                                style={{ borderColor: 'var(--border-default)', color: 'var(--text-primary)', background: 'transparent' }}
                             >
                                 <svg className="h-5 w-5" viewBox="0 0 24 24">
                                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
@@ -156,7 +168,10 @@ function LoginForm() {
 
                             <button
                                 onClick={() => signIn("zalo", { callbackUrl })}
-                                className="flex w-full items-center justify-center gap-3 rounded-lg border border-transparent bg-[#0068FF] px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-[#005BFF] focus:outline-none focus:ring-2 focus:ring-[#0068FF] focus:ring-offset-2 transition-all"
+                                className="flex w-full items-center justify-center gap-3 rounded-lg border border-transparent px-4 py-2.5 text-sm font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all cursor-pointer"
+                                style={{ background: '#0068FF' }}
+                                onMouseOver={(e) => e.currentTarget.style.background = '#005BFF'}
+                                onMouseOut={(e) => e.currentTarget.style.background = '#0068FF'}
                             >
                                 <span className="font-bold text-lg tracking-tighter mr-1 -mt-0.5">Zalo</span>
                                 Zalo
@@ -165,14 +180,17 @@ function LoginForm() {
                     </div>
                 </div>
             </div>
+
+            {/* Background decorative blob */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-[var(--accent-glow)] rounded-full blur-[100px] -z-10 opacity-60 pointer-events-none"></div>
         </div>
     );
 }
 
 export default function LoginPage() {
     return (
-        <LanguageProvider>
+        <Suspense fallback={<div className="min-h-screen bg-[var(--bg-primary)]" />}>
             <LoginForm />
-        </LanguageProvider>
+        </Suspense>
     );
 }
