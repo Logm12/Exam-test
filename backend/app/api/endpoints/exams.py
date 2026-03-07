@@ -19,7 +19,6 @@ from app.schemas.exam import Exam as ExamSchema, ExamCreate, ExamUpdate
 from app.schemas.student_exam import StudentExam
 from app.schemas.submission import AnswerDraft, ExamSubmit
 from sqlalchemy.orm import selectinload
-from fastapi_limiter.depends import RateLimiter
 
 router = APIRouter()
 
@@ -193,7 +192,7 @@ async def delete_exam(
     return {"ok": True}
 
 
-@router.post("/{exam_id}/draft", dependencies=[Depends(RateLimiter(times=10, seconds=60))])
+@router.post("/{exam_id}/draft")
 async def save_draft(
     *,
     exam_id: int,

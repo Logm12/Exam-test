@@ -8,14 +8,13 @@ from sqlalchemy.future import select
 from app.core.config import settings
 from app.db.session import get_db
 from app.models.user import User
-from app.schemas.user import User as UserSchema
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/auth/login")
 
 async def get_current_user(
     token: Annotated[str, Depends(oauth2_scheme)],
     db: AsyncSession = Depends(get_db)
-) -> User:
+):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -36,8 +35,8 @@ async def get_current_user(
     return user
 
 async def get_current_active_admin(
-    current_user: User = Depends(get_current_user),
-) -> User:
+    current_user = Depends(get_current_user),
+):
     if current_user.role != "admin":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions"

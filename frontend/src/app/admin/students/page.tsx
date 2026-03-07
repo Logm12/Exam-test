@@ -1,6 +1,7 @@
 "use client";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { fetcher } from "@/lib/api";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface UserAccount {
     id: number;
@@ -9,6 +10,7 @@ interface UserAccount {
 }
 
 export default function StudentsManagementPage() {
+    const { t } = useLanguage();
     const [users, setUsers] = useState<UserAccount[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState("");
@@ -43,7 +45,7 @@ export default function StudentsManagementPage() {
                 method: "PUT",
                 body: JSON.stringify({ username: user.username, role: editRole }),
             });
-            setUsers(users.map((u) => (u.id === user.id ? { ...u, role: editRole } : u)));
+            setUsers(users.map((u: UserAccount) => (u.id === user.id ? { ...u, role: editRole } : u)));
             setEditingId(null);
         } catch (err: any) {
             alert(err.message || "Failed to update user");
@@ -54,52 +56,67 @@ export default function StudentsManagementPage() {
         if (!confirm(`Are you sure you want to delete user "${username}"? This action cannot be undone.`)) return;
         try {
             await fetcher(`/users/${id}`, { method: "DELETE" });
-            setUsers(users.filter((u) => u.id !== id));
+            setUsers(users.filter((u: UserAccount) => u.id !== id));
         } catch (err: any) {
             alert(err.message || "Failed to delete user");
         }
     };
 
-    const filteredUsers = filter === "all" ? users : users.filter((u) => u.role === filter);
-    const studentCount = users.filter((u) => u.role === "student").length;
-    const adminCount = users.filter((u) => u.role === "admin").length;
+    const filteredUsers = filter === "all" ? users : users.filter((u: UserAccount) => u.role === filter);
+    const studentCount = users.filter((u: UserAccount) => u.role === "student").length;
+    const adminCount = users.filter((u: UserAccount) => u.role === "admin").length;
 
     return (
-        <div className="space-y-6 animate-fade-in">
-            <div>
-                <h1 className="text-3xl font-semibold tracking-tight text-neutral-900">
+        <div className="space-y-6 animate-fade-in font-sans pb-20">
+            <div className="mb-8">
+                <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">
                     Students & Accounts
                 </h1>
-                <p className="text-sm text-neutral-500 mt-1">
+                <p className="text-sm text-[var(--text-secondary)] mt-1">
                     Manage user accounts and role assignments.
                 </p>
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-white p-5 rounded-2xl border border-neutral-100 shadow-sm">
-                    <h3 className="text-xs font-medium text-neutral-500 uppercase tracking-wider">Total Users</h3>
-                    <p className="text-2xl font-bold text-neutral-900 mt-2">{users.length}</p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div className="bg-white p-6 rounded-lg shadow-[var(--shadow-sm)] border border-[var(--border-default)] dark:bg-[#1f1f1f]">
+                    <div className="flex items-center justify-between mb-2">
+                        <h3 className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider">Total Users</h3>
+                        <div className="w-8 h-8 rounded bg-gray-50 text-gray-500 flex items-center justify-center dark:bg-gray-800">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                        </div>
+                    </div>
+                    <p className="text-3xl font-bold text-[var(--text-primary)]">{users.length}</p>
                 </div>
-                <div className="bg-white p-5 rounded-2xl border border-neutral-100 shadow-sm">
-                    <h3 className="text-xs font-medium text-neutral-500 uppercase tracking-wider">Students</h3>
-                    <p className="text-2xl font-bold text-emerald-600 mt-2">{studentCount}</p>
+                <div className="bg-white p-6 rounded-lg shadow-[var(--shadow-sm)] border border-[var(--border-default)] dark:bg-[#1f1f1f]">
+                    <div className="flex items-center justify-between mb-2">
+                        <h3 className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider">Students</h3>
+                        <div className="w-8 h-8 rounded bg-green-50 text-green-600 flex items-center justify-center dark:bg-green-900/30 dark:text-green-400">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        </div>
+                    </div>
+                    <p className="text-3xl font-bold text-green-600 dark:text-green-400">{studentCount}</p>
                 </div>
-                <div className="bg-white p-5 rounded-2xl border border-neutral-100 shadow-sm">
-                    <h3 className="text-xs font-medium text-neutral-500 uppercase tracking-wider">Administrators</h3>
-                    <p className="text-2xl font-bold text-indigo-600 mt-2">{adminCount}</p>
+                <div className="bg-white p-6 rounded-lg shadow-[var(--shadow-sm)] border border-[var(--border-default)] dark:bg-[#1f1f1f]">
+                    <div className="flex items-center justify-between mb-2">
+                        <h3 className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wider">Administrators</h3>
+                        <div className="w-8 h-8 rounded bg-blue-50 text-blue-600 flex items-center justify-center dark:bg-blue-900/30 dark:text-blue-400">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        </div>
+                    </div>
+                    <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">{adminCount}</p>
                 </div>
             </div>
 
             {/* Filter Tabs */}
-            <div className="flex space-x-1 bg-neutral-100 rounded-lg p-1 w-fit">
+            <div className="flex space-x-1 bg-gray-100 dark:bg-gray-800 rounded-md p-1 w-fit mb-6 border border-gray-200 dark:border-gray-700">
                 {(["all", "student", "admin"] as const).map((tab) => (
                     <button
                         key={tab}
                         onClick={() => setFilter(tab)}
-                        className={`px-4 py-1.5 rounded-md text-xs font-medium transition-all capitalize ${filter === tab
-                                ? "bg-white text-neutral-900 shadow-sm"
-                                : "text-neutral-500 hover:text-neutral-700"
+                        className={`px-4 py-2 rounded text-xs font-semibold transition-all capitalize ${filter === tab
+                            ? "bg-white text-[var(--accent-primary)] shadow-sm dark:bg-gray-700 dark:text-blue-400"
+                            : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
                             }`}
                     >
                         {tab === "all" ? `All (${users.length})` : tab === "student" ? `Students (${studentCount})` : `Admins (${adminCount})`}
@@ -108,95 +125,102 @@ export default function StudentsManagementPage() {
             </div>
 
             {error && (
-                <div className="bg-red-50 text-red-600 p-4 rounded-xl text-sm border border-red-100">{error}</div>
+                <div className="bg-red-50 text-red-600 p-4 rounded-md text-sm border border-red-200 mb-6 dark:bg-red-900/20 dark:border-red-800/50 dark:text-red-400">
+                    {error}
+                </div>
             )}
 
             {isLoading ? (
                 <div className="flex items-center justify-center py-20">
-                    <div className="w-8 h-8 border-2 border-neutral-300 border-t-indigo-600 rounded-full animate-spin" />
+                    <div className="w-8 h-8 border-2 border-gray-200 border-t-[var(--accent-primary)] rounded-full animate-spin dark:border-gray-700" />
                 </div>
             ) : filteredUsers.length === 0 ? (
-                <div className="text-center py-16 border-2 border-dashed border-neutral-200 rounded-2xl">
-                    <p className="text-neutral-500 text-sm">No users found</p>
+                <div className="text-center py-20 bg-white border border-dashed border-gray-300 rounded-lg shadow-[var(--shadow-sm)] dark:bg-[#1f1f1f] dark:border-gray-700">
+                    <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 bg-gray-50 dark:bg-gray-800">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-gray-400" strokeWidth="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="17" y1="8" x2="23" y2="14"></line><line x1="23" y1="8" x2="17" y2="14"></line></svg>
+                    </div>
+                    <p className="text-[var(--text-secondary)] text-sm font-medium">No users found</p>
                 </div>
             ) : (
-                <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm overflow-hidden">
-                    <table className="w-full text-left">
-                        <thead>
-                            <tr className="border-b border-neutral-100 bg-neutral-50/50">
-                                <th className="px-6 py-4 text-xs font-medium text-neutral-500 uppercase tracking-wider">ID</th>
-                                <th className="px-6 py-4 text-xs font-medium text-neutral-500 uppercase tracking-wider">Username</th>
-                                <th className="px-6 py-4 text-xs font-medium text-neutral-500 uppercase tracking-wider">Role</th>
-                                <th className="px-6 py-4 text-xs font-medium text-neutral-500 uppercase tracking-wider text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-neutral-100">
-                            {filteredUsers.map((user) => (
-                                <tr key={user.id} className="hover:bg-neutral-50/50 transition-colors group">
-                                    <td className="px-6 py-4 text-sm text-neutral-400 font-mono">#{user.id}</td>
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center space-x-3">
-                                            <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-xs">
-                                                {user.username.charAt(0).toUpperCase()}
-                                            </div>
-                                            <span className="font-medium text-neutral-900 text-sm">{user.username}</span>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        {editingId === user.id ? (
-                                            <div className="flex items-center space-x-2">
-                                                <select
-                                                    value={editRole}
-                                                    onChange={(e) => setEditRole(e.target.value)}
-                                                    className="text-xs border border-neutral-300 rounded-lg px-2 py-1 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
-                                                >
-                                                    <option value="student">Student</option>
-                                                    <option value="admin">Admin</option>
-                                                </select>
-                                                <button
-                                                    onClick={() => saveRole(user)}
-                                                    className="text-xs font-medium text-emerald-600 hover:text-emerald-800"
-                                                >
-                                                    Save
-                                                </button>
-                                                <button
-                                                    onClick={() => setEditingId(null)}
-                                                    className="text-xs font-medium text-neutral-400 hover:text-neutral-600"
-                                                >
-                                                    Cancel
-                                                </button>
-                                            </div>
-                                        ) : (
-                                            <span
-                                                className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${user.role === "admin"
-                                                        ? "bg-indigo-50 text-indigo-700"
-                                                        : "bg-neutral-100 text-neutral-600"
-                                                    }`}
-                                            >
-                                                {user.role}
-                                            </span>
-                                        )}
-                                    </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <div className="flex items-center justify-end space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button
-                                                onClick={() => startEdit(user)}
-                                                className="text-xs font-medium text-indigo-600 hover:text-indigo-800 px-3 py-1.5 rounded-lg hover:bg-indigo-50 transition-colors"
-                                            >
-                                                Edit Role
-                                            </button>
-                                            <button
-                                                onClick={() => handleDelete(user.id, user.username)}
-                                                className="text-xs font-medium text-red-600 hover:text-red-800 px-3 py-1.5 rounded-lg hover:bg-red-50 transition-colors"
-                                            >
-                                                Delete
-                                            </button>
-                                        </div>
-                                    </td>
+                <div className="bg-white rounded-lg border border-[var(--border-default)] shadow-[var(--shadow-sm)] overflow-hidden dark:bg-[#1f1f1f]">
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left border-collapse">
+                            <thead>
+                                <tr className="border-b border-[var(--border-default)] bg-gray-50/50 dark:bg-gray-800/50">
+                                    <th className="px-6 py-4 text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">ID</th>
+                                    <th className="px-6 py-4 text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Username</th>
+                                    <th className="px-6 py-4 text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Role</th>
+                                    <th className="px-6 py-4 text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider text-right">Actions</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody className="divide-y divide-[var(--border-default)]">
+                                {filteredUsers.map((user) => (
+                                    <tr key={user.id} className="hover:bg-gray-50 transition-colors group dark:hover:bg-gray-800">
+                                        <td className="px-6 py-4 text-sm text-[var(--text-secondary)] font-mono">#{user.id}</td>
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center space-x-3">
+                                                <div className="w-8 h-8 rounded-md bg-blue-50 flex items-center justify-center text-blue-600 font-bold text-xs border border-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800/50">
+                                                    {user.username.charAt(0).toUpperCase()}
+                                                </div>
+                                                <span className="font-semibold text-[var(--text-primary)] text-sm">{user.username}</span>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            {editingId === user.id ? (
+                                                <div className="flex items-center space-x-2">
+                                                    <select
+                                                        value={editRole}
+                                                        onChange={(e: any) => setEditRole(e.target.value)}
+                                                        className="text-xs bg-white border border-gray-300 rounded-md px-2.5 py-1.5 focus:ring-[var(--accent-primary)] focus:border-[var(--accent-primary)] outline-none dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                                                    >
+                                                        <option value="student">Student</option>
+                                                        <option value="admin">Admin</option>
+                                                    </select>
+                                                    <button
+                                                        onClick={() => saveRole(user)}
+                                                        className="text-xs font-semibold text-green-600 hover:text-green-700 bg-green-50 px-3 py-1.5 rounded border border-green-200 dark:bg-green-900/20 dark:border-green-800/50 dark:text-green-400 dark:hover:text-green-300"
+                                                    >
+                                                        Save
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setEditingId(null)}
+                                                        className="text-xs font-semibold text-gray-500 hover:text-gray-700 bg-gray-100 px-3 py-1.5 rounded border border-gray-200 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+                                                    >
+                                                        Cancel
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <span
+                                                    className={`inline-flex items-center px-2.5 py-1 rounded text-xs font-semibold border ${user.role === "admin"
+                                                        ? "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800/30"
+                                                        : "bg-gray-100 text-gray-600 border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700"
+                                                        }`}
+                                                >
+                                                    {user.role}
+                                                </span>
+                                            )}
+                                        </td>
+                                        <td className="px-6 py-4 text-right">
+                                            <div className="flex items-center justify-end space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <button
+                                                    onClick={() => startEdit(user)}
+                                                    className="text-xs font-semibold text-[var(--accent-primary)] hover:text-[var(--accent-primary-hover)] px-3 py-1.5 rounded-md hover:bg-blue-50 transition-colors border border-transparent hover:border-blue-100 dark:hover:bg-blue-900/30 dark:hover:border-blue-800/50"
+                                                >
+                                                    Edit Role
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDelete(user.id, user.username)}
+                                                    className="text-xs font-semibold text-red-600 hover:text-red-700 px-3 py-1.5 rounded-md hover:bg-red-50 transition-colors border border-transparent hover:border-red-100 dark:text-red-400 dark:hover:bg-red-900/30 dark:hover:border-red-800/50"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             )}
         </div>

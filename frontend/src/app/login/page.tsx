@@ -1,12 +1,11 @@
 "use client";
-import { useState, Suspense } from "react";
+import React, { useState, Suspense, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
 import { LanguageProvider, useLanguage } from "@/contexts/LanguageContext";
 import LanguageToggle from "@/components/LanguageToggle";
 import ThemeToggle from "@/components/ThemeToggle";
 import Link from "next/link";
-import { useEffect } from "react";
 
 function LoginForm() {
     const router = useRouter();
@@ -93,7 +92,7 @@ function LoginForm() {
                                 type="text"
                                 required
                                 value={username}
-                                onChange={(e) => setUsername(e.target.value)}
+                                onChange={(e: any) => setUsername(e.target.value)}
                                 className="block w-full appearance-none rounded-lg border px-3 py-2 sm:text-sm transition-all focus:outline-none focus:ring-2"
                                 style={{
                                     background: 'var(--bg-primary)',
@@ -111,7 +110,7 @@ function LoginForm() {
                                 type="password"
                                 required
                                 value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+                                onChange={(e: any) => setPassword(e.target.value)}
                                 className="block w-full appearance-none rounded-lg border px-3 py-2 sm:text-sm transition-all focus:outline-none focus:ring-2"
                                 style={{
                                     background: 'var(--bg-primary)',

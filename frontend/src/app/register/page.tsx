@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { LanguageProvider, useLanguage } from "@/contexts/LanguageContext";
 import LanguageToggle from "@/components/LanguageToggle";
@@ -96,7 +96,7 @@ function RegisterForm() {
                                     type="text"
                                     required
                                     value={username}
-                                    onChange={(e) => setUsername(e.target.value)}
+                                    onChange={(e: any) => setUsername(e.target.value)}
                                     className="block w-full appearance-none rounded-lg border px-3 py-2 sm:text-sm transition-all focus:outline-none focus:ring-2"
                                     style={{
                                         background: 'var(--bg-primary)',
@@ -114,7 +114,7 @@ function RegisterForm() {
                                     type="password"
                                     required
                                     value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
+                                    onChange={(e: any) => setPassword(e.target.value)}
                                     className="block w-full appearance-none rounded-lg border px-3 py-2 sm:text-sm transition-all focus:outline-none focus:ring-2"
                                     style={{
                                         background: 'var(--bg-primary)',
@@ -132,7 +132,7 @@ function RegisterForm() {
                                     type="password"
                                     required
                                     value={confirmPassword}
-                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    onChange={(e: any) => setConfirmPassword(e.target.value)}
                                     className="block w-full appearance-none rounded-lg border px-3 py-2 sm:text-sm transition-all focus:outline-none focus:ring-2"
                                     style={{
                                         background: 'var(--bg-primary)',

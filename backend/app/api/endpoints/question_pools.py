@@ -5,6 +5,7 @@ from sqlalchemy.future import select
 
 from app.db.session import get_db
 from app.api.deps import get_current_active_admin
+from app.models.user import User
 from app.models.question_pool import QuestionPool
 from app.schemas.question_pool import QuestionPool as PoolSchema, QuestionPoolCreate
 

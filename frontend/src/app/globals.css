@@ -1,117 +1,75 @@
 @import "tailwindcss";
 
 /* ===== DESIGN TOKENS ===== */
-/* Aesthetic: "Refined Industrial" - Sharp, professional, memorable */
+/* Aesthetic: "Clean LMS" - Minimalist, Academic, Corporate Blue */
 
 :root,
 [data-theme="light"] {
   /* Surfaces */
-  --bg-primary: #f8f9fc;
+  --bg-primary: #f0f2f5;
   --bg-secondary: #ffffff;
-  --bg-tertiary: #f1f3f9;
-  --surface-card: rgba(255, 255, 255, 0.85);
-  --surface-hover: rgba(0, 0, 0, 0.03);
-  --surface-overlay: rgba(255, 255, 255, 0.92);
+  --bg-tertiary: #f9fafb;
+  --surface-card: #ffffff;
+  --surface-hover: #f3f4f6;
+  --surface-overlay: rgba(255, 255, 255, 0.98);
 
   /* Text */
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #94a3b8;
-  --text-inverse: #f8fafc;
+  --text-primary: #1f2937;
+  --text-secondary: #4b5563;
+  --text-muted: #9ca3af;
+  --text-inverse: #ffffff;
 
-  /* Accent */
-  --accent-primary: #4f46e5;
-  --accent-primary-hover: #4338ca;
-  --accent-secondary: #7c3aed;
-  --accent-gradient: linear-gradient(135deg, #4f46e5, #7c3aed);
-  --accent-glow: rgba(79, 70, 229, 0.15);
-
-  /* Status */
-  --status-success: #059669;
-  --status-warning: #d97706;
-  --status-danger: #dc2626;
-  --status-info: #0284c7;
-
-  /* Borders */
-  --border-default: #e2e8f0;
-  --border-subtle: rgba(0, 0, 0, 0.06);
-  --border-accent: rgba(79, 70, 229, 0.3);
-
-  /* Shadows */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.03);
-
-  /* Misc */
-  --glass-bg: rgba(255, 255, 255, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.5);
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
-}
-
-[data-theme="dark"] {
-  /* Surfaces */
-  --bg-primary: #0b0e14;
-  --bg-secondary: #111827;
-  --bg-tertiary: #1a1f2e;
-  --surface-card: rgba(17, 24, 39, 0.8);
-  --surface-hover: rgba(255, 255, 255, 0.04);
-  --surface-overlay: rgba(11, 14, 20, 0.95);
-
-  /* Text */
-  --text-primary: #f1f5f9;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  --text-inverse: #0f172a;
-
-  /* Accent */
-  --accent-primary: #6366f1;
-  --accent-primary-hover: #818cf8;
-  --accent-secondary: #a78bfa;
-  --accent-gradient: linear-gradient(135deg, #6366f1, #a78bfa);
-  --accent-glow: rgba(99, 102, 241, 0.2);
+  /* Accent (MyAloha Blue) */
+  --accent-primary: #1890ff;
+  --accent-primary-hover: #40a9ff;
+  --accent-secondary: #096dd9;
+  --accent-gradient: linear-gradient(135deg, #1890ff, #096dd9);
+  --accent-glow: rgba(24, 144, 255, 0.15);
 
   /* Status */
-  --status-success: #34d399;
-  --status-warning: #fbbf24;
-  --status-danger: #f87171;
-  --status-info: #38bdf8;
+  --status-success: #52c41a;
+  --status-warning: #faad14;
+  --status-danger: #ff4d4f;
+  --status-info: #1890ff;
 
   /* Borders */
-  --border-default: #1e293b;
-  --border-subtle: rgba(255, 255, 255, 0.06);
-  --border-accent: rgba(99, 102, 241, 0.3);
+  --border-default: #e5e7eb;
+  --border-subtle: #f3f4f6;
+  --border-accent: rgba(24, 144, 255, 0.3);
 
   /* Shadows */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.03);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.02);
 
   /* Misc */
-  --glass-bg: rgba(17, 24, 39, 0.6);
-  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-bg: rgba(255, 255, 255, 0.95);
+  --glass-border: rgba(229, 231, 235, 0.8);
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
 }
+
+/* Dark mode is disabled for MyAloha corporate theme */
 
 @theme inline {
   --color-background: var(--bg-primary);
   --color-foreground: var(--text-primary);
-  --font-sans: var(--font-space-grotesk);
-  --font-mono: var(--font-jetbrains-mono);
+  --font-sans: "Inter", "Roboto", system-ui, -apple-system, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 /* ===== BASE STYLES ===== */
 * {
-  transition: background-color 0.25s ease, color 0.15s ease, border-color 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 body {
   background: var(--bg-primary);
   color: var(--text-primary);
-  font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
