@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from .user import Base
@@ -30,3 +30,7 @@ class Answer(Base):
     
     submission = relationship("Submission", back_populates="answers")
     question = relationship("Question", back_populates="answers")
+
+    __table_args__ = (
+        UniqueConstraint("submission_id", "question_id", name="uix_submission_question"),
+    )

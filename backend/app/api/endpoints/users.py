@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from app.db.session import get_db
+from app.api.deps import get_current_active_admin
 from app.core.security import get_password_hash
 from app.models.user import User
 from app.schemas.user import User as UserSchema, UserUpdate
@@ -16,6 +17,7 @@ async def list_users(
     db: AsyncSession = Depends(get_db),
     skip: int = 0,
     limit: int = 100,
+    current_user: User = Depends(get_current_active_admin),
 ):
     """List all users (admin only)."""
     result = await db.execute(select(User).offset(skip).limit(limit))
@@ -26,6 +28,7 @@ async def list_users(
 async def get_user(
     user_id: int,
     db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_active_admin),
 ):
     """Get a specific user by ID."""
     result = await db.execute(select(User).where(User.id == user_id))
@@ -40,6 +43,7 @@ async def update_user(
     user_id: int,
     user_in: UserUpdate,
     db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_active_admin),
 ):
     """Update user role or password."""
     result = await db.execute(select(User).where(User.id == user_id))
@@ -64,6 +68,7 @@ async def update_user(
 async def delete_user(
     user_id: int,
     db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_active_admin),
 ):
     """Delete a user."""
     result = await db.execute(select(User).where(User.id == user_id))

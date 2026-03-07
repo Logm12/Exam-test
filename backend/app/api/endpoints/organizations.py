@@ -4,6 +4,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from app.db.session import get_db
+from app.api.deps import get_current_active_admin
+from app.models.user import User
 from app.models.organization import OrganizationalUnit
 from app.schemas.organization import OrganizationalUnit as OrgSchema, OrganizationalUnitCreate, OrganizationalUnitUpdate
 
@@ -14,6 +16,7 @@ async def read_organizations(
     db: AsyncSession = Depends(get_db),
     skip: int = 0,
     limit: int = 100,
+    current_user: User = Depends(get_current_active_admin),
 ) -> Any:
     result = await db.execute(select(OrganizationalUnit).offset(skip).limit(limit))
     return result.scalars().all()
@@ -23,6 +26,7 @@ async def create_organization(
     *,
     db: AsyncSession = Depends(get_db),
     org_in: OrganizationalUnitCreate,
+    current_user: User = Depends(get_current_active_admin),
 ) -> Any:
     org = OrganizationalUnit(**org_in.model_dump())
     db.add(org)
@@ -35,6 +39,7 @@ async def delete_organization(
     *,
     db: AsyncSession = Depends(get_db),
     org_id: int,
+    current_user: User = Depends(get_current_active_admin),
 ) -> Any:
     result = await db.execute(select(OrganizationalUnit).where(OrganizationalUnit.id == org_id))
     org = result.scalars().first()

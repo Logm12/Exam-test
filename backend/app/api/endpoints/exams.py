@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, UploadFi
 from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from sqlalchemy import delete
 import json
 import os
 import tempfile
@@ -10,7 +11,7 @@ import io
 
 from app.db.session import get_db
 from app.db.redis import get_redis
-from app.api.deps import get_current_user
+from app.api.deps import get_current_user, get_current_active_admin
 from app.models.user import User
 from app.models.exam import Exam, Question
 from app.models.submission import Submission, Answer
@@ -18,6 +19,7 @@ from app.schemas.exam import Exam as ExamSchema, ExamCreate, ExamUpdate
 from app.schemas.student_exam import StudentExam
 from app.schemas.submission import AnswerDraft, ExamSubmit
 from sqlalchemy.orm import selectinload
+from fastapi_limiter.depends import RateLimiter
 
 router = APIRouter()
 
@@ -26,6 +28,7 @@ async def read_exams(
     db: AsyncSession = Depends(get_db),
     skip: int = 0,
     limit: int = 100,
+    current_user: User = Depends(get_current_user), # Any logged in user
 ) -> Any:
     result = await db.execute(select(Exam).offset(skip).limit(limit))
     exams = result.scalars().all()
@@ -36,6 +39,7 @@ async def create_exam(
     *,
     db: AsyncSession = Depends(get_db),
     exam_in: ExamCreate,
+    current_user: User = Depends(get_current_active_admin), # Admin Only
 ) -> Any:
     exam_data = exam_in.model_dump()
     exam_data["slug"] = Exam.generate_slug()
@@ -46,7 +50,7 @@ async def create_exam(
     return exam
 
 
-@router.post("/import-questions")
+@router.post("/import-questions", dependencies=[Depends(get_current_active_admin)])
 async def import_questions_from_file(
     file: UploadFile = File(...),
 ):
@@ -124,6 +128,7 @@ async def read_exam(
     *,
     db: AsyncSession = Depends(get_db),
     exam_id: int,
+    current_user: User = Depends(get_current_user),
 ) -> Any:
     result = await db.execute(select(Exam).where(Exam.id == exam_id))
     exam = result.scalars().first()
@@ -135,6 +140,7 @@ async def read_exam(
 async def get_exam_for_student(
     *,
     db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
     exam_id: int,
 ) -> Any:
     """
@@ -154,6 +160,7 @@ async def update_exam(
     db: AsyncSession = Depends(get_db),
     exam_id: int,
     exam_in: ExamUpdate,
+    current_user: User = Depends(get_current_active_admin),
 ) -> Any:
     result = await db.execute(select(Exam).where(Exam.id == exam_id))
     exam = result.scalars().first()
@@ -174,6 +181,7 @@ async def delete_exam(
     *,
     db: AsyncSession = Depends(get_db),
     exam_id: int,
+    current_user: User = Depends(get_current_active_admin),
 ) -> Any:
     result = await db.execute(select(Exam).where(Exam.id == exam_id))
     exam = result.scalars().first()
@@ -184,10 +192,8 @@ async def delete_exam(
     await db.commit()
     return {"ok": True}
 
-# TODO: Re-integrate rate limiting after upgrading fastapi-limiter to pyrate_limiter API
-# from fastapi_limiter.depends import RateLimiter
 
-@router.post("/{exam_id}/draft")
+@router.post("/{exam_id}/draft", dependencies=[Depends(RateLimiter(times=10, seconds=60))])
 async def save_draft(
     *,
     exam_id: int,
@@ -252,12 +258,17 @@ async def submit_exam(
         submission.status = "submitted"
         submission.violation_count = submit_in.violation_count
         submission.forced_submit = str(submit_in.forced_submit).lower()
+        
+        # Clear existing answers to avoid duplication and unique constraint errors
+        await db.execute(delete(Answer).where(Answer.submission_id == submission.id))
+        await db.flush()
     
     for q in exam.questions:
         ans_value = submit_in.answers.get(str(q.id))
         if q.type == "multiple_choice":
             total_mcq += 1
-            if ans_value == q.correct_answer:
+            # Strict validation for correct answer
+            if ans_value is not None and q.correct_answer is not None and str(ans_value).strip() != "" and str(ans_value).strip() == str(q.correct_answer).strip():
                 correct_count += 1
                 
         # Prepare Answer record
@@ -291,6 +302,7 @@ async def export_exam_report(
     *,
     db: AsyncSession = Depends(get_db),
     exam_id: int,
+    current_user: User = Depends(get_current_active_admin),
 ):
     """
     Generate CSV Report of submissions.
