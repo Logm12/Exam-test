@@ -1,63 +1,67 @@
 @import "tailwindcss";
 
 /* ===== DESIGN TOKENS ===== */
-/* Aesthetic: "Clean LMS" - Minimalist, Academic, Corporate Blue */
+/* Aesthetic: "Bright Hub" - Energetic, Clean, FDB TALENT Cyan */
 
 :root,
 [data-theme="light"] {
   /* Surfaces */
-  --bg-primary: #f0f2f5;
+  --bg-primary: #f8fafc;
   --bg-secondary: #ffffff;
-  --bg-tertiary: #f9fafb;
+  --bg-tertiary: #f1f5f9;
   --surface-card: #ffffff;
-  --surface-hover: #f3f4f6;
-  --surface-overlay: rgba(255, 255, 255, 0.98);
+  --surface-hover: #f1f5f9;
+  --surface-overlay: rgba(255, 255, 255, 0.95);
 
   /* Text */
-  --text-primary: #1f2937;
-  --text-secondary: #4b5563;
-  --text-muted: #9ca3af;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
   --text-inverse: #ffffff;
 
-  /* Accent (MyAloha Blue) */
-  --accent-primary: #1890ff;
-  --accent-primary-hover: #40a9ff;
-  --accent-secondary: #096dd9;
-  --accent-gradient: linear-gradient(135deg, #1890ff, #096dd9);
-  --accent-glow: rgba(24, 144, 255, 0.15);
+  /* Accent (VNU-IS Navy & Gold) */
+  --accent-primary: #1e3a8a;
+  /* Navy Blue (blue-900) */
+  --accent-primary-hover: #1e40af;
+  /* Lighter Navy (blue-800) */
+  --accent-secondary: #f59e0b;
+  /* Gold/Amber (amber-500) */
+  --accent-gradient: linear-gradient(135deg, #1e3a8a, #172554);
+  /* Deep Navy Gradient */
+  --accent-glow: rgba(30, 58, 138, 0.15);
 
   /* Status */
-  --status-success: #52c41a;
-  --status-warning: #faad14;
-  --status-danger: #ff4d4f;
-  --status-info: #1890ff;
+  --status-success: #10b981;
+  --status-warning: #f59e0b;
+  --status-danger: #ef4444;
+  --status-info: #0ea5e9;
 
   /* Borders */
-  --border-default: #e5e7eb;
-  --border-subtle: #f3f4f6;
-  --border-accent: rgba(24, 144, 255, 0.3);
+  --border-default: #e2e8f0;
+  --border-subtle: #f1f5f9;
+  --border-accent: rgba(30, 58, 138, 0.3);
 
-  /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.05);
-  --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.02);
+  /* Shadows - Lighter & Airier */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.06), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  --shadow-card: 0 2px 5px rgba(0, 0, 0, 0.03), 0 1px 2px rgba(0, 0, 0, 0.02);
 
   /* Misc */
-  --glass-bg: rgba(255, 255, 255, 0.95);
-  --glass-border: rgba(229, 231, 235, 0.8);
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
+  --glass-bg: rgba(255, 255, 255, 0.90);
+  --glass-border: rgba(226, 232, 240, 0.8);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
 }
 
-/* Dark mode is disabled for MyAloha corporate theme */
+/* Dark mode is disabled for FDB TALENT to maintain a unified bright UI */
 
 @theme inline {
   --color-background: var(--bg-primary);
   --color-foreground: var(--text-primary);
-  --font-sans: "Inter", "Roboto", system-ui, -apple-system, sans-serif;
+  --font-sans: "Inter", "Outfit", system-ui, -apple-system, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 

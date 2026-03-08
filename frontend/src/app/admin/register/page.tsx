@@ -63,7 +63,7 @@ export default function AdminRegisterPage() {
 
             <div className="sm:mx-auto sm:w-full sm:max-w-md animate-fade-in text-center relative z-10">
                 <div className="inline-flex justify-center items-center w-14 h-14 rounded-2xl mb-6 shadow-lg border-2 border-[var(--accent-primary)] bg-[var(--bg-secondary)]">
-                    <span className="text-[var(--accent-primary)] font-bold text-xl tracking-tighter">EO</span>
+                    <span className="text-[var(--accent-primary)] font-bold text-xl tracking-tighter">FDB</span>
                 </div>
                 <h2 className="text-center text-3xl font-bold tracking-tight text-[var(--text-primary)]">
                     {t("admin.register.title") || "Create Admin Account"}

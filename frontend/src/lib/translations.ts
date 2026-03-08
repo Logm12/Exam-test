@@ -2,7 +2,7 @@ export type Locale = "vi" | "en";
 
 const translations: Record<string, Record<Locale, string>> = {
     // Chung
-    "app.name": { vi: "ExamOS", en: "ExamOS" },
+    "app.name": { vi: "FDB TALENT", en: "FDB TALENT" },
     "app.signOut": { vi: "Thoát", en: "Sign out" },
     "app.signIn": { vi: "Đăng nhập", en: "Sign in" },
     "app.register": { vi: "Đăng ký", en: "Register" },
@@ -10,8 +10,8 @@ const translations: Record<string, Record<Locale, string>> = {
     "app.language": { vi: "EN", en: "VI" },
 
     // Trang chủ
-    "landing.hero.title": { vi: "Hệ thống thi trắc nghiệm trực tuyến", en: "Online Examination Platform" },
-    "landing.hero.subtitle": { vi: "Nền tảng tổ chức thi trực tuyến chuyên nghiệp, chống gian lận, hỗ trợ nhiều định dạng câu hỏi", en: "Professional online exam platform with anti-cheating and multi-format question support" },
+    "landing.hero.title": { vi: "Cổng đánh giá năng lực FDB TALENT", en: "FDB TALENT Assessment Portal" },
+    "landing.hero.subtitle": { vi: "1 sản phẩm đến từ Liên chi đoàn Khoa Các Khoa học Ứng dụng", en: "A product from the Inter-branch Youth Union of the Faculty of Applied Sciences" },
     "landing.badge": { vi: "Chống gian lận | Giám sát thời gian thực", en: "Anti-Cheating | Real-time Monitoring" },
     "landing.cta.student": { vi: "Đăng nhập làm bài", en: "Student Login" },
     "landing.cta.admin": { vi: "Quản trị viên", en: "Admin Login" },
@@ -36,7 +36,7 @@ const translations: Record<string, Record<Locale, string>> = {
 
     // Đăng ký sinh viên
     "register.title": { vi: "Tạo tài khoản mới", en: "Create an account" },
-    "register.subtitle": { vi: "Đăng ký tài khoản thí sinh ExamOS", en: "Register a student account on ExamOS" },
+    "register.subtitle": { vi: "Đăng ký tài khoản hệ thống FDB TALENT", en: "Register an account on FDB TALENT" },
     "register.confirmPassword": { vi: "Xác nhận mật khẩu", en: "Confirm Password" },
     "register.hasAccount": { vi: "Đã có tài khoản?", en: "Already have an account?" },
     "register.success": { vi: "Tạo tài khoản thành công!", en: "Account created successfully!" },
@@ -44,7 +44,7 @@ const translations: Record<string, Record<Locale, string>> = {
     "register.error.passwordMismatch": { vi: "Mật khẩu xác nhận không khớp.", en: "Passwords do not match." },
 
     // Đăng nhập sinh viên
-    "login.title": { vi: "Cổng thí sinh ExamOS", en: "ExamOS Student Portal" },
+    "login.title": { vi: "Cổng thí sinh FDB TALENT", en: "FDB TALENT Student Portal" },
     "login.subtitle": { vi: "Hệ thống thi trắc nghiệm trực tuyến", en: "Online examination system" },
     "login.username": { vi: "Tên đăng nhập", en: "Username" },
     "login.password": { vi: "Mật khẩu", en: "Password" },
@@ -56,8 +56,8 @@ const translations: Record<string, Record<Locale, string>> = {
     "login.orContinue": { vi: "Hoặc tiếp tục với", en: "Or continue with" },
 
     // Đăng nhập quản trị
-    "admin.login.title": { vi: "ExamOS Quản trị", en: "ExamOS Admin" },
-    "admin.login.subtitle": { vi: "Hệ thống Quản trị thi trực tuyến", en: "Exam management system" },
+    "admin.login.title": { vi: "FDB TALENT Quản trị", en: "FDB TALENT Admin" },
+    "admin.login.subtitle": { vi: "1 sản phẩm đến từ Liên chi đoàn Khoa Các Khoa học Ứng dụng", en: "A product from the Inter-branch Youth Union of the Faculty of Applied Sciences" },
     "admin.login.username": { vi: "Tài khoản Quản trị", en: "Admin Account" },
     "admin.login.password": { vi: "Mật khẩu", en: "Password" },
     "admin.login.submit": { vi: "Đăng nhập truy cập hệ thống", en: "Sign in to access system" },
@@ -78,8 +78,8 @@ const translations: Record<string, Record<Locale, string>> = {
 
     // Bảng điều khiển quản trị
     "admin.portal": { vi: "Cổng Quản trị", en: "Admin Portal" },
-    "admin.dashboard.title": { vi: "Trung tâm điều khiển ExamOS", en: "ExamOS Control Panel" },
-    "admin.dashboard.subtitle": { vi: "Chào mừng quản trị viên, giám sát các luồng thi trực tuyến.", en: "Welcome, admin. Monitor online exam activity here." },
+    "admin.dashboard.title": { vi: "Trung tâm điều khiển FDB TALENT", en: "FDB TALENT Control Panel" },
+    "admin.dashboard.subtitle": { vi: "1 sản phẩm đến từ Liên chi đoàn Khoa Các Khoa học Ứng dụng", en: "A product from the Inter-branch Youth Union of the Faculty of Applied Sciences" },
     "admin.dashboard.createExam": { vi: "+ Tạo bài thi mới", en: "+ Create New Exam" },
     "admin.dashboard.totalExams": { vi: "Tổng bài thi", en: "Total Submissions" },
     "admin.dashboard.avgScore": { vi: "Điểm trung bình", en: "Average Score" },

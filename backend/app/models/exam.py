@@ -1,7 +1,6 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Float
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Float, JSON
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from sqlalchemy.dialects.postgresql import JSONB
 from .user import Base
 import secrets
 
@@ -17,7 +16,7 @@ class Exam(Base):
     duration = Column(Integer, nullable=False)  # Duration in minutes
     is_published = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    theme_config = Column(JSONB, nullable=True)
+    theme_config = Column(JSON, nullable=True)
 
     @staticmethod
     def generate_slug() -> str:
@@ -34,7 +33,7 @@ class Question(Base):
     pool_id = Column(Integer, ForeignKey("question_pools.id", ondelete="SET NULL"), nullable=True)
     content = Column(String, nullable=False)
     type = Column(String, nullable=False)  # multiple_choice, short_answer
-    options = Column(JSONB, nullable=True) # {"A": "Option A", "B": "Option B"}
+    options = Column(JSON, nullable=True) # {"A": "Option A", "B": "Option B"}
     correct_answer = Column(String, nullable=False) # e.g., "A" or "Short answer text here"
     
     exam = relationship("Exam", back_populates="questions")

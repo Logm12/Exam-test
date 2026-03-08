@@ -343,9 +343,9 @@ function ExamContent({ examId }: { examId: string }) {
                         <p className="text-[var(--text-secondary)]">{t("exam.take.noQuestions")}</p>
                     </div>
                 )}
-                <div className="bg-neutral-50 p-4 rounded-xl border border-neutral-100 flex justify-between items-center text-sm">
-                    <span className="text-neutral-500">{t("exam.receipt.timestamp")}</span>
-                    <span className="font-mono font-medium text-neutral-900" suppressHydrationWarning>
+                <div className="bg-[var(--bg-secondary)] p-4 rounded-xl border border-[var(--border-subtle)] flex justify-between items-center text-sm">
+                    <span className="text-[var(--text-secondary)]">{t("exam.receipt.timestamp")}</span>
+                    <span className="font-mono font-medium text-[var(--text-primary)]" suppressHydrationWarning>
                         {typeof window !== "undefined" ? new Date().toLocaleString() : ""}
                     </span>
                 </div>

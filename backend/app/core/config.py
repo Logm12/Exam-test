@@ -16,8 +16,12 @@ class Settings(BaseSettings):
     POSTGRES_DB: str = "online_exam"
     POSTGRES_PORT: str = "5432"
     
+    DATABASE_URL: str | None = None
+
     @property
     def SQLALCHEMY_DATABASE_URI(self) -> str:
+        if self.DATABASE_URL:
+            return self.DATABASE_URL
         return f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_SERVER}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
     
     # Cache (Redis)

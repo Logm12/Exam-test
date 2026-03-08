@@ -61,7 +61,7 @@ function RegisterForm() {
 
             <div className="sm:mx-auto sm:w-full sm:max-w-md animate-fade-in text-center relative z-10">
                 <div className="inline-flex justify-center items-center w-14 h-14 rounded-2xl mb-6 shadow-lg" style={{ background: 'var(--accent-gradient)' }}>
-                    <span className="text-white font-bold text-2xl tracking-tighter">EO</span>
+                    <span className="text-white font-bold text-2xl tracking-tighter">FDB</span>
                 </div>
                 <h2 className="text-center text-3xl font-bold tracking-tight text-[var(--text-primary)]">
                     {t("register.title") || "Register"}

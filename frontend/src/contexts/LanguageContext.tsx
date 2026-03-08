@@ -21,7 +21,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     const [locale, setLocaleState] = useState<Locale>("vi");
 
     useEffect(() => {
-        const saved = localStorage.getItem("examos-locale") as Locale;
+        const saved = localStorage.getItem("fdbtalent-locale") as Locale;
         if (saved && (saved === "vi" || saved === "en")) {
             setLocaleState(saved);
         }
@@ -29,7 +29,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
     const setLocale = (newLocale: Locale) => {
         setLocaleState(newLocale);
-        localStorage.setItem("examos-locale", newLocale);
+        localStorage.setItem("fdbtalent-locale", newLocale);
     };
 
     const toggleLocale = () => {
