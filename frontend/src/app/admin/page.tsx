@@ -35,8 +35,12 @@ export default async function AdminDashboard() {
         redirect("/");
     }
 
-    const metrics = await getAdminMetrics(1);
     const exams = await getRecentExams();
+    let metrics = { total_submissions: 0, average_score: 0, high_violations: [], accuracy_rate: 0 };
+
+    if (exams && exams.length > 0) {
+        metrics = await getAdminMetrics(exams[0].id);
+    }
 
     return <AdminDashboardClient metrics={metrics} exams={exams} />;
 }

@@ -32,7 +32,8 @@ The main requirements were handling concurrent exam sessions without data loss. 
 - **Automated Question Extraction**: Integrated a regex-based document parser supporting `.docx` and `.pdf` uploads, allowing admins to import entire exams in seconds via standardized formatting (similar to MyAloha).
 
 ### Student Portal
-- Public landing page with separate login paths for students and admins
+- Public landing page with a central get-started action
+- Unified login interface supporting multi-role authentication
 - Dashboard showing available exams
 - Real-time countdown timer synchronized with the server
 - Auto-save every 10 seconds via Redis

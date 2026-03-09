@@ -92,7 +92,7 @@ function DashboardContent({ metrics, exams }: { metrics: Metrics; exams: Exam[] 
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-red-500"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
                             {t("admin.dashboard.violations")}
                         </h2>
-                        <span className="text-xs font-semibold px-2.5 py-1 rounded bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400 border border-red-200 dark:border-red-800/50">LIVE</span>
+                        <span className="text-xs font-semibold px-2.5 py-1 rounded bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400 border border-red-200 dark:border-red-800/50">TRỰC TIẾP</span>
                     </div>
                     <div className="flex-1 flex flex-col">
                         {metrics.high_violations.length > 0 ? (
@@ -124,7 +124,7 @@ function DashboardContent({ metrics, exams }: { metrics: Metrics; exams: Exam[] 
                                 <div className="w-16 h-16 rounded-full mb-4 flex items-center justify-center bg-green-50 dark:bg-green-900/20">
                                     <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--status-success)" strokeWidth="2"><polyline points="20 6 9 17 4 12" /></svg>
                                 </div>
-                                <h3 className="text-base font-semibold text-[var(--text-primary)] mb-1">System Secure</h3>
+                                <h3 className="text-base font-semibold text-[var(--text-primary)] mb-1">Hệ thống an toàn</h3>
                                 <p className="text-sm text-[var(--text-secondary)]">{t("admin.dashboard.noViolations")}</p>
                             </div>
                         )}
@@ -138,7 +138,7 @@ function DashboardContent({ metrics, exams }: { metrics: Metrics; exams: Exam[] 
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-blue-500"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" /></svg>
                             {t("admin.dashboard.recentExams")}
                         </h2>
-                        <span className="text-xs font-semibold text-[var(--accent-primary)] hover:underline cursor-pointer">View All</span>
+                        <span className="text-xs font-semibold text-[var(--accent-primary)] hover:underline cursor-pointer">Xem tất cả</span>
                     </div>
                     <div className="overflow-x-auto flex-1">
                         {exams.length > 0 ? (
@@ -178,7 +178,7 @@ function DashboardContent({ metrics, exams }: { metrics: Metrics; exams: Exam[] 
                         ) : (
                             <div className="p-12 text-center text-[var(--text-secondary)] flex flex-col items-center justify-center">
                                 <svg className="mb-3 text-gray-300 dark:text-gray-600" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>
-                                <p className="text-sm">No exams found</p>
+                                <p className="text-sm">Không tìm thấy bài thi nào</p>
                             </div>
                         )}
                     </div>

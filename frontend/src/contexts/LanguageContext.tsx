@@ -20,20 +20,13 @@ const LanguageContext = createContext<LanguageContextType>({
 export function LanguageProvider({ children }: { children: ReactNode }) {
     const [locale, setLocaleState] = useState<Locale>("vi");
 
-    useEffect(() => {
-        const saved = localStorage.getItem("fdbtalent-locale") as Locale;
-        if (saved && (saved === "vi" || saved === "en")) {
-            setLocaleState(saved);
-        }
-    }, []);
-
     const setLocale = (newLocale: Locale) => {
-        setLocaleState(newLocale);
-        localStorage.setItem("fdbtalent-locale", newLocale);
+        // Enforce Vietnamese per user request
+        setLocaleState("vi");
     };
 
     const toggleLocale = () => {
-        setLocale(locale === "vi" ? "en" : "vi");
+        // Disabled per user request
     };
 
     const tFn = (key: string) => translate(key, locale);

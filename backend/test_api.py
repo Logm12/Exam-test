@@ -1,15 +1,29 @@
-import sys
-import traceback
-from fastapi.testclient import TestClient
+import requests
 
-try:
-    from app.main import app
-    client = TestClient(app)
-    response = client.post("/api/v1/auth/register", json={"username": "test100", "password": "123"})
-    print("STATUS:", response.status_code)
+def test():
+    res = requests.post("http://127.0.0.1:8001/api/v1/auth/login", data={"username":"admin", "password":"admin123"})
+    token = res.json()["access_token"]
+    
+    # 2. Get Exams
+    headers = {"Authorization": f"Bearer {token}"}
+    exams_res = requests.get("http://127.0.0.1:8001/api/v1/exams/", headers=headers)
+    exams = exams_res.json()
+    print("EXAMS RESPONSE:", type(exams), exams)
+    
+    if isinstance(exams, list) and exams:
+        exam_id = exams[0]["id"]
+    else:
+        exam_id = 1
+        
+    print("USING EXAM ID:", exam_id)
+    
+    # 3. Get Metrics
+    res = requests.get(f"http://127.0.0.1:8001/api/v1/admin/exams/{exam_id}/metrics", headers=headers)
+    print("STATUS", res.status_code)
     try:
-        print("BODY:", response.json())
+        print("JSON", res.json())
     except:
-        print("BODY:", response.text)
-except Exception as e:
-    traceback.print_exc()
+        print("TEXT", res.text)
+
+if __name__ == "__main__":
+    test()

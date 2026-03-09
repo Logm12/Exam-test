@@ -2,6 +2,15 @@
 
 All notable changes to ExamOS are documented here.
 
+## [1.4.0] - 2026-03-09
+
+### Changed
+- Unified Login System: Replaced separate Admin and Student login pages with a single role-selectable layout at `/login`.
+- Redesigned `/login` and `/register` interfaces to visually align with VNU-IS branding (Navy Blue & Gold) in a dual-column layout.
+- Simplified Landing Page (`/`) to contain a single "Get Started" button linking to the unified login page.
+- Updated NextAuth `CredentialsProvider` to validate backend user roles against requested UI roles.
+- Removed deprecated UI components and unused placeholder files from the project.
+
 ## [1.3.0] - 2026-03-03
 
 ### Added

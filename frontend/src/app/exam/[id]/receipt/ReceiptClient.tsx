@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { LanguageProvider, useLanguage } from "@/contexts/LanguageContext";
 import LanguageToggle from "@/components/LanguageToggle";
@@ -11,6 +12,11 @@ type Exam = {
 
 function ReceiptContent({ exam, examId }: { exam: Exam | null; examId: string }) {
     const { t } = useLanguage();
+    const [currentTime, setCurrentTime] = useState("");
+
+    useEffect(() => {
+        setCurrentTime(new Date().toLocaleString());
+    }, []);
 
     return (
         <div className="min-h-screen bg-[var(--bg-primary)] flex flex-col font-sans">
@@ -38,8 +44,8 @@ function ReceiptContent({ exam, examId }: { exam: Exam | null; examId: string })
 
                     <div className="bg-[var(--bg-secondary)] p-4 rounded-xl border border-[var(--border-subtle)] flex justify-between items-center text-sm">
                         <span className="text-[var(--text-secondary)]">{t("exam.receipt.timestamp")}</span>
-                        <span className="font-mono font-medium text-[var(--text-primary)]" suppressHydrationWarning>
-                            {typeof window !== "undefined" ? new Date().toLocaleString() : ""}
+                        <span className="font-mono font-medium text-[var(--text-primary)]">
+                            {currentTime}
                         </span>
                     </div>
 

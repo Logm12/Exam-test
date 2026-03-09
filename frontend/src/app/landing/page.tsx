@@ -24,16 +24,10 @@ export default function LandingPage() {
                         <ThemeToggle />
                         <LanguageToggle />
                         <Link
-                            href="/admin/login"
-                            className="text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--accent-primary)] transition-colors"
-                        >
-                            {t("landing.cta.admin")}
-                        </Link>
-                        <Link
                             href="/login"
                             className="bg-[var(--accent-primary)] hover:bg-[var(--accent-primary-hover)] text-white px-6 py-2 rounded-md text-sm font-semibold transition-all shadow-md"
                         >
-                            {t("landing.cta.student")}
+                            Bắt đầu
                         </Link>
                     </div>
                 </nav>
@@ -65,13 +59,7 @@ export default function LandingPage() {
                                     href="/login"
                                     className="bg-[var(--accent-primary)] hover:bg-[var(--accent-primary-hover)] text-white px-8 py-3.5 rounded-md text-base font-semibold shadow-md transition-colors flex items-center justify-center"
                                 >
-                                    {t("landing.cta.student")}
-                                </Link>
-                                <Link
-                                    href="/admin/login"
-                                    className="bg-white hover:bg-gray-50 text-[var(--text-primary)] border border-gray-300 px-8 py-3.5 rounded-md text-base font-semibold shadow-sm transition-colors flex items-center justify-center dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700"
-                                >
-                                    {t("landing.cta.admin")}
+                                    Bắt đầu
                                 </Link>
                             </div>
                         </div>

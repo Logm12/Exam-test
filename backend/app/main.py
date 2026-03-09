@@ -32,6 +32,15 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+from fastapi.responses import JSONResponse
+import traceback
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request, exc: Exception):
+    err_msg = "".join(traceback.format_exception(type(exc), exc, exc.__traceback__))
+    print(f"GLOBAL ERROR: {err_msg}")
+    return JSONResponse(status_code=500, content={"detail": str(exc), "traceback": err_msg})
+
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,

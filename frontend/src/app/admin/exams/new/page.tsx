@@ -96,9 +96,9 @@ export default function CreateExam() {
                 router.push("/admin/exams");
             });
 
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
-            alert(t("admin.exams.new.failed"));
+            alert(error.message || t("admin.exams.new.failed"));
         } finally {
             setIsSubmitting(false);
         }
@@ -266,8 +266,9 @@ export default function CreateExam() {
                 <div className="fixed bottom-0 left-64 right-0 p-4 bg-[var(--surface-overlay)] backdrop-blur-md border-t border-[var(--border-subtle)] flex justify-end px-8 z-20">
                     <button
                         type="submit"
-                        disabled={isSubmitting || questions.length === 0}
-                        className="accent-btn px-8 py-2.5 rounded-lg text-sm font-medium shadow-lg transition-all"
+                        disabled={isSubmitting || questions.length === 0 || !examTitle}
+                        title={questions.length === 0 ? "Vui lòng thêm ít nhất 1 câu hỏi" : (!examTitle ? "Vui lòng nhập tiêu đề" : "")}
+                        className="accent-btn px-8 py-2.5 rounded-lg text-sm font-medium shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {isSubmitting ? t("admin.exams.new.publishing") : t("admin.exams.new.publish")}
                     </button>

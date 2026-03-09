@@ -3,17 +3,16 @@ import GoogleProvider from "next-auth/providers/google";
 import FacebookProvider from "next-auth/providers/facebook";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+const API_URL = "http://127.0.0.1:8000/api/v1";
 
 export const authOptions: AuthOptions = {
     providers: [
-        // CredentialsProvider: bridges the existing FastAPI username/password login
-        // with NextAuth session management so the proxy.ts withAuth() works.
         CredentialsProvider({
             name: "Credentials",
             credentials: {
                 username: { label: "Username", type: "text" },
                 password: { label: "Password", type: "password" },
+                role: { label: "Role", type: "text" },
             },
             async authorize(credentials) {
                 if (!credentials?.username || !credentials?.password) {
@@ -26,22 +25,34 @@ export const authOptions: AuthOptions = {
                     formData.append("username", credentials.username);
                     formData.append("password", credentials.password);
 
-                    // Fix IPv6 localhost resolution specifically for Node 18+ SSR
-                    const loginUrl = `${API_URL}/auth/login`.replace("localhost", "127.0.0.1");
+                    const loginUrl = `${API_URL}/auth/login`;
 
                     const res = await fetch(loginUrl, {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/x-www-form-urlencoded",
                         },
-                        body: formData.toString(),
+                        body: new URLSearchParams({
+                            username: credentials.username,
+                            password: credentials.password,
+                        }).toString(),
                     });
 
+                    console.log(`[NextAuth] Login fetch status: ${res.status}`);
+
                     if (!res.ok) {
+                        const errBody = await res.text();
+                        console.error(`[NextAuth] Login failed. Status: ${res.status}, Body: ${errBody}`);
                         return null;
                     }
 
                     const data = await res.json();
+                    console.log(`[NextAuth] Login success for user: ${data.user?.username}`);
+
+                    if (credentials.role && data.user.role !== credentials.role) {
+                        console.error(`[NextAuth] Role mismatch. Expected: ${credentials.role}, Got: ${data.user.role}`);
+                        throw new Error("Invalid role selected");
+                    }
 
                     // Return user object for NextAuth session
                     return {
@@ -51,8 +62,11 @@ export const authOptions: AuthOptions = {
                         role: data.user.role,
                         accessToken: data.access_token,
                     };
-                } catch (error) {
+                } catch (error: any) {
                     console.error("CredentialsProvider authorize error:", error);
+                    if (error.message === "Invalid role selected") {
+                        throw error;
+                    }
                     return null;
                 }
             },

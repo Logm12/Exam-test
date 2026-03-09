@@ -53,7 +53,8 @@ async def get_exam_metrics(
     # Find students with violations
     high_violations = []
     for s in submissions:
-        if s.violation_count > 0 or s.forced_submit == "true":
+        count = s.violation_count or 0
+        if count > 0 or s.forced_submit == "true":
             # We need user info, so let's fetch it or join it.
             # For simplicity in this endpoint:
             user_result = await db.execute(select(User).where(User.id == s.user_id))

@@ -23,13 +23,13 @@ export default async function middleware(req: NextRequest) {
         }
     }
 
-    // Admin routes: /admin/* requires admin role (except /admin/login)
-    if (url.pathname.startsWith('/admin') && url.pathname !== '/admin/login') {
+    // Admin routes: /admin/* requires admin role
+    if (url.pathname.startsWith('/admin')) {
         if (!token) {
-            return NextResponse.redirect(new URL('/admin/login', req.url));
+            return NextResponse.redirect(new URL('/login', req.url));
         }
         if (userRole !== 'admin') {
-            return NextResponse.redirect(new URL('/admin/login?error=AccessDenied', req.url));
+            return NextResponse.redirect(new URL('/login?error=AccessDenied', req.url));
         }
     }
 

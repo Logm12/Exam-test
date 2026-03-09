@@ -68,12 +68,14 @@ function useAntiCheat(durationMinutes: number, maxViolations: number, onAutoSubm
         };
     }, []);
 
-    // Auto-submit on exceeding max violations
+    // Auto-submit on exceeding maxViolations
+    const [hasAutoSubmitted, setHasAutoSubmitted] = useState(false);
     useEffect(() => {
-        if (warnings >= maxViolations) {
+        if (warnings >= maxViolations && !hasAutoSubmitted) {
+            setHasAutoSubmitted(true);
             onAutoSubmit();
         }
-    }, [warnings, maxViolations, onAutoSubmit]);
+    }, [warnings, maxViolations, onAutoSubmit, hasAutoSubmitted]);
 
     // Block right-click, copy, paste
     useEffect(() => {
@@ -153,6 +155,11 @@ function ExamContent({ examId }: { examId: string }) {
     const [answers, setAnswers] = useState<Record<number, string>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const [currentTime, setCurrentTime] = useState("");
+
+    useEffect(() => {
+        setCurrentTime(new Date().toLocaleString());
+    }, []);
 
     useEffect(() => {
         const loadExam = async () => {
@@ -264,18 +271,22 @@ function ExamContent({ examId }: { examId: string }) {
                         <div className={`font-mono text-lg font-bold ${timeLeft < 300 ? 'animate-pulse' : ''}`} style={{ color: timeLeft < 300 ? 'var(--status-danger)' : 'var(--status-success)' }}>
                             {formatTime(timeLeft)}
                         </div>
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                if (confirm(t("exam.take.confirmSubmit"))) {
-                                    submitExam(false, warnings);
-                                }
-                            }}
-                            disabled={isSubmitting}
-                            className="accent-btn px-5 py-2 text-sm disabled:opacity-50 cursor-pointer relative z-[60]"
-                        >
-                            {isSubmitting ? t("exam.take.submitting") : t("exam.take.finishExam")}
-                        </button>
+                        <div className="relative z-[100] ml-4">
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    if (confirm(t("exam.take.confirmSubmit"))) {
+                                        submitExam(false, warnings);
+                                    }
+                                }}
+                                disabled={isSubmitting}
+                                className="accent-btn py-2 px-6 font-semibold shadow-lg text-sm rounded-lg hover:shadow-xl transition-all cursor-pointer pointer-events-auto"
+                                style={{ background: 'var(--accent-primary)', color: 'white' }}
+                            >
+                                {isSubmitting ? t("exam.take.submitting") : t("exam.take.finishExam")}
+                            </button>
+                        </div>
                     </div>
                 </div>
             </header>
@@ -345,8 +356,8 @@ function ExamContent({ examId }: { examId: string }) {
                 )}
                 <div className="bg-[var(--bg-secondary)] p-4 rounded-xl border border-[var(--border-subtle)] flex justify-between items-center text-sm">
                     <span className="text-[var(--text-secondary)]">{t("exam.receipt.timestamp")}</span>
-                    <span className="font-mono font-medium text-[var(--text-primary)]" suppressHydrationWarning>
-                        {typeof window !== "undefined" ? new Date().toLocaleString() : ""}
+                    <span className="font-mono font-medium text-[var(--text-primary)]">
+                        {currentTime}
                     </span>
                 </div>
             </main>

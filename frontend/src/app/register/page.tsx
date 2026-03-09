@@ -1,13 +1,14 @@
 "use client";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { LanguageProvider, useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import LanguageToggle from "@/components/LanguageToggle";
 import ThemeToggle from "@/components/ThemeToggle";
 import Link from "next/link";
+import Image from "next/image";
 import { fetcher } from "@/lib/api";
 
-function RegisterForm() {
+export default function RegisterForm() {
     const router = useRouter();
     const { t } = useLanguage();
 
@@ -22,7 +23,7 @@ function RegisterForm() {
         e.preventDefault();
 
         if (password !== confirmPassword) {
-            setError(t("register.error.passwordMismatch") || "Passwords do not match");
+            setError(t("register.error.passwordMismatch") || "Mật khẩu xác nhận không khớp");
             return;
         }
 
@@ -45,136 +46,118 @@ function RegisterForm() {
             }, 2000);
 
         } catch (err: any) {
-            setError(err.message || t("login.error.failed"));
+            setError(err.message || t("register.error.failed") || "Đăng ký thất bại");
         } finally {
             setIsLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen bg-[var(--bg-primary)] flex flex-col justify-center py-12 sm:px-6 lg:px-8 font-sans">
-            {/* Toggles top-right */}
-            <div className="absolute top-6 right-6 flex items-center space-x-3">
-                <ThemeToggle />
-                <LanguageToggle />
+        <div className="min-h-screen bg-[var(--bg-primary)] flex font-sans">
+            {/* Left side: Image placeholder */}
+            <div className="hidden lg:block lg:w-1/2 relative bg-[#1e3a8a]">
+                <Image
+                    src="/login-bg.jpg"
+                    alt="Register Background"
+                    fill
+                    className="object-cover"
+                    priority
+                />
             </div>
 
-            <div className="sm:mx-auto sm:w-full sm:max-w-md animate-fade-in text-center relative z-10">
-                <div className="inline-flex justify-center items-center w-14 h-14 rounded-2xl mb-6 shadow-lg" style={{ background: 'var(--accent-gradient)' }}>
-                    <span className="text-white font-bold text-2xl tracking-tighter">FDB</span>
+            {/* Right side: Form */}
+            <div className="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-20 xl:px-32 relative bg-[var(--bg-primary)]">
+                {/* Toggles top-right */}
+                <div className="absolute top-6 right-6 flex items-center space-x-3">
+                    <ThemeToggle />
+                    <LanguageToggle />
                 </div>
-                <h2 className="text-center text-3xl font-bold tracking-tight text-[var(--text-primary)]">
-                    {t("register.title") || "Register"}
-                </h2>
-                <p className="mt-2 text-center text-sm text-[var(--text-secondary)]">
-                    {t("register.subtitle") || "Create a new student account"}
-                </p>
-            </div>
 
-            <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md relative z-10">
-                <div className="surface-card py-8 px-4 sm:px-10">
+                <div className="w-full max-w-sm mx-auto sm:max-w-md animate-fade-in text-center lg:text-left">
+                    <div className="lg:hidden inline-flex items-center justify-center w-16 h-16 bg-[#1e3a8a] text-white rounded-2xl mb-8 shadow-xl">
+                        <span className="font-black text-2xl">FDB</span>
+                    </div>
+
+                    <h2 className="text-3xl font-bold tracking-tight text-[var(--text-primary)] mb-2">
+                        {t("register.title") || "Đăng ký tài khoản"}
+                    </h2>
+                    <p className="text-[var(--text-secondary)] mb-8">
+                        {t("register.subtitle") || "Tạo tài khoản thí sinh mới để tham gia thi"}
+                    </p>
+
                     {success ? (
                         <div className="text-center py-8">
-                            <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: 'rgba(5, 150, 105, 0.1)' }}>
-                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--status-success)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <polyline points="20 6 9 17 4 12"></polyline>
                                 </svg>
                             </div>
-                            <h3 className="text-lg font-medium text-[var(--text-primary)] mb-2">{t("register.success") || "Account created!"}</h3>
-                            <p className="text-sm text-[var(--text-secondary)]">{t("register.redirecting") || "Redirecting to login..."}</p>
+                            <h3 className="text-lg font-bold text-[var(--text-primary)] mb-2">{t("register.success") || "Tạo tài khoản thành công!"}</h3>
+                            <p className="text-sm font-medium text-[var(--text-secondary)]">{t("register.redirecting") || "Đang chuyển hướng đến trang đăng nhập..."}</p>
                         </div>
                     ) : (
-                        <form className="space-y-6" onSubmit={handleSubmit}>
+                        <form className="space-y-6 text-left" onSubmit={handleSubmit}>
                             {error && (
-                                <div className="p-3 rounded-lg text-sm" style={{ background: 'rgba(239, 68, 68, 0.1)', color: 'var(--status-danger)', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
+                                <div className="p-3.5 rounded-xl text-sm font-medium bg-red-50 text-red-600 border border-red-200 shadow-sm dark:bg-red-900/20 dark:text-red-400 dark:border-red-800/30">
                                     {error}
                                 </div>
                             )}
                             <div>
-                                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">{t("login.username")}</label>
+                                <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-2">{t("login.username") || "Tài khoản (MSSV)"}</label>
                                 <input
                                     type="text"
                                     required
                                     value={username}
-                                    onChange={(e: any) => setUsername(e.target.value)}
-                                    className="block w-full appearance-none rounded-lg border px-3 py-2 sm:text-sm transition-all focus:outline-none focus:ring-2"
-                                    style={{
-                                        background: 'var(--bg-primary)',
-                                        borderColor: 'var(--border-default)',
-                                        color: 'var(--text-primary)'
-                                    }}
-                                    onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--accent-primary)'; e.currentTarget.style.boxShadow = '0 0 0 2px var(--accent-glow)'; }}
-                                    onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border-default)'; e.currentTarget.style.boxShadow = 'none'; }}
+                                    onChange={(e) => setUsername(e.target.value)}
+                                    className="block w-full appearance-none rounded-xl border border-[var(--border-default)] px-4 py-3.5 sm:text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]/40 focus:border-[#1e3a8a] bg-[var(--surface-card)] text-[var(--text-primary)] shadow-sm"
+                                    placeholder="Mã số sinh viên"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">{t("login.password")}</label>
+                                <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-2">{t("login.password") || "Mật khẩu"}</label>
                                 <input
                                     type="password"
                                     required
                                     value={password}
-                                    onChange={(e: any) => setPassword(e.target.value)}
-                                    className="block w-full appearance-none rounded-lg border px-3 py-2 sm:text-sm transition-all focus:outline-none focus:ring-2"
-                                    style={{
-                                        background: 'var(--bg-primary)',
-                                        borderColor: 'var(--border-default)',
-                                        color: 'var(--text-primary)'
-                                    }}
-                                    onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--accent-primary)'; e.currentTarget.style.boxShadow = '0 0 0 2px var(--accent-glow)'; }}
-                                    onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border-default)'; e.currentTarget.style.boxShadow = 'none'; }}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="block w-full appearance-none rounded-xl border border-[var(--border-default)] px-4 py-3.5 sm:text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]/40 focus:border-[#1e3a8a] bg-[var(--surface-card)] text-[var(--text-primary)] shadow-sm"
+                                    placeholder="••••••••"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">{t("register.confirmPassword") || "Confirm Password"}</label>
+                                <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-2">{t("register.confirmPassword") || "Xác nhận mật khẩu"}</label>
                                 <input
                                     type="password"
                                     required
                                     value={confirmPassword}
-                                    onChange={(e: any) => setConfirmPassword(e.target.value)}
-                                    className="block w-full appearance-none rounded-lg border px-3 py-2 sm:text-sm transition-all focus:outline-none focus:ring-2"
-                                    style={{
-                                        background: 'var(--bg-primary)',
-                                        borderColor: 'var(--border-default)',
-                                        color: 'var(--text-primary)'
-                                    }}
-                                    onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--accent-primary)'; e.currentTarget.style.boxShadow = '0 0 0 2px var(--accent-glow)'; }}
-                                    onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border-default)'; e.currentTarget.style.boxShadow = 'none'; }}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    className="block w-full appearance-none rounded-xl border border-[var(--border-default)] px-4 py-3.5 sm:text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]/40 focus:border-[#1e3a8a] bg-[var(--surface-card)] text-[var(--text-primary)] shadow-sm"
+                                    placeholder="••••••••"
                                 />
                             </div>
 
-                            <div>
+                            <div className="pt-2">
                                 <button
                                     type="submit"
                                     disabled={isLoading}
-                                    className="accent-btn flex w-full justify-center py-2.5 px-4 disabled:opacity-50"
+                                    className="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-xl shadow-md text-sm font-bold text-white bg-[#1e3a8a] hover:bg-[#152960] focus:outline-none focus:ring-4 focus:ring-[#1e3a8a]/40 transition-all disabled:opacity-70 disabled:cursor-not-allowed"
                                 >
-                                    {isLoading ? t("app.processing") : t("app.register")}
+                                    {isLoading ? (t("app.processing") || "Đang xử lý...") : (t("app.register") || "Đăng ký")}
                                 </button>
                             </div>
 
-                            <div className="text-sm text-center">
-                                <span className="text-[var(--text-secondary)]">{t("register.hasAccount") || "Already have an account?"} </span>
-                                <Link href="/login" className="font-medium hover:underline transition-colors" style={{ color: 'var(--accent-primary)' }}>
-                                    {t("app.signIn")}
+                            <div className="text-sm text-center pt-2">
+                                <span className="text-[var(--text-secondary)] font-medium">{t("register.hasAccount") || "Đã có tài khoản?"} </span>
+                                <Link href="/login" className="font-bold hover:underline transition-colors text-[#1e3a8a]">
+                                    {t("app.signIn") || "Đăng nhập ngay"}
                                 </Link>
                             </div>
                         </form>
                     )}
                 </div>
             </div>
-
-            {/* Background decorative blob */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-[var(--accent-glow)] rounded-full blur-[100px] -z-10 opacity-60 pointer-events-none"></div>
         </div>
-    );
-}
-
-export default function RegisterPage() {
-    return (
-        <LanguageProvider>
-            <RegisterForm />
-        </LanguageProvider>
     );
 }

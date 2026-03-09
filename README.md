@@ -15,7 +15,7 @@ The platform uses a decoupled architecture: a FastAPI backend for business logic
 - Bilingual interface (Vietnamese / English)
 
 ### Student Side
-- Public landing page with login access
+- Public landing page with unified login access (supporting Student and Admin roles)
 - Dashboard showing assigned and available exams
 - Anti-cheating enforcement during exams (fullscreen, tab monitoring, clipboard blocking)
 - Auto-save every 10 seconds via Redis
@@ -85,10 +85,10 @@ The platform uses a decoupled architecture: a FastAPI backend for business logic
 
 ### Default Accounts
 
-| Role    | Username  | Password     |
-|---------|-----------|-------------|
-| Admin   | admin     | admin123     |
-| Student | student   | password123  |
+| Role    | Username  | Password     | Login Path |
+|---------|-----------|-------------|------------|
+| Admin   | admin     | admin123     | `/login`   |
+| Student | student   | password123  | `/login`   |
 
 ## Project Structure
 
@@ -106,11 +106,11 @@ online-exam/
   frontend/
     src/
       app/              # Next.js App Router pages
-        admin/          # Admin portal (dashboard, login, exams)
+        admin/          # Admin portal (dashboard, exams)
         dashboard/      # Student dashboard
         exam/           # Exam gateway and exam engine
         landing/        # Public landing page
-        login/          # Student login
+        login/          # Unified login page with role selection
       components/       # Shared UI components
       contexts/         # React contexts (language switching)
       lib/              # Utilities (auth config, API client, translations)
