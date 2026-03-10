@@ -14,8 +14,8 @@ type Exam = {
 
 async function getStudentExams() {
     try {
-        const exams: Exam[] = await fetcher("/exams/");
-        return exams.filter((e) => e.is_published);
+        const exams: Exam[] = await fetcher("/exams/me");
+        return exams;
     } catch (error) {
         console.error("Failed to fetch student exams:", error);
         return [];

@@ -150,6 +150,12 @@ export default function ExamsCollectionPage() {
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex items-center justify-end space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                                 <Link
+                                                    href={`/admin/exams/${exam.id}/submissions`}
+                                                    className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 px-3 py-1.5 rounded-md hover:bg-emerald-50 transition-colors border border-transparent hover:border-emerald-100 dark:hover:bg-emerald-900/30 dark:hover:border-emerald-800/50"
+                                                >
+                                                    Xem bài nộp
+                                                </Link>
+                                                <Link
                                                     href={`/admin/exams/${exam.id}/edit`}
                                                     className="text-xs font-semibold text-[var(--accent-primary)] hover:text-[var(--accent-primary-hover)] px-3 py-1.5 rounded-md hover:bg-blue-50 transition-colors border border-transparent hover:border-blue-100 dark:hover:bg-blue-900/30 dark:hover:border-blue-800/50"
                                                 >

@@ -196,10 +196,11 @@ function ExamContent({ examId }: { examId: string }) {
                 })
             });
 
-            router.push(`/exam/${exam.id}/receipt`);
+            alert(t("exam.take.submitSuccess") || "Nộp bài thành công!");
+            router.push(`/dashboard`);
         } catch (err) {
             console.error("Submission failed", err);
-            alert(t("exam.take.submitFailed"));
+            alert(t("exam.take.submitFailed") || "Có lỗi xảy ra khi nộp bài. Vui lòng thử lại.");
             setIsSubmitting(false);
         }
     }, [exam, answers, isSubmitting, router, t]);

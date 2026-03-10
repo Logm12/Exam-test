@@ -33,6 +33,42 @@ async def read_exams(
     exams = result.scalars().all()
     return exams
 
+@router.get("/me", response_model=Any)
+async def get_my_exams(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> Any:
+    # get all published exams
+    result = await db.execute(select(Exam).where(Exam.is_published == True))
+    exams = result.scalars().all()
+    
+    # get user's submissions
+    sub_res = await db.execute(select(Submission).where(Submission.user_id == current_user.id))
+    submissions = sub_res.scalars().all()
+    sub_map = {s.exam_id: s for s in submissions}
+    
+    final_exams = []
+    for e in exams:
+        d = {
+            "id": e.id,
+            "title": e.title,
+            "description": e.description,
+            "duration": e.duration,
+            "start_time": e.start_time,
+            "end_time": None,
+            "created_at": e.created_at,
+            "is_published": e.is_published,
+            "cover_image": e.cover_image,
+            "slug": e.slug
+        }
+        if e.id in sub_map:
+            s_obj = sub_map[e.id]
+            d["status"] = s_obj.status
+            d["score"] = s_obj.score
+        final_exams.append(d)
+        
+    return final_exams
+
 @router.post("/", response_model=ExamSchema)
 async def create_exam(
     *,
@@ -319,4 +355,33 @@ async def export_exam_report(
     response = StreamingResponse(iter([output.getvalue()]), media_type="text/csv")
     response.headers["Content-Disposition"] = f"attachment; filename=exam_{exam_id}_report.csv"
     return response
+
+@router.get("/{exam_id}/submissions")
+async def get_exam_submissions(
+    *,
+    db: AsyncSession = Depends(get_db),
+    exam_id: int,
+    current_user: User = Depends(get_current_active_admin),
+) -> Any:
+    """
+    Get all submissions for an exam (Admin only), joined with username.
+    """
+    result = await db.execute(select(Submission).where(Submission.exam_id == exam_id))
+    submissions = result.scalars().all()
+    
+    res = []
+    for sub in submissions:
+        user_result = await db.execute(select(User).where(User.id == sub.user_id))
+        user = user_result.scalars().first()
+        res.append({
+            "id": sub.id,
+            "user_id": sub.user_id,
+            "username": user.username if user else "Unknown",
+            "score": sub.score,
+            "status": sub.status,
+            "submitted_at": str(sub.submitted_at) if sub.submitted_at else None,
+            "violation_count": sub.violation_count,
+            "forced_submit": sub.forced_submit
+        })
+    return res
 
