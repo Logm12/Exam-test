@@ -44,7 +44,7 @@ async def global_exception_handler(request, exc: Exception):
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origin_regex="https://.*\\.vercel\\.app",
+    allow_origin_regex="https://.*\\.vercel\\.app|http://.*:3000|http://localhost:.*",
     allow_origins=[
         "http://localhost:3000",
         "http://127.0.0.1:3000",
