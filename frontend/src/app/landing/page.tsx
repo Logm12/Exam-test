@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useLanguage } from "@/contexts/LanguageContext";
 import LanguageToggle from "@/components/LanguageToggle";
 import ThemeToggle from "@/components/ThemeToggle";
-import Image from "next/image";
+import FdbLogo from "@/components/FdbLogo";
 
 export default function LandingPage() {
     const { t } = useLanguage();
@@ -14,11 +14,8 @@ export default function LandingPage() {
             {/* Navigation (White Navbar, Shadow) */}
             <header className="sticky top-0 z-50 bg-[var(--surface-overlay)] border-b border-[var(--border-subtle)] shadow-sm backdrop-blur-md">
                 <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 rounded shadow-sm flex items-center justify-center bg-[var(--accent-primary)]">
-                            <span className="text-white font-black text-lg">FDB</span>
-                        </div>
-                        <span className="font-bold text-xl tracking-tight text-[var(--text-primary)]">{t("app.name")}</span>
+                    <div className="flex items-center">
+                        <FdbLogo className="text-[1.6rem]" />
                     </div>
                     <div className="flex items-center space-x-4">
                         <ThemeToggle />

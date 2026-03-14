@@ -22,6 +22,18 @@ export default function CreateExam() {
     const [examDuration, setExamDuration] = useState(60);
     const [questions, setQuestions] = useState<QuestionForm[]>([]);
     const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+    const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
+    const [coverImagePreview, setCoverImagePreview] = useState<string | null>(null);
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0] || null;
+        setCoverImageFile(file);
+        if (file) {
+            setCoverImagePreview(URL.createObjectURL(file));
+        } else {
+            setCoverImagePreview(null);
+        }
+    };
 
     const addQuestion = () => {
         setQuestions([
@@ -80,6 +92,16 @@ export default function CreateExam() {
                 body: JSON.stringify(examPayload)
             });
 
+            // Upload cover image if selected
+            if (coverImageFile) {
+                const formData = new FormData();
+                formData.append("file", coverImageFile);
+                await fetcher(`/exams/${newExam.id}/upload-image`, {
+                    method: "POST",
+                    body: formData,
+                });
+            }
+
             const qPromises = questions.map((q) =>
                 fetcher("/questions/", {
                     method: "POST",
@@ -105,7 +127,7 @@ export default function CreateExam() {
     };
 
     return (
-        <div className="max-w-4xl mx-auto pb-20 animate-fade-in space-y-8 text-[var(--text-primary)]">
+        <div className="p-8 max-w-4xl mx-auto pb-20 animate-fade-in space-y-8 text-[var(--text-primary)] w-full">
             <div className="flex justify-between items-center">
                 <div>
                     <h1 className="text-3xl font-semibold tracking-tight text-[var(--text-primary)]">
@@ -138,7 +160,7 @@ export default function CreateExam() {
                                 type="text"
                                 required
                                 className="w-full px-4 py-2 border border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--accent-primary)] focus:border-[var(--accent-primary)] outline-none transition-shadow bg-[var(--bg-primary)] text-[var(--text-primary)]"
-                                placeholder="e.g. Midterm 2026"
+                                placeholder="VD: Thi giữa kì 2026"
                                 value={examTitle}
                                 onChange={(e) => setExamTitle(e.target.value)}
                             />
@@ -156,6 +178,25 @@ export default function CreateExam() {
                                     setExamDuration(val === "" ? 0 : parseInt(val));
                                 }}
                             />
+                        </div>
+                    </div>
+
+                    {/* Cover Image Upload */}
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-[var(--text-secondary)]">Ảnh bìa (tuỳ chọn)</label>
+                        <div className="flex items-start gap-4">
+                            <label className="flex-1 flex flex-col items-center justify-center h-32 border-2 border-dashed border-[var(--border-default)] rounded-xl cursor-pointer hover:border-[var(--accent-primary)] hover:bg-[var(--accent-glow)] transition-all">
+                                <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" className="hidden" onChange={handleImageChange} />
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-[var(--text-muted)] mb-2"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" /></svg>
+                                <span className="text-xs text-[var(--text-muted)]">Chọn ảnh JPG, PNG, WebP (tối đa 5MB)</span>
+                            </label>
+                            {coverImagePreview && (
+                                <div className="relative w-32 h-32 rounded-xl overflow-hidden border border-[var(--border-default)] flex-shrink-0">
+                                    <img src={coverImagePreview} alt="Preview" className="w-full h-full object-cover" />
+                                    <button type="button" onClick={() => { setCoverImageFile(null); setCoverImagePreview(null); }}
+                                        className="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/60 text-white flex items-center justify-center text-xs hover:bg-red-500 transition-colors">✕</button>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </section>
@@ -180,7 +221,7 @@ export default function CreateExam() {
                                     type="button"
                                     onClick={() => removeQuestion(qIndex)}
                                     className="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--status-danger)] p-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                                    title="Remove Question"
+                                    title="Xoá câu hỏi"
                                 >
                                     ✕
                                 </button>

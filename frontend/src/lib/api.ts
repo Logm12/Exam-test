@@ -4,7 +4,9 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1
 
 export async function fetcher(endpoint: string, options: RequestInit = {}) {
     const headers = new Headers(options.headers || {});
-    if (!headers.has('Content-Type')) {
+    // Don't set Content-Type for FormData – browser sets it automatically with boundary
+    const isFormData = options.body instanceof FormData;
+    if (!isFormData && !headers.has('Content-Type')) {
         headers.set('Content-Type', 'application/json');
     }
 

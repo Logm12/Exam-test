@@ -8,6 +8,8 @@ import json
 import os
 import tempfile
 import io
+import uuid
+import shutil
 
 from app.db.session import get_db
 from app.db.redis import get_redis
@@ -19,6 +21,9 @@ from app.schemas.exam import Exam as ExamSchema, ExamCreate, ExamUpdate
 from app.schemas.student_exam import StudentExam
 from app.schemas.submission import AnswerDraft, ExamSubmit
 from sqlalchemy.orm import selectinload
+
+UPLOAD_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "..", "uploads")
+os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 router = APIRouter()
 
@@ -55,11 +60,10 @@ async def get_my_exams(
             "description": e.description,
             "duration": e.duration,
             "start_time": e.start_time,
-            "end_time": None,
             "created_at": e.created_at,
             "is_published": e.is_published,
+            "slug": e.slug,
             "cover_image": e.cover_image,
-            "slug": e.slug
         }
         if e.id in sub_map:
             s_obj = sub_map[e.id]
@@ -80,6 +84,52 @@ async def create_exam(
     exam_data["slug"] = Exam.generate_slug()
     exam = Exam(**exam_data)
     db.add(exam)
+    await db.commit()
+    await db.refresh(exam)
+    return exam
+
+
+@router.post("/{exam_id}/upload-image", response_model=ExamSchema)
+async def upload_exam_image(
+    exam_id: int,
+    file: UploadFile = File(...),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_active_admin),
+) -> Any:
+    """Upload a cover image for an exam. Accepts jpg/png/webp, max 5MB."""
+    result = await db.execute(select(Exam).where(Exam.id == exam_id))
+    exam = result.scalars().first()
+    if not exam:
+        raise HTTPException(status_code=404, detail="Exam not found")
+
+    ALLOWED_TYPES = {"image/jpeg", "image/png", "image/webp", "image/gif"}
+    ALLOWED_EXT = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
+    MAX_SIZE = 5 * 1024 * 1024  # 5 MB
+
+    if file.content_type not in ALLOWED_TYPES:
+        raise HTTPException(status_code=400, detail="Only jpg, png, webp, gif images are allowed")
+
+    ext = os.path.splitext(file.filename or "")[1].lower()
+    if ext not in ALLOWED_EXT:
+        raise HTTPException(status_code=400, detail="Invalid file extension")
+
+    contents = await file.read()
+    if len(contents) > MAX_SIZE:
+        raise HTTPException(status_code=400, detail="Image exceeds 5MB limit")
+
+    # Delete old image file if exists
+    if exam.cover_image:
+        old_filename = exam.cover_image.split("/uploads/")[-1]
+        old_path = os.path.join(UPLOAD_DIR, old_filename)
+        if os.path.exists(old_path):
+            os.remove(old_path)
+
+    filename = f"exam_{exam_id}_{uuid.uuid4().hex[:8]}{ext}"
+    save_path = os.path.join(UPLOAD_DIR, filename)
+    with open(save_path, "wb") as f:
+        f.write(contents)
+
+    exam.cover_image = f"/uploads/{filename}"
     await db.commit()
     await db.refresh(exam)
     return exam

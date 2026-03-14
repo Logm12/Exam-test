@@ -29,7 +29,7 @@ export default function LanguageToggle({ className = "" }: { className?: string 
                 ? "bg-white text-blue-900 border-blue-200 hover:bg-blue-50"
                 : "bg-blue-900 text-white border-blue-900 hover:bg-blue-800"
                 } ${className}`}
-            title={locale === "vi" ? "Switch to English" : "Chuyển sang Tiếng Việt"}
+            title={locale === "vi" ? "Chuyển sang Tiếng Anh" : "Chuyển sang Tiếng Việt"}
         >
             {t("app.language")}
         </button>

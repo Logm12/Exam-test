@@ -14,6 +14,7 @@ class ThemeConfig(BaseModel):
 class ExamBase(BaseModel):
     title: str
     description: Optional[str] = None
+    cover_image: Optional[str] = None
     duration: int
     is_published: Optional[bool] = False
     start_time: datetime
@@ -27,6 +28,7 @@ class ExamCreate(ExamBase):
 class ExamUpdate(ExamBase):
     title: Optional[str] = None
     description: Optional[str] = None
+    cover_image: Optional[str] = None
     duration: Optional[int] = None
     start_time: Optional[datetime] = None
 

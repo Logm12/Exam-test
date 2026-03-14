@@ -7,6 +7,7 @@ import LanguageToggle from "@/components/LanguageToggle";
 import ThemeToggle from "@/components/ThemeToggle";
 import Link from "next/link";
 import Image from "next/image";
+import FdbLogo from "@/components/FdbLogo";
 
 function LoginForm() {
     const router = useRouter();
@@ -93,8 +94,8 @@ function LoginForm() {
                 </div>
 
                 <div className="w-full max-w-sm mx-auto sm:max-w-md animate-fade-in text-center lg:text-left">
-                    <div className="lg:hidden inline-flex items-center justify-center w-16 h-16 bg-[#1e3a8a] text-white rounded-2xl mb-8 shadow-xl">
-                        <span className="font-black text-2xl">FDB</span>
+                    <div className="lg:hidden mb-8">
+                        <FdbLogo className="text-4xl" />
                     </div>
 
                     <h2 className="text-3xl font-bold tracking-tight text-[var(--text-primary)] mb-2">

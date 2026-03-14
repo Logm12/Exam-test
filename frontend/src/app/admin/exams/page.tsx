@@ -62,7 +62,7 @@ export default function ExamsCollectionPage() {
     };
 
     return (
-        <div className="space-y-6 animate-fade-in pb-20 font-sans">
+        <div className="p-8 max-w-7xl mx-auto space-y-6 animate-fade-in pb-20 font-sans w-full">
             <div className="flex justify-between items-center mb-8">
                 <div>
                     <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">
@@ -140,9 +140,9 @@ export default function ExamsCollectionPage() {
                                         <td className="px-6 py-4 text-sm text-[var(--text-secondary)]">
                                             <div className="flex items-center gap-1.5">
                                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-400"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>
-                                                {exam.start_time ? new Date(exam.start_time).toLocaleDateString("en-US", {
-                                                    year: "numeric", month: "short", day: "numeric"
-                                                }) + " " + new Date(exam.start_time).toLocaleTimeString("en-US", {
+                                                {exam.start_time ? new Date(exam.start_time).toLocaleDateString("vi-VN", {
+                                                    year: "numeric", month: "long", day: "numeric"
+                                                }) + " " + new Date(exam.start_time).toLocaleTimeString("vi-VN", {
                                                     hour: "2-digit", minute: "2-digit"
                                                 }) : "—"}
                                             </div>

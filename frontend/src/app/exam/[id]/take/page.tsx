@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback, use } from "react";
+import { useState, useEffect, useCallback, use, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useSession, signIn } from "next-auth/react";
 import { fetcher } from "@/lib/api";
@@ -23,10 +23,12 @@ type ExamData = {
 };
 
 /* ==================== ANTI-CHEAT HOOK ==================== */
-function useAntiCheat(durationMinutes: number, maxViolations: number, onAutoSubmit: () => void) {
+function useAntiCheat(durationMinutes: number, maxViolations: number, onAutoSubmit: () => void, isDisabled: () => boolean = () => false) {
     const [timeLeft, setTimeLeft] = useState(durationMinutes * 60);
     const [warnings, setWarnings] = useState(0);
     const [showWarning, setShowWarning] = useState(false);
+    const isDisabledRef = useRef(isDisabled);
+    useEffect(() => { isDisabledRef.current = isDisabled; });
 
     // Sync timeLeft when durationMinutes changes (e.g. after exam data loads)
     useEffect(() => {
@@ -45,7 +47,7 @@ function useAntiCheat(durationMinutes: number, maxViolations: number, onAutoSubm
     // Tab switch and blur detection
     useEffect(() => {
         const handleVisibilityChange = () => {
-            if (document.hidden) {
+            if (document.hidden && !isDisabledRef.current()) {
                 setWarnings((w) => {
                     const next = w + 1;
                     return next;
@@ -54,6 +56,7 @@ function useAntiCheat(durationMinutes: number, maxViolations: number, onAutoSubm
             }
         };
         const handleBlur = () => {
+            if (isDisabledRef.current()) return;
             setWarnings((w) => {
                 const next = w + 1;
                 return next;
@@ -164,13 +167,21 @@ function ExamContent({ examId }: { examId: string }) {
     useEffect(() => {
         const loadExam = async () => {
             try {
+                // Check if already submitted before loading exam
+                const myExams: Array<{ id: number; status?: string }> = await fetcher(`/exams/me`);
+                const thisExam = myExams.find((e) => String(e.id) === String(examId));
+                if (thisExam?.status === "submitted") {
+                    window.location.replace('/dashboard');
+                    return;
+                }
+
                 const examData = await fetcher(`/exams/${examId}`);
                 const questionsData = await fetcher(`/questions/exam/${examId}`);
                 setExam(examData);
                 setQuestions(questionsData);
             } catch (err) {
                 console.error("Failed to load exam data", err);
-                router.push("/dashboard");
+                window.location.replace('/dashboard');
             } finally {
                 setIsLoading(false);
             }
@@ -178,8 +189,12 @@ function ExamContent({ examId }: { examId: string }) {
         loadExam();
     }, [examId, router]);
 
+    const isSubmittingRef = useRef(false);
+    useEffect(() => { isSubmittingRef.current = isSubmitting; }, [isSubmitting]);
+
     const submitExam = useCallback(async (isAutoSubmit = false, violationCount = 0) => {
-        if (!exam || isSubmitting) return;
+        if (!exam || isSubmittingRef.current) return;
+        isSubmittingRef.current = true;  // Set immediately (before await) so anti-cheat is disabled right away
         setIsSubmitting(true);
         try {
             const answersPayload: Record<string, string> = {};
@@ -197,10 +212,22 @@ function ExamContent({ examId }: { examId: string }) {
             });
 
             alert(t("exam.take.submitSuccess") || "Nộp bài thành công!");
-            router.push(`/dashboard`);
-        } catch (err) {
+            // Use full navigation to bypass Next.js router cache so dashboard shows fresh data
+            window.location.replace('/dashboard');
+        } catch (err: any) {
             console.error("Submission failed", err);
-            alert(t("exam.take.submitFailed") || "Có lỗi xảy ra khi nộp bài. Vui lòng thử lại.");
+            const errorMessage = err?.message || "";
+            let alertMessage = t("exam.take.submitFailed") || "Có lỗi xảy ra khi nộp bài. Vui lòng thử lại.";
+            
+            if (errorMessage.includes("Exam already submitted")) {
+                alertMessage = t("exam.take.alreadySubmitted") || "Bài thi này đã được nộp rồi. Bạn không thể nộp lại.";
+                // Redirect to dashboard after 2 seconds
+                setTimeout(() => {
+                    window.location.replace('/dashboard');
+                }, 2000);
+            }
+            
+            alert(alertMessage);
             setIsSubmitting(false);
         }
     }, [exam, answers, isSubmitting, router, t]);
@@ -212,7 +239,8 @@ function ExamContent({ examId }: { examId: string }) {
     const { timeLeft, warnings, showWarning, dismissWarning } = useAntiCheat(
         exam?.duration || 60,
         3,
-        handleAutoSubmit
+        handleAutoSubmit,
+        () => isSubmittingRef.current
     );
 
     const formatTime = (seconds: number) => {

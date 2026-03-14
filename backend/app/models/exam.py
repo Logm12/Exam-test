@@ -12,6 +12,7 @@ class Exam(Base):
     title = Column(String, nullable=False)
     slug = Column(String(12), unique=True, index=True, nullable=True)
     description = Column(String, nullable=True)
+    cover_image = Column(String, nullable=True)
     start_time = Column(DateTime(timezone=True), nullable=False)
     duration = Column(Integer, nullable=False)  # Duration in minutes
     is_published = Column(Boolean, default=False)

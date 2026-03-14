@@ -12,13 +12,13 @@ export default function OrganizationsLab() {
     ]);
 
     return (
-        <div className="space-y-6 animate-fade-in font-sans pb-20">
+        <div className="p-8 max-w-7xl mx-auto space-y-6 animate-fade-in font-sans pb-20 w-full">
             <div className="mb-8">
                 <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">
-                    Org.Units
+                    Đơn vị tổ chức
                 </h1>
                 <p className="text-sm text-[var(--text-secondary)] mt-1">
-                    Structural isolation and access control boundaries. Strict separation enforced.
+                    Quản lý cơ cấu và phân quyền kiểm soát.
                 </p>
             </div>
 
@@ -27,17 +27,17 @@ export default function OrganizationsLab() {
                 <div className="md:col-span-4 space-y-6">
                     <button className="w-full bg-[var(--accent-primary)] hover:bg-[var(--accent-primary-hover)] text-white text-sm font-semibold py-3 px-6 rounded-md shadow-sm transition-colors flex justify-center items-center gap-2">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
-                        Provision Unit
+                        Tạo đơn vị mới
                     </button>
                     <div className="bg-white p-6 rounded-lg shadow-[var(--shadow-sm)] border border-[var(--border-default)] dark:bg-[#1f1f1f]">
-                        <h3 className="font-bold text-[var(--text-primary)] mb-4">System Status</h3>
+                        <h3 className="font-bold text-[var(--text-primary)] mb-4">Trạng thái hệ thống</h3>
                         <div className="flex flex-col gap-3 text-sm text-[var(--text-secondary)]">
                             <div className="flex justify-between items-center border-b border-[var(--border-subtle)] pb-2">
-                                <span>Active Units</span>
+                                <span>Đơn vị đang hoạt động</span>
                                 <span className="text-[var(--text-primary)] font-bold">{orgs.length}</span>
                             </div>
                             <div className="flex justify-between items-center">
-                                <span>Network</span>
+                                <span>Mạng</span>
                                 <span className="text-green-600 flex items-center gap-2 font-medium dark:text-green-400">
                                     <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> OK
                                 </span>
@@ -56,9 +56,9 @@ export default function OrganizationsLab() {
                             </div>
                             <p className="text-[var(--text-secondary)] text-sm mb-6 whitespace-pre-wrap">{org.description}</p>
                             <div className="flex justify-between items-center border-t border-[var(--border-subtle)] pt-4">
-                                <span className="text-xs text-[var(--text-muted)]">Deployed: {org.created_at}</span>
+                                <span className="text-xs text-[var(--text-muted)]">Đã tạo: {org.created_at}</span>
                                 <button className="text-sm font-semibold text-[var(--accent-primary)] hover:text-[var(--accent-primary-hover)] flex items-center gap-1">
-                                    Configure
+                                    Cấu hình
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
                                 </button>
                             </div>
@@ -67,7 +67,7 @@ export default function OrganizationsLab() {
 
                     {orgs.length === 0 && (
                         <div className="text-center p-12 bg-white border border-dashed border-gray-300 rounded-lg shadow-[var(--shadow-sm)] dark:bg-[#1f1f1f] dark:border-gray-700">
-                            <span className="text-sm font-medium text-[var(--text-secondary)]">No deployed units</span>
+                            <span className="text-sm font-medium text-[var(--text-secondary)]">Không có đơn vị nào</span>
                         </div>
                     )}
                 </div>

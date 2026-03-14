@@ -175,7 +175,7 @@ export default function ImportQuestionsModal({ isOpen, onClose, onImport, examId
                                     {t("import.found").replace("{count}", String(parsedQuestions.length))}
                                 </p>
                                 <button onClick={selectAll} className="text-xs text-[var(--accent-primary)] hover:underline cursor-pointer">
-                                    {selectedIds.size === parsedQuestions.length ? "Deselect All" : "Select All"}
+                                    {selectedIds.size === parsedQuestions.length ? "Bỏ chọn tất cả" : "Chọn tất cả"}
                                 </button>
                             </div>
                             {parsedQuestions.map((q, idx) => (
@@ -197,7 +197,7 @@ export default function ImportQuestionsModal({ isOpen, onClose, onImport, examId
                                             <div className="mt-2 space-y-1">
                                                 {Object.entries(q.options).map(([letter, text]) => (
                                                     <p key={letter} className={`text-xs ${letter === q.correct_answer ? 'text-[var(--status-success)] font-semibold' : 'text-[var(--text-secondary)]'}`}>
-                                                        {letter}. {text} {letter === q.correct_answer ? " (correct)" : ""}
+                                                        {letter}. {text} {letter === q.correct_answer ? " (đáp án đúng)" : ""}
                                                     </p>
                                                 ))}
                                             </div>
@@ -222,7 +222,7 @@ export default function ImportQuestionsModal({ isOpen, onClose, onImport, examId
                             onClick={() => { resetState(); }}
                             className="text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
                         >
-                            Upload a different file
+                            Tải lên tệp khác
                         </button>
                         <button
                             onClick={handleImport}

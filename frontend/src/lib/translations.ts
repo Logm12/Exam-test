@@ -130,11 +130,13 @@ const translations: Record<string, Record<Locale, string>> = {
     "exam.take.warnings": { vi: "Cảnh báo vi phạm", en: "Integrity Warnings" },
     "exam.take.finishExam": { vi: "Nộp bài", en: "Finish Exam" },
     "exam.take.submitting": { vi: "Đang nộp...", en: "Submitting..." },
+    "exam.take.submitSuccess": { vi: "Nộp bài thành công!", en: "Submission successful!" },
     "exam.take.confirmSubmit": { vi: "Bạn có chắc chắn muốn nộp bài sớm? Hành động này không thể hoàn tác.", en: "Are you sure you want to finalize and submit early? You cannot undo this." },
     "exam.take.typeAnswer": { vi: "Nhập câu trả lời...", en: "Type your answer here..." },
     "exam.take.characters": { vi: "ký tự", en: "characters" },
     "exam.take.noQuestions": { vi: "Không tìm thấy câu hỏi cho bài thi này.", en: "No questions found for this exam." },
     "exam.take.submitFailed": { vi: "Nộp bài thất bại. Vui lòng kiểm tra kết nối mạng.", en: "Submission failed. Please check your network connection." },
+    "exam.take.alreadySubmitted": { vi: "Bài thi này đã được nộp rồi. Bạn không thể nộp lại.", en: "This exam has already been submitted. You cannot submit again." },
 
     // Receipt
     "exam.receipt.title": { vi: "Đã nhận bài làm", en: "Submission Received" },
