@@ -18,6 +18,7 @@ class ExamBase(BaseModel):
     is_published: Optional[bool] = False
     start_time: datetime
     theme_config: Optional[ThemeConfig] = None
+    cover_image: Optional[str] = None
 
 # Properties to create
 class ExamCreate(ExamBase):

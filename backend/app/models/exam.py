@@ -16,7 +16,7 @@ class Exam(Base):
     duration = Column(Integer, nullable=False)  # Duration in minutes
     is_published = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    theme_config = Column(JSON, nullable=True)
+    cover_image = Column(String, nullable=True)
 
     @staticmethod
     def generate_slug() -> str:

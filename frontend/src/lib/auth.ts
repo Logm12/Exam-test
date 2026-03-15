@@ -3,7 +3,7 @@ import GoogleProvider from "next-auth/providers/google";
 import FacebookProvider from "next-auth/providers/facebook";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-const API_URL = "http://127.0.0.1:8000/api/v1";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api/v1";
 
 export const authOptions: AuthOptions = {
     providers: [
@@ -168,7 +168,7 @@ export const authOptions: AuthOptions = {
     },
     session: {
         strategy: "jwt",
-        maxAge: 30 * 24 * 60 * 60, // 30 Days
+        maxAge: 8 * 60 * 60, // 8 Hours
     },
     secret: process.env.NEXTAUTH_SECRET,
     pages: {

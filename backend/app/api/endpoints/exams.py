@@ -56,9 +56,8 @@ async def get_my_exams(
             "duration": e.duration,
             "start_time": e.start_time,
             "end_time": None,
-            "created_at": e.created_at,
             "is_published": e.is_published,
-            "cover_image": e.cover_image,
+            "cover_image": str(getattr(e, "cover_image", "")) if getattr(e, "cover_image", "") is not None else "",
             "slug": e.slug
         }
         if e.id in sub_map:

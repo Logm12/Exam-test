@@ -61,8 +61,11 @@ function LoginForm() {
                 return;
             }
 
-            const targetUrl = role === "admin" ? "/admin" : "/dashboard";
-            router.push(callbackUrl === "/login" || callbackUrl === "/admin/login" ? targetUrl : callbackUrl);
+            let targetUrl = role === "admin" ? "/admin" : "/dashboard";
+            if (callbackUrl && !callbackUrl.includes('/login') && callbackUrl !== '/') {
+                targetUrl = callbackUrl;
+            }
+            router.push(targetUrl);
             router.refresh();
         } catch (err: any) {
             setError(err.message || t("login.error.failed") || "Đăng nhập thất bại.");
@@ -109,14 +112,14 @@ function LoginForm() {
                         <button
                             type="button"
                             className={`flex-1 py-3 text-sm font-bold rounded-lg transition-all duration-300 ${role === 'student' ? 'bg-[#1e3a8a] text-white shadow-md' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)]'}`}
-                            onClick={() => { setRole("student"); setError(""); }}
+                            onClick={() => { setRole("student"); setUsername(""); setPassword(""); setError(""); }}
                         >
                             Thí sinh
                         </button>
                         <button
                             type="button"
                             className={`flex-1 py-3 text-sm font-bold rounded-lg transition-all duration-300 ${role === 'admin' ? 'bg-[#1e3a8a] text-white shadow-md' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)]'}`}
-                            onClick={() => { setRole("admin"); setError(""); }}
+                            onClick={() => { setRole("admin"); setUsername(""); setPassword(""); setError(""); }}
                         >
                             Quản trị viên
                         </button>

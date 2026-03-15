@@ -189,9 +189,5 @@ function DashboardContent({ metrics, exams }: { metrics: Metrics; exams: Exam[] 
 }
 
 export default function AdminDashboardClient({ metrics, exams }: { metrics: Metrics; exams: Exam[] }) {
-    return (
-        <LanguageProvider>
-            <DashboardContent metrics={metrics} exams={exams} />
-        </LanguageProvider>
-    );
+    return <DashboardContent metrics={metrics} exams={exams} />;
 }

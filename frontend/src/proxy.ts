@@ -13,8 +13,8 @@ export default async function middleware(req: NextRequest) {
     const token = await getToken({ req });
     const userRole = token?.role as string | undefined;
 
-    // Protected routes: /dashboard requires authentication
-    if (url.pathname.startsWith('/dashboard')) {
+    // Protected routes: /dashboard and /exam require authentication
+    if (url.pathname.startsWith('/dashboard') || url.pathname.startsWith('/exam')) {
         if (!token) {
             return NextResponse.redirect(new URL('/login', req.url));
         }
@@ -54,6 +54,8 @@ export default async function middleware(req: NextRequest) {
     response.headers.set("X-Frame-Options", "DENY");
     response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
     response.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+    response.headers.set('X-XSS-Protection', '1; mode=block');
+    response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
 
     return response;
 }

@@ -484,8 +484,9 @@ export default function StudentDashboardClient({
                 {/* Logout */}
                 <div className="px-2 pb-4 mt-auto">
                     <button
-                        onClick={() => signOut({ callbackUrl: "/" })}
+                        onClick={() => signOut({ redirect: true, callbackUrl: "/login" })}
                         className="w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-500 hover:bg-red-50 hover:text-red-600 transition-colors"
+                        style={{ position: 'relative', zIndex: 9999 }}
                         title="Đăng xuất"
                     >
                         <span className="flex-shrink-0"><IconLogout /></span>
