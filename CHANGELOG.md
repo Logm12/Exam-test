@@ -2,6 +2,23 @@
 
 All notable changes to ExamOS are documented here.
 
+## [1.6.0] - 2026-03-16
+
+### Added
+- Integrated `start.bat` launcher for simultaneous Frontend (port 3000), Backend (port 8000), and Docker service startup.
+- Added comprehensive coverage for optional `start_time` and `cover_image` handling in exam creation/editing flows.
+
+### Changed
+- Refactored `ExamUpdate` Pydantic schema to make all fields truly optional, resolving 422 Validation Errors during partial updates.
+- Decoupled `ExamUpdate` from `ExamBase` to ensure mandatory base fields do not block surgical updates (e.g., toggling publish status).
+- Updated admin exam editing UI to use environment-aware API URLs for cover image previews.
+
+### Fixed
+- Applied missing `a1b2c3d4e5f6` migration adding the `cover_image` column to the `exams` table, resolving SQL persistence errors.
+- Fixed `togglePublish` logic in the admin portal to only transmit modified fields, drastically reducing payload size and validation overhead.
+- Resolved "Admin cannot create exam" bug caused by strict schema validation on non-critical metadata.
+- Fixed broken image upload flow where validation errors prevented retrieval of newly created exam IDs.
+
 ## [1.5.0] - 2026-03-09
 
 ### Added

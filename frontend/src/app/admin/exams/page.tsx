@@ -53,7 +53,7 @@ export default function ExamsCollectionPage() {
         try {
             await fetcher(`/exams/${exam.id}`, {
                 method: "PUT",
-                body: JSON.stringify({ ...exam, is_published: !exam.is_published }),
+                body: JSON.stringify({ is_published: !exam.is_published }),
             });
             setExams(exams.map((e: Exam) => (e.id === exam.id ? { ...e, is_published: !e.is_published } : e)));
         } catch (err: any) {

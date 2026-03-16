@@ -1,4 +1,25 @@
-# Báo Cáo Cập Nhật Hệ Thống - FDB TALENT (Phiên bản mới)
+# 📢 HỆ THỐNG THI TRỰC TUYẾN - THÔNG BÁO CẬP NHẬT (UPDATE LOG)
+
+## [v1.6.0] - Critical System Stabilization (16/03/2026)
+
+### 🇻🇳 Tiếng Việt:
+Bản cập nhật này tập trung vào việc sửa các lỗi nghiêm trọng trong quá trình tạo và quản lý bài thi của Quản trị viên, đồng thời tối ưu hóa quy trình khởi động hệ thống.
+
+*   **Sửa lỗi SQL (Ảnh bìa):** Đã kích hoạt cơ chế migration mới nhất, giải quyết triệt để lỗi không lưu được ảnh bìa bài thi vào cơ sở dữ liệu.
+*   **Sửa lỗi Tạo/Sửa bài thi:** Khắc phục lỗi "Validation Error (422)" khi Admin thực hiện cập nhật trạng thái hoặc chỉnh sửa bài thi. Hiện tại, các trường dữ liệu tùy chọn không còn gây lỗi hệ thống.
+*   **Trình khởi động Start.bat:** Thêm file `start.bat` tại thư mục gốc, cho phép bật toàn bộ hệ thống (Docker, Frontend, Backend) chỉ với một cú click chuột.
+*   **Cập nhật giao diện:** Hiển thị preview ảnh bìa chính xác dựa trên cấu hình môi trường thực tế.
+
+### 🇺🇸 English:
+This update focuses on resolving critical bugs within the Admin exam creation and management flows while optimizing system startup procedures.
+
+*   **SQL Fix (Cover Image):** Activated the latest database migrations to resolve persistence issues related to the `cover_image` column.
+*   **Creation/Edit Workflow Fix:** Resolved "Validation Error (422)" caused by strict schema enforcement. Optional fields (like cover images or specific start times) no longer block system updates.
+*   **System Launcher:** Introduced `start.bat` in the root directory, enabling one-click startup for Docker, Frontend, and Backend services.
+*   **UI Optimization:** Fixed hardcoded preview URLs for exam cover images, ensuring they follow environment-specific API configurations.
+
+---
+(Phiên bản mới)
 
 Tài liệu này tổng hợp toàn bộ các lỗi đã được khắc phục và các thay đổi về giao diện (UI) gần đây trên hệ thống FDB TALENT để team nắm bắt thông tin đồng bộ.
 

@@ -45,7 +45,8 @@ export default function EditExam() {
                 const exam = await fetcher(`/exams/${params.id}`);
                 setExamTitle(exam.title);
                 setExamDuration(exam.duration);
-                if (exam.cover_image) setExistingCoverImage(`http://127.0.0.1:8000${exam.cover_image}`);
+                const backendBase = process.env.NEXT_PUBLIC_API_URL?.replace('/api/v1', '') || 'http://127.0.0.1:8000';
+                if (exam.cover_image) setExistingCoverImage(`${backendBase}${exam.cover_image}`);
 
                 const qData = await fetcher(`/questions/exam/${params.id}`);
                 setQuestions(qData || []);
@@ -103,7 +104,7 @@ export default function EditExam() {
         setIsSubmitting(true);
 
         try {
-            // Update Exam
+            // Update Exam (only send fields that are changing)
             await fetcher(`/exams/${params.id}`, {
                 method: "PUT",
                 body: JSON.stringify({

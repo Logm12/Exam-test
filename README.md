@@ -48,7 +48,16 @@ The platform uses a decoupled architecture: a FastAPI backend for business logic
 - Python 3.12 (for local backend development)
 - Conda (optional, for the `FDBTa` environment)
 
-### Setup
+### One-Click Quick Start (Windows)
+For the fastest setup on Windows, use the integrated launcher which starts Docker, Backend, and Frontend simultaneously:
+
+1. Double-click **`start.bat`** in the project root.
+2. The launcher will automatically:
+   - Verify/Start Docker containers (PostgreSQL, Redis).
+   - Activate the `FDBTa` environment and start the Backend (Port 8000).
+   - Start the Next.js Frontend (Port 3000).
+
+### Manual Setup
 
 1. Start database and cache services:
    ```bash

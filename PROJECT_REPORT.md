@@ -72,6 +72,12 @@ The main requirements were handling concurrent exam sessions without data loss. 
 
 7. **Backend Service Instability**: Missing core dependencies (`google-auth`, `fastapi-limiter`) prevented the backend from initializing correctly in certain environments. Fixed by standardizing the virtual environment setup and ensuring all requirements are strictly locked.
 
+8. **Database Schema Synchronization**: Critical SQL columns (e.g., `cover_image`) were present in the codebase but missing from the database due to unapplied Alembic migrations. Resolved by strictly enforcing the migration HEAD (`a1b2c3d4e5f6`) across environments.
+
+9. **Schema Inheritance Pitfalls (422 Errors)**: Tight coupling between `ExamUpdate` and `ExamBase` schemas meant that surgical API updates erroneously required mandatory base fields (like `start_time`). Decoupled the update schema to allow partial payloads, resolving repeated [422 Unprocessable Entity] errors.
+
+10. **Environment Orchestration Complexity**: Manually starting multiple interdependent services (PostgreSQL, Redis, FastAPI, Next.js) led to frequent setup errors. Developed an automated Windows Batch orchestrator (`start.bat`) to verify Docker services and launch both frontend/backend instances in a single action.
+
 ## 5. Conclusion
 
 ExamOS is a working exam platform with real-time monitoring, anti-cheating measures, bilingual support, and social login. The decoupled architecture keeps the frontend lightweight and the backend independently scalable. The platform is ready for deployment and further feature development.
