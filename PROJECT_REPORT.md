@@ -76,7 +76,9 @@ The main requirements were handling concurrent exam sessions without data loss. 
 
 9. **Schema Inheritance Pitfalls (422 Errors)**: Tight coupling between `ExamUpdate` and `ExamBase` schemas meant that surgical API updates erroneously required mandatory base fields (like `start_time`). Decoupled the update schema to allow partial payloads, resolving repeated [422 Unprocessable Entity] errors.
 
-10. **Environment Orchestration Complexity**: Manually starting multiple interdependent services (PostgreSQL, Redis, FastAPI, Next.js) led to frequent setup errors. Developed an automated Windows Batch orchestrator (`start.bat`) to verify Docker services and launch both frontend/backend instances in a single action.
+10. **Environment Orchestration Complexity**: Manually starting multiple interdependent services (PostgreSQL, Redis, FastAPI, Next.js) led to frequent setup errors and "Conda command not found" issues. Developed an automated unified `npm run dev` orchestrator using `concurrently` that verifies Docker services and launches both frontend/backend instances with absolute environment paths, ensuring seamless cross-platform execution.
+
+11. **Database-Code Realignment (Submission Metrics)**: A discrepancy in the production SQL schema (March 2026 update) resulted in missing columns like `correct_count` in the database while they were expected by the API. Strictly realigned the backend models and reports with the latest production SQL dump, while simultaneously cleaning up the directory structure (moving tests and seeding scripts to dedicated subfolders) to improve project health and auditability.
 
 ## 5. Conclusion
 

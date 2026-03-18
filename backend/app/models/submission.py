@@ -33,6 +33,3 @@ class Answer(Base):
     submission = relationship("Submission", back_populates="answers")
     question = relationship("Question", back_populates="answers")
 
-    __table_args__ = (
-        UniqueConstraint("submission_id", "question_id", name="uix_submission_question"),
-    )

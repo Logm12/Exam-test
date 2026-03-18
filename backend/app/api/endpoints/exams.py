@@ -371,9 +371,9 @@ async def submit_exam(
         
     if total_mcq > 0:
         submission.score = (correct_count / total_mcq) * 10.0 # Scale to 10
-
-    submission.correct_count = correct_count
         
+    submission.correct_count = correct_count
+
     db.add_all(answers_to_insert)
     
     # Clear Redis Draft

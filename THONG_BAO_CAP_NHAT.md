@@ -1,5 +1,23 @@
 # 📢 HỆ THỐNG THI TRỰC TUYẾN - THÔNG BÁO CẬP NHẬT (UPDATE LOG)
 
+## [v1.7.0] - Development Orchestration & DB Sync (18/03/2026)
+
+### 🇻🇳 Tiếng Việt:
+Bản cập nhật này tập trung vào việc chuẩn hóa quy trình chạy dự án và đồng bộ hóa cơ sở dữ liệu với phiên bản mới nhất.
+
+*   **Hệ thống khởi động đồng thời (`npm run dev`):** Đã tích hợp Front-end và Back-end vào duy nhất 1 câu lệnh khởi động tại thư mục gốc. Hệ thống sẽ tự động bật Docker, Backend (port 8000) và Frontend (port 3000) cùng lúc.
+*   **Đồng bộ cơ sở dữ liệu:** Khắc phục triệt để lỗi thiếu cột `correct_count` bằng cách cập nhật lại schema từ file SQL chuẩn (phiên bản 18/03/2026).
+*   **Sửa lỗi môi trường (FastAPI Limiter):** Giải quyết lỗi import thư viện bằng cách sử dụng phiên bản ổn định hơn (0.1.5), đảm bảo hệ thống giới hạn truy cập (Rate Limiting) hoạt động trơn tru.
+*   **Dọn dẹp cấu trúc folder:** Di chuyển các file script và test lẻ tẻ vào các thư mục `tests/` và `scripts/` giúp mã nguồn gọn gàng và dễ bảo trì hơn.
+
+### 🇺🇸 English:
+This update focuses on standardizing the development workflow and synchronizing the database with the latest schema version.
+
+*   **Unified Development Launcher (`npm run dev`):** Integrated both Frontend and Backend into a single execution command at the root directory. This command concurrently launches Docker services, Backend (port 8000), and Frontend (port 3000).
+*   **Database Schema Synchronization:** Resolved critical errors regarding missing `correct_count` columns by resyncing the PostgreSQL schema with the latest production SQL dump (March 18, 2026).
+*   **Environment Stability (FastAPI Limiter):** Fixed library import failures by pinning to a stable version (0.1.5), ensuring robust API rate limiting functionality.
+*   **Directory Reorganization:** Moved standalone scripts and tests into dedicated `tests/` and `scripts/` directories for enhanced maintainability and code clarity.
+
 ## [v1.6.0] - Critical System Stabilization (16/03/2026)
 
 ### 🇻🇳 Tiếng Việt:

@@ -1,0 +1,29 @@
+{
+  "name": "online-exam",
+  "version": "1.0.0",
+  "description": "ExamOS is a full-stack online examination platform built for educational institutions and organizations. It handles exam creation, student assessment, and real-time monitoring with built-in anti-cheating measures.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "dev:backend": "cd backend && C:/Python313/python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev": "concurrently -k \"npm run dev:backend\" \"npm run dev:frontend\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Logm12/Exam-test.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Logm12/Exam-test/issues"
+  },
+  "homepage": "https://github.com/Logm12/Exam-test#readme",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

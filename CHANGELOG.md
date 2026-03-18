@@ -2,6 +2,23 @@
 
 All notable changes to ExamOS are documented here.
 
+## [1.7.0] - 2026-03-18
+
+### Added
+- Unified development environment: Added a root `package.json` with a `npm run dev` script that starts Docker, Backend, and Frontend concurrently.
+- Integrated `concurrently` to manage multiple server processes with automatic cleanup.
+- Dedicated `tests/` and `scripts/` directories in both Backend and Frontend for better project organization.
+
+### Changed
+- Standardized Backend runtime: Configured uvicorn to use a consistent Python environment path, resolving "Conda command not found" issues in terminal launchers.
+- Restored `correct_count` property to the `Submission` model to align with the latest database schema (2026-03-18 update).
+
+### Fixed
+- Database Synchronization: Resolved `UndefinedColumnError` regarding `submissions.correct_count` by resyncing the PostgreSQL schema with the latest SQL dump.
+- Dependency Resolution: Fixed `fastapi-limiter` import errors by pinning to a stable version (`0.1.5`) and updating the internal initialization logic.
+- Answer Schema Alignment: Removed deprecated `UniqueConstraint` on questions per submission in the database model to match the production schema definition.
+- Cache Management: Performed deep cache purges for both `pip` and `npm` to prevent resource-heavy core dumps and stale build artifacts.
+
 ## [1.6.0] - 2026-03-16
 
 ### Added

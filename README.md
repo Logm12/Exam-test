@@ -48,14 +48,20 @@ The platform uses a decoupled architecture: a FastAPI backend for business logic
 - Python 3.12 (for local backend development)
 - Conda (optional, for the `FDBTa` environment)
 
-### One-Click Quick Start (Windows)
-For the fastest setup on Windows, use the integrated launcher which starts Docker, Backend, and Frontend simultaneously:
+### One-Click Quick Start (Recommended)
+For the fastest setup, use the integrated npm script which starts Docker, Backend, and Frontend concurrently:
 
-1. Double-click **`start.bat`** in the project root.
-2. The launcher will automatically:
-   - Verify/Start Docker containers (PostgreSQL, Redis).
-   - Activate the `FDBTa` environment and start the Backend (Port 8000).
+1. Ensure Docker Desktop is running.
+2. Run the following command in the project root:
+   ```bash
+   npm run dev
+   ```
+3. The launcher will automatically:
+   - Start Docker containers (PostgreSQL, Redis) via `docker-compose`.
+   - Start the Backend (Port 8000) using the configured Python path.
    - Start the Next.js Frontend (Port 3000).
+
+*Note: You can also use `start.bat` on Windows if preferred.*
 
 ### Manual Setup
 
@@ -111,7 +117,8 @@ online-exam/
       models/           # SQLAlchemy ORM models
       schemas/          # Pydantic request/response schemas
     alembic/            # Database migrations
-    seed_users.py       # Test data seeder
+    scripts/            # Maintenance and seeding scripts
+    tests/              # Backend API and logic tests
   frontend/
     src/
       app/              # Next.js App Router pages
@@ -123,6 +130,7 @@ online-exam/
       components/       # Shared UI components
       contexts/         # React contexts (language switching)
       lib/              # Utilities (auth config, API client, translations)
+    scripts/            # Frontend utility scripts
 ```
 
 ## Authentication Flow
