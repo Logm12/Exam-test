@@ -8,3 +8,4 @@ class ExamSubmit(BaseModel):
     answers: Dict[str, str]
     forced_submit: bool = False
     violation_count: int = 0
+    time_spent_seconds: int | None = None

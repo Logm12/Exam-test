@@ -3,3 +3,4 @@ from .organization import OrganizationalUnit
 from .question_pool import QuestionPool
 from .exam import Exam, Question
 from .submission import Submission, Answer
+from .student import Student

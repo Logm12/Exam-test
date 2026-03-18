@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { fetcher } from "@/lib/api";
+import { downloadFromApi } from "@/lib/download";
 
 interface Submission {
     id: number;
@@ -37,7 +38,7 @@ export default function ExamSubmissionsPage() {
     }, [examId]);
 
     return (
-        <div className="space-y-6 animate-fade-in pb-20 font-sans">
+        <div className="p-8 max-w-7xl mx-auto space-y-6 animate-fade-in pb-20 font-sans w-full">
             <div className="flex justify-between items-center mb-6">
                 <div>
                     <div className="flex items-center gap-2 text-sm text-[var(--text-secondary)] mb-2">
@@ -51,14 +52,76 @@ export default function ExamSubmissionsPage() {
                         Danh sách bài nộp
                     </h1>
                 </div>
-                <a
-                    href={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/exams/${examId}/report`}
-                    download
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-md flex items-center gap-2 text-sm font-semibold shadow-sm transition-colors"
-                >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
-                    Xuất CSV
-                </a>
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={async () => {
+                            try {
+                                const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+                                await downloadFromApi(
+                                    `${base}/admin/reports/exams/${examId}/scores?format=csv`,
+                                    `exam_${examId}_scores.csv`
+                                );
+                            } catch (e: any) {
+                                alert(e?.message || "Xuất CSV thất bại");
+                            }
+                        }}
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-md flex items-center gap-2 text-sm font-semibold shadow-sm transition-colors"
+                    >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
+                        Xuất điểm CSV
+                    </button>
+                    <button
+                        onClick={async () => {
+                            try {
+                                const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+                                await downloadFromApi(
+                                    `${base}/admin/reports/exams/${examId}/scores?format=xlsx`,
+                                    `exam_${examId}_scores.xlsx`
+                                );
+                            } catch (e: any) {
+                                alert(e?.message || "Xuất Excel thất bại");
+                            }
+                        }}
+                        className="bg-white hover:bg-gray-50 text-emerald-700 px-4 py-2 rounded-md flex items-center gap-2 text-sm font-semibold shadow-sm border border-emerald-200 transition-colors"
+                    >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
+                        Xuất điểm Excel
+                    </button>
+                    <button
+                        onClick={async () => {
+                            try {
+                                const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+                                await downloadFromApi(
+                                    `${base}/admin/reports/submissions?format=csv&exam_id=${encodeURIComponent(examId)}`,
+                                    `submission_history_exam_${examId}.csv`
+                                );
+                            } catch (e: any) {
+                                alert(e?.message || "Xuất CSV thất bại");
+                            }
+                        }}
+                        className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-md flex items-center gap-2 text-sm font-semibold shadow-sm transition-colors"
+                    >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
+                        Xuất lịch sử CSV
+                    </button>
+                    <button
+                        onClick={async () => {
+                            try {
+                                const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+                                await downloadFromApi(
+                                    `${base}/admin/reports/submissions?format=xlsx&exam_id=${encodeURIComponent(examId)}`,
+                                    `submission_history_exam_${examId}.xlsx`
+                                );
+                            } catch (e: any) {
+                                alert(e?.message || "Xuất Excel thất bại");
+                            }
+                        }}
+                        className="bg-white hover:bg-gray-50 text-slate-900 px-4 py-2 rounded-md flex items-center gap-2 text-sm font-semibold shadow-sm border border-gray-200 transition-colors"
+                    >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
+                        Xuất lịch sử Excel
+                    </button>
+                </div>
             </div>
 
             {error && (

@@ -334,7 +334,8 @@ async def submit_exam(
             user_id=current_user.id, 
             status="submitted",
             violation_count=submit_in.violation_count,
-            forced_submit=str(submit_in.forced_submit).lower()
+            forced_submit=str(submit_in.forced_submit).lower(),
+            time_spent_seconds=submit_in.time_spent_seconds,
         )
         db.add(submission)
         await db.flush() # get ID
@@ -343,6 +344,7 @@ async def submit_exam(
         submission.status = "submitted"
         submission.violation_count = submit_in.violation_count
         submission.forced_submit = str(submit_in.forced_submit).lower()
+        submission.time_spent_seconds = submit_in.time_spent_seconds
         
         # Clear existing answers to avoid duplication and unique constraint errors
         await db.execute(delete(Answer).where(Answer.submission_id == submission.id))
@@ -369,6 +371,8 @@ async def submit_exam(
         
     if total_mcq > 0:
         submission.score = (correct_count / total_mcq) * 10.0 # Scale to 10
+
+    submission.correct_count = correct_count
         
     db.add_all(answers_to_insert)
     

@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { fetcher } from "@/lib/api";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { downloadFromApi } from "@/lib/download";
 
 interface UserAccount {
     id: number;
@@ -75,6 +76,36 @@ export default function StudentsManagementPage() {
                 <p className="text-sm text-[var(--text-secondary)] mt-1">
                     Quản lý tài khoản người dùng và phân quyền.
                 </p>
+                <div className="mt-4 flex items-center gap-2">
+                    <button
+                        onClick={async () => {
+                            try {
+                                const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+                                await downloadFromApi(`${base}/admin/reports/candidates?format=csv`, "candidates.csv");
+                            } catch (e: any) {
+                                alert(e?.message || "Xuất CSV thất bại");
+                            }
+                        }}
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-md flex items-center gap-2 text-sm font-semibold shadow-sm transition-colors"
+                    >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
+                        Xuất thí sinh CSV
+                    </button>
+                    <button
+                        onClick={async () => {
+                            try {
+                                const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+                                await downloadFromApi(`${base}/admin/reports/candidates?format=xlsx`, "candidates.xlsx");
+                            } catch (e: any) {
+                                alert(e?.message || "Xuất Excel thất bại");
+                            }
+                        }}
+                        className="bg-white hover:bg-gray-50 text-emerald-700 px-4 py-2 rounded-md flex items-center gap-2 text-sm font-semibold shadow-sm border border-emerald-200 transition-colors"
+                    >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
+                        Xuất thí sinh Excel
+                    </button>
+                </div>
             </div>
 
             {/* Stats Cards */}

@@ -159,6 +159,7 @@ function ExamContent({ examId }: { examId: string }) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [currentTime, setCurrentTime] = useState("");
+    const startedAtRef = useRef<number | null>(null);
 
     useEffect(() => {
         setCurrentTime(new Date().toLocaleString());
@@ -189,6 +190,16 @@ function ExamContent({ examId }: { examId: string }) {
         loadExam();
     }, [examId, router]);
 
+    useEffect(() => {
+        startedAtRef.current = null;
+    }, [examId]);
+
+    useEffect(() => {
+        if (exam && startedAtRef.current === null) {
+            startedAtRef.current = Date.now();
+        }
+    }, [exam]);
+
     const isSubmittingRef = useRef(false);
     useEffect(() => { isSubmittingRef.current = isSubmitting; }, [isSubmitting]);
 
@@ -202,12 +213,17 @@ function ExamContent({ examId }: { examId: string }) {
                 answersPayload[question_id.toString()] = answer_text;
             });
 
+            const timeSpentSeconds = startedAtRef.current
+                ? Math.max(0, Math.floor((Date.now() - startedAtRef.current) / 1000))
+                : null;
+
             await fetcher(`/exams/${exam.id}/submit`, {
                 method: "POST",
                 body: JSON.stringify({
                     answers: answersPayload,
                     forced_submit: isAutoSubmit,
-                    violation_count: violationCount
+                    violation_count: violationCount,
+                    time_spent_seconds: timeSpentSeconds,
                 })
             });
 
@@ -229,8 +245,21 @@ function ExamContent({ examId }: { examId: string }) {
             
             alert(alertMessage);
             setIsSubmitting(false);
-        }
-    }, [exam, answers, isSubmitting, router, t]);
+            isSubmittingRef.current = false;
+            }
+            }, [exam, answers, isSubmitting, router, t]);
+
+    const isAnswered = useCallback((q: Question) => {
+        const a = answers[q.id];
+        if (a === undefined || a === null) return false;
+        return String(a).trim().length > 0;
+    }, [answers]);
+
+    const scrollToQuestion = useCallback((questionId: number) => {
+        const el = document.getElementById(`q-${questionId}`);
+        if (!el) return;
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, []);
 
     const handleAutoSubmit = useCallback(() => {
         submitExam(true, 3);
@@ -322,6 +351,44 @@ function ExamContent({ examId }: { examId: string }) {
 
             {/* Questions */}
             <main className="flex-1 max-w-4xl w-full mx-auto px-6 py-12 space-y-8 pb-32">
+                {/* Question navigator: order + status */}
+                {questions.length > 0 && (
+                    <div className="surface-card p-5">
+                        <div className="flex flex-wrap gap-2">
+                            {questions.map((q, idx) => {
+                                const answered = isAnswered(q);
+                                return (
+                                    <button
+                                        key={q.id}
+                                        type="button"
+                                        onClick={() => scrollToQuestion(q.id)}
+                                        className="w-10 h-10 rounded-xl border text-sm font-bold transition-colors"
+                                        style={answered
+                                            ? {
+                                                background: 'var(--accent-glow)',
+                                                borderColor: 'var(--accent-primary)',
+                                                color: 'var(--accent-primary)'
+                                            }
+                                            : {
+                                                background: 'var(--surface-card)',
+                                                borderColor: 'var(--border-default)',
+                                                color: 'var(--text-secondary)'
+                                            }}
+                                        aria-label={`Câu ${idx + 1} ${answered ? 'đã trả lời' : 'chưa trả lời'}`}
+                                        title={`Câu ${idx + 1} • ${answered ? 'Đã trả lời' : 'Chưa trả lời'}`}
+                                    >
+                                        {idx + 1}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                        <div className="mt-3 text-xs text-[var(--text-muted)] font-medium">
+                            <span className="mr-4">• Đã trả lời: viền màu</span>
+                            <span>• Chưa trả lời: viền xám</span>
+                        </div>
+                    </div>
+                )}
+
                 {questions.map((q, index) => (
                     <div key={q.id} className="surface-card p-8 relative" id={`q-${q.id}`}>
                         <div className="absolute -top-3 -left-3 w-9 h-9 rounded-xl flex items-center justify-center font-bold text-sm text-white select-none" style={{ background: 'var(--accent-gradient)', boxShadow: '0 4px 14px var(--accent-glow)' }}>

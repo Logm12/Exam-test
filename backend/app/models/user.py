@@ -16,3 +16,10 @@ class User(Base):
     
     org_unit = relationship("OrganizationalUnit", back_populates="users")
     submissions = relationship("Submission", back_populates="user")
+
+    student_profile = relationship(
+        "Student",
+        back_populates="user",
+        uselist=False,
+        cascade="all, delete-orphan",
+    )

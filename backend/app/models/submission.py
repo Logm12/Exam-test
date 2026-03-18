@@ -10,10 +10,12 @@ class Submission(Base):
     exam_id = Column(Integer, ForeignKey("exams.id", ondelete="CASCADE"))
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
     score = Column(Float, nullable=True)
+    correct_count = Column(Integer, nullable=True)
     status = Column(String, default="in_progress") # in_progress, submitted, graded
     submitted_at = Column(DateTime(timezone=True), nullable=True)
     violation_count = Column(Integer, default=0)
     forced_submit = Column(String, default="false") # "true" or "false" (SQLite friendly boolean fallback or Boolean if postgres)
+    time_spent_seconds = Column(Integer, nullable=True)
     
     user = relationship("User", back_populates="submissions")
     exam = relationship("Exam", back_populates="submissions")
