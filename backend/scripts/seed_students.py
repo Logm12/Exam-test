@@ -1,10 +1,16 @@
 import argparse
 import asyncio
+import os
 import random
+import sys
 from datetime import date
 from typing import Optional
 
 from sqlalchemy import select
+
+BACKEND_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if BACKEND_DIR not in sys.path:
+    sys.path.insert(0, BACKEND_DIR)
 
 from app.core.security import get_password_hash
 from app.db.session import AsyncSessionLocal

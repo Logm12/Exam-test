@@ -10,7 +10,7 @@ export default async function middleware(req: NextRequest) {
     const url = req.nextUrl;
     const hostname = req.headers.get('host') ?? '';
 
-    const token = await getToken({ req });
+    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
     const userRole = token?.role as string | undefined;
 
     // Protected routes: /dashboard requires authentication
