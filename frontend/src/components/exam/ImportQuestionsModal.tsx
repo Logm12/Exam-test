@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { getSession } from "next-auth/react";
 
 interface ParsedQuestion {
     number: number;
@@ -47,8 +48,17 @@ export default function ImportQuestionsModal({ isOpen, onClose, onImport, examId
         formData.append("file", file);
 
         try {
+            const session = await getSession();
+            const token = (session as any)?.accessToken as string | undefined;
+            if (!token) {
+                throw new Error("Missing access token");
+            }
+
             const res = await fetch("/api/proxy/exams/import-questions", {
                 method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
                 body: formData,
             });
 
