@@ -15,6 +15,47 @@ interface QuestionForm {
     correct_answer: string;
 }
 
+function sanitizeOptions(options: OptionMap): OptionMap {
+    return Object.fromEntries(
+        Object.entries(options)
+            .map(([k, v]) => [k, (v ?? "").trim()])
+            .filter(([, v]) => v.length > 0)
+    );
+}
+
+function sanitizeAndValidateQuestions(questions: QuestionForm[]): QuestionForm[] {
+    return questions.map((q, index) => {
+        if (q.type === "multiple_choice") {
+            const cleanedOptions = sanitizeOptions(q.options || {});
+            const optionKeys = Object.keys(cleanedOptions);
+            if (optionKeys.length < 2) {
+                throw new Error(`Câu ${index + 1}: Trắc nghiệm phải có ít nhất 2 đáp án (A/B).`);
+            }
+
+            const nextCorrect = cleanedOptions[q.correct_answer]
+                ? q.correct_answer
+                : (optionKeys[0] ?? "A");
+
+            return {
+                ...q,
+                options: cleanedOptions,
+                correct_answer: nextCorrect,
+            };
+        }
+
+        const expected = (q.correct_answer ?? "").trim();
+        if (!expected) {
+            throw new Error(`Câu ${index + 1}: Vui lòng nhập đáp án tự luận.`);
+        }
+
+        return {
+            ...q,
+            options: {},
+            correct_answer: expected,
+        };
+    });
+}
+
 export default function EditExam() {
     const { t } = useLanguage();
     const router = useRouter();
@@ -103,6 +144,15 @@ export default function EditExam() {
         e.preventDefault();
         setIsSubmitting(true);
 
+        let sanitizedQuestions: QuestionForm[];
+        try {
+            sanitizedQuestions = sanitizeAndValidateQuestions(questions);
+        } catch (error: any) {
+            alert(error?.message || "Dữ liệu câu hỏi không hợp lệ");
+            setIsSubmitting(false);
+            return;
+        }
+
         try {
             // Update Exam (only send fields that are changing)
             await fetcher(`/exams/${params.id}`, {
@@ -135,7 +185,7 @@ export default function EditExam() {
             } catch (e) { }
 
             // Add new
-            const qPromises = questions.map((q) =>
+            const qPromises = sanitizedQuestions.map((q) =>
                 fetcher("/questions/", {
                     method: "POST",
                     body: JSON.stringify({
@@ -300,9 +350,9 @@ export default function EditExam() {
                                                     <span className="text-sm font-medium text-[var(--text-muted)]">{optKey}</span>
                                                     <input
                                                         type="text"
-                                                        required
+                                                        required={optKey === "A" || optKey === "B"}
                                                         placeholder={`${t("admin.exams.new.option")} ${optKey}`}
-                                                        value={q.options[optKey]}
+                                                        value={q.options?.[optKey] ?? ""}
                                                         onChange={(e) => updateOption(qIndex, optKey, e.target.value)}
                                                         className="bg-transparent text-sm w-full outline-none placeholder:text-[var(--text-muted)] text-[var(--text-primary)]"
                                                     />

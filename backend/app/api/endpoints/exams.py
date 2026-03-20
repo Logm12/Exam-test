@@ -144,14 +144,14 @@ async def import_questions_from_file(
     Returns a list of parsed questions for review before adding to an exam.
     """
     MAX_SIZE = 10 * 1024 * 1024  # 10 MB
-    allowed_types = (".docx", ".pdf")
+    allowed_types = (".doc", ".docx", ".pdf")
 
     if not file.filename:
         raise HTTPException(status_code=400, detail="No file provided")
 
     ext = os.path.splitext(file.filename)[1].lower()
     if ext not in allowed_types:
-        raise HTTPException(status_code=400, detail="Only .docx and .pdf files are supported")
+        raise HTTPException(status_code=400, detail="Only .doc, .docx and .pdf files are supported")
 
     contents = await file.read()
     if len(contents) > MAX_SIZE:

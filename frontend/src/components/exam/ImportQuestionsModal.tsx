@@ -31,7 +31,7 @@ export default function ImportQuestionsModal({ isOpen, onClose, onImport, examId
 
     const handleFile = useCallback(async (file: File) => {
         const ext = file.name.split(".").pop()?.toLowerCase();
-        if (!["docx", "pdf"].includes(ext || "")) {
+        if (!["doc", "docx", "pdf"].includes(ext || "")) {
             setError(t("import.error"));
             return;
         }
@@ -63,15 +63,22 @@ export default function ImportQuestionsModal({ isOpen, onClose, onImport, examId
             });
 
             if (!res.ok) {
-                const data = await res.json();
-                throw new Error(data.detail || "Parse failed");
+                let detail = "Parse failed";
+                try {
+                    const data = await res.json();
+                    detail = data.detail || detail;
+                } catch {
+                    // ignore
+                }
+                throw new Error(detail);
             }
 
             const data = await res.json();
             setParsedQuestions(data.questions);
             setSelectedIds(new Set(data.questions.map((_: ParsedQuestion, i: number) => i)));
         } catch (err) {
-            setError(t("import.error"));
+            const message = err instanceof Error ? err.message : "";
+            setError(message || t("import.error"));
         } finally {
             setIsProcessing(false);
         }
@@ -156,7 +163,7 @@ export default function ImportQuestionsModal({ isOpen, onClose, onImport, examId
                             <input
                                 ref={fileInputRef}
                                 type="file"
-                                accept=".docx,.pdf"
+                                accept=".doc,.docx,.pdf"
                                 className="hidden"
                                 onChange={(e) => {
                                     const file = e.target.files?.[0];
