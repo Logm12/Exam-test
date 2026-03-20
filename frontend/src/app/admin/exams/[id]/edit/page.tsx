@@ -184,18 +184,16 @@ export default function EditExam() {
                 await Promise.all(oldQs.map((q: any) => fetcher(`/questions/${q.id}`, { method: "DELETE" })));
             } catch (e) { }
 
-            // Add new
-            const qPromises = sanitizedQuestions.map((q) =>
-                fetcher("/questions/", {
+            // Add new (sequential to preserve ordering)
+            for (const q of sanitizedQuestions) {
+                await fetcher("/questions/", {
                     method: "POST",
                     body: JSON.stringify({
                         ...q,
-                        exam_id: parseInt(params.id as string)
-                    })
-                })
-            );
-
-            await Promise.all(qPromises);
+                        exam_id: parseInt(params.id as string),
+                    }),
+                });
+            }
 
             startTransition(() => {
                 router.push("/admin/exams");

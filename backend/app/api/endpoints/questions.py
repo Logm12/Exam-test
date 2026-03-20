@@ -18,7 +18,11 @@ async def read_questions_by_exam(
     exam_id: int,
     current_user: User = Depends(get_current_user),
 ) -> Any:
-    result = await db.execute(select(Question).where(Question.exam_id == exam_id))
+    result = await db.execute(
+        select(Question)
+        .where(Question.exam_id == exam_id)
+        .order_by(Question.id.asc())
+    )
     questions = result.scalars().all()
     return questions
 

@@ -152,17 +152,15 @@ export default function CreateExam() {
                 });
             }
 
-            const qPromises = sanitizedQuestions.map((q) =>
-                fetcher("/questions/", {
+            for (const q of sanitizedQuestions) {
+                await fetcher("/questions/", {
                     method: "POST",
                     body: JSON.stringify({
                         ...q,
-                        exam_id: newExam.id
-                    })
-                })
-            );
-
-            await Promise.all(qPromises);
+                        exam_id: newExam.id,
+                    }),
+                });
+            }
 
             startTransition(() => {
                 router.push("/admin/exams");
