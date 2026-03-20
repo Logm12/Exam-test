@@ -24,13 +24,18 @@ class ParsedQuestion:
     type: str = "multiple_choice"
 
 
+def _norm_line(text: str) -> str:
+    text = (text or "").replace("\u00a0", " ").strip()
+    # normalize common OCR/Word quirks
+    text = re.sub(r"\s+", " ", text)
+    return text
+
+
 # Regex patterns
-QUESTION_PATTERN = re.compile(
-    r"^C[aâ]u\s*(\d+)\s*[:.]\s*(.+)", re.IGNORECASE
-)
-OPTION_PATTERN = re.compile(
-    r"^([A-Da-d])\s*[.)]\s*(.+)", re.IGNORECASE
-)
+# Accept: "Cau 1:", "Câu 1.", "CÂU 1 :" and even missing space "Câu1:"
+QUESTION_PATTERN = re.compile(r"^C(?:a|â)u\s*(\d+)\s*[:.]\s*(.*)$", re.IGNORECASE)
+# Accept: "A.", "A)", "A:", "A -" etc.
+OPTION_PATTERN = re.compile(r"^([A-Da-d])\s*[\.)\]:\-]\s*(.+)$", re.IGNORECASE)
 
 
 def parse_docx(file_path: str) -> List[ParsedQuestion]:
@@ -44,8 +49,18 @@ def parse_docx(file_path: str) -> List[ParsedQuestion]:
     questions: List[ParsedQuestion] = []
     current_question: Optional[ParsedQuestion] = None
 
+    def flush_current() -> None:
+        nonlocal current_question
+        if current_question is None:
+            return
+        current_question.content = _norm_line(current_question.content)
+        # Only keep if it looks like a valid MCQ (at least 2 options)
+        if current_question.options and len(current_question.options) >= 2:
+            questions.append(current_question)
+        current_question = None
+
     for para in doc.paragraphs:
-        text = para.text.strip()
+        text = _norm_line(para.text)
         if not text:
             continue
 
@@ -53,11 +68,10 @@ def parse_docx(file_path: str) -> List[ParsedQuestion]:
         q_match = QUESTION_PATTERN.match(text)
         if q_match:
             # Save previous question if exists
-            if current_question is not None:
-                questions.append(current_question)
+            flush_current()
 
             q_num = int(q_match.group(1))
-            q_content = q_match.group(2).strip()
+            q_content = (q_match.group(2) or "").strip()
             current_question = ParsedQuestion(
                 number=q_num,
                 content=q_content,
@@ -77,10 +91,14 @@ def parse_docx(file_path: str) -> List[ParsedQuestion]:
             is_red = _is_paragraph_red(para)
             if is_bold or is_red:
                 current_question.correct_answer = option_letter
+            continue
+
+        # Continuation lines: append to current question content until options begin
+        if current_question is not None and not current_question.options:
+            current_question.content = (current_question.content + "\n" + text).strip()
 
     # Append the last question
-    if current_question is not None:
-        questions.append(current_question)
+    flush_current()
 
     return questions
 
@@ -132,8 +150,21 @@ def parse_pdf(file_path: str) -> List[ParsedQuestion]:
     questions: List[ParsedQuestion] = []
     current_question: Optional[ParsedQuestion] = None
 
+    def flush_current() -> None:
+        nonlocal current_question
+        if current_question is None:
+            return
+        current_question.content = _norm_line(current_question.content)
+        if current_question.options and len(current_question.options) >= 2:
+            questions.append(current_question)
+        current_question = None
+
     for page in doc:
-        blocks = page.get_text("dict", flags=fitz.TEXT_PRESERVE_WHITESPACE)["blocks"]
+        # Some PyMuPDF versions don't expose TEXT_PRESERVE_WHITESPACE
+        try:
+            blocks = page.get_text("dict", flags=getattr(fitz, "TEXT_PRESERVE_WHITESPACE", 0))["blocks"]
+        except Exception:
+            blocks = page.get_text("dict").get("blocks", [])
         for block in blocks:
             if "lines" not in block:
                 continue
@@ -155,17 +186,16 @@ def parse_pdf(file_path: str) -> List[ParsedQuestion]:
                 if total_chars > 0:
                     is_bold = (bold_chars / total_chars) > 0.5
 
-                line_text = line_text.strip()
+                line_text = _norm_line(line_text)
                 if not line_text:
                     continue
 
                 # Check for question line
                 q_match = QUESTION_PATTERN.match(line_text)
                 if q_match:
-                    if current_question is not None:
-                        questions.append(current_question)
+                    flush_current()
                     q_num = int(q_match.group(1))
-                    q_content = q_match.group(2).strip()
+                    q_content = (q_match.group(2) or "").strip()
                     current_question = ParsedQuestion(
                         number=q_num,
                         content=q_content,
@@ -181,9 +211,12 @@ def parse_pdf(file_path: str) -> List[ParsedQuestion]:
                     current_question.options[option_letter] = option_text
                     if is_bold:
                         current_question.correct_answer = option_letter
+                    continue
 
-    if current_question is not None:
-        questions.append(current_question)
+                if current_question is not None and not current_question.options:
+                    current_question.content = (current_question.content + "\n" + line_text).strip()
+
+    flush_current()
 
     doc.close()
     return questions
