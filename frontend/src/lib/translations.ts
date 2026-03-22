@@ -8,6 +8,8 @@ const translations: Record<string, Record<Locale, string>> = {
     "app.register": { vi: "Đăng ký", en: "Register" },
     "app.processing": { vi: "Đang xử lý...", en: "Processing..." },
     "app.language": { vi: "EN", en: "VI" },
+    "common.prev": { vi: "Câu trước", en: "Previous" },
+    "common.next": { vi: "Câu tiếp", en: "Next" },
 
     // Trang chủ
     "landing.hero.title": { vi: "Cổng đánh giá năng lực FDB TALENT", en: "FDB TALENT Assessment Portal" },

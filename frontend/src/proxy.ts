@@ -39,9 +39,9 @@ export default async function middleware(req: NextRequest) {
     const cspHeader = `
       default-src 'self';
       script-src 'self' 'unsafe-eval' 'unsafe-inline';
-      style-src 'self' 'unsafe-inline';
+      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
       img-src 'self' blob: data: lh3.googleusercontent.com http://127.0.0.1:8000 http://localhost:8000;
-      font-src 'self' fonts.gstatic.com;
+      font-src 'self' https://fonts.gstatic.com;
       connect-src 'self' http://127.0.0.1:8000 http://127.0.0.1:8001 http://localhost:8000 http://localhost:8001;
       object-src 'none';
       base-uri 'self';

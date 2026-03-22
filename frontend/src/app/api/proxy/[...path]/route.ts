@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getToken } from "next-auth/jwt";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
 
@@ -25,14 +26,20 @@ async function proxyRequest(request: NextRequest, params: { path: string[] }) {
     // Preserve query string
     const searchParams = request.nextUrl.searchParams.toString();
     const fullUrl = searchParams ? `${url}?${searchParams}` : url;
-
+    
     const headers: Record<string, string> = {};
     request.headers.forEach((value, key) => {
         // Don't forward host or other hop-by-hop headers
-        if (!["host", "connection", "content-length"].includes(key.toLowerCase())) {
+        if (!["host", "connection", "content-length", "authorization"].includes(key.toLowerCase())) {
             headers[key] = value;
         }
     });
+
+    // Inject NextAuth Authorization token
+    const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
+    if (token?.accessToken) {
+        headers["Authorization"] = `Bearer ${token.accessToken}`;
+    }
 
     const fetchOptions: RequestInit = {
         method: request.method,

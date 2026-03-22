@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { LanguageProvider, useLanguage } from "@/contexts/LanguageContext";
-import LanguageToggle from "@/components/LanguageToggle";
 
 type Exam = {
     id: number;
@@ -40,7 +39,6 @@ function GatewayContent({ exam }: { exam: Exam | null; examId: string }) {
                         </Link>
                     </div>
                     <div className="flex items-center space-x-4">
-                        <LanguageToggle />
                         <span className="font-semibold text-[var(--text-primary)] tracking-tight text-sm">
                             {t("exam.gateway.header")}
                         </span>

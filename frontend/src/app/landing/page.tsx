@@ -2,8 +2,6 @@
 
 import Link from "next/link";
 import { useLanguage } from "@/contexts/LanguageContext";
-import LanguageToggle from "@/components/LanguageToggle";
-import ThemeToggle from "@/components/ThemeToggle";
 import FdbLogo from "@/components/FdbLogo";
 
 export default function LandingPage() {
@@ -18,8 +16,6 @@ export default function LandingPage() {
                         <FdbLogo className="text-[1.6rem]" />
                     </div>
                     <div className="flex items-center space-x-4">
-                        <ThemeToggle />
-                        <LanguageToggle />
                         <Link
                             href="/login"
                             className="bg-[var(--accent-primary)] hover:bg-[var(--accent-primary-hover)] text-white px-6 py-2 rounded-md text-sm font-semibold transition-all shadow-md"

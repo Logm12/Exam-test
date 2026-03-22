@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { LanguageProvider, useLanguage } from "@/contexts/LanguageContext";
-import LanguageToggle from "@/components/LanguageToggle";
 
 type Exam = {
     id: number;
@@ -22,7 +21,6 @@ function ReceiptContent({ exam, examId }: { exam: Exam | null; examId: string })
         <div className="min-h-screen bg-[var(--bg-primary)] flex flex-col font-sans">
             <header className="bg-[var(--bg-primary)] border-b border-[var(--border-subtle)]">
                 <div className="max-w-4xl mx-auto px-6 h-16 flex items-center justify-end">
-                    <LanguageToggle />
                 </div>
             </header>
             <div className="flex-1 flex items-center justify-center p-6 text-center animate-fade-in">

@@ -3,8 +3,6 @@ import React, { useState, Suspense, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import LanguageToggle from "@/components/LanguageToggle";
-import ThemeToggle from "@/components/ThemeToggle";
 import Link from "next/link";
 import Image from "next/image";
 import FdbLogo from "@/components/FdbLogo";
@@ -80,6 +78,7 @@ function LoginForm() {
                     src="/login-bg.jpg"
                     alt="Login Background"
                     fill
+                    sizes="50vw"
                     className="object-cover"
                     priority
                 />
@@ -88,10 +87,7 @@ function LoginForm() {
             {/* Right side: Form */}
             <div className="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-20 xl:px-32 relative bg-[var(--bg-primary)]">
                 {/* Toggles top-right */}
-                <div className="absolute top-6 right-6 flex items-center space-x-3">
-                    <ThemeToggle />
-                    <LanguageToggle />
-                </div>
+
 
                 <div className="w-full max-w-sm mx-auto sm:max-w-md animate-fade-in text-center lg:text-left">
                     <div className="lg:hidden mb-8">

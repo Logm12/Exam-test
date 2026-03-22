@@ -5,7 +5,6 @@ import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { fetcher } from "@/lib/api";
 import FdbLogo from "@/components/FdbLogo";
-import LanguageToggle from "@/components/LanguageToggle";
 
 /* ═══════ TYPES ═══════ */
 type ExamStatus = "in_progress" | "not_started" | "completed" | "submitted";
@@ -626,7 +625,7 @@ export default function StudentDashboardClient({
                                 <IconBell />
                                 <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-[#FF5722] rounded-full border-2 border-white" />
                             </button>
-                            <LanguageToggle />
+
                             <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white text-[13px] font-black shadow-sm" style={{ background: "#2563EB" }}>
                                 {userName.charAt(0).toUpperCase()}
                             </div>

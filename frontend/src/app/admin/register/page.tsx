@@ -2,8 +2,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/contexts/LanguageContext";
-import LanguageToggle from "@/components/LanguageToggle";
-import ThemeToggle from "@/components/ThemeToggle";
 import Link from "next/link";
 import { fetcher } from "@/lib/api";
 import FdbLogo from "@/components/FdbLogo";
@@ -57,10 +55,7 @@ export default function AdminRegisterPage() {
     return (
         <div className="min-h-screen bg-[var(--bg-primary)] flex flex-col justify-center py-12 sm:px-6 lg:px-8 font-sans">
             {/* Toggles top-right */}
-            <div className="absolute top-6 right-6 flex items-center space-x-3">
-                <ThemeToggle />
-                <LanguageToggle />
-            </div>
+
 
             <div className="sm:mx-auto sm:w-full sm:max-w-md animate-fade-in text-center relative z-10">
                 <div className="flex items-center justify-center mb-6">

@@ -46,13 +46,7 @@ async def global_exception_handler(request, exc: Exception):
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origin_regex="https://.*\\.vercel\\.app|http://.*:3000|http://localhost:.*",
-    allow_origins=[
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-        "http://student.localhost:3000",
-        "http://admin.localhost:3000",
-    ],
+    allow_origins=[str(origin) for origin in settings.BACKEND_CORS_ORIGINS],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
