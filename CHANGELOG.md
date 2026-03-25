@@ -2,6 +2,17 @@
 
 All notable changes to ExamOS are documented here.
 
+## [1.7.1] - 2026-03-25
+
+### Changed
+- Landing routes: `/landing` now serves the Legal Contest landing page; `/landing-law` redirects to `/landing`.
+- Branding: Standardized navbar/logo usage to use `frontend/public/logofdb.jpeg` across key nav components and `FdbLogo`.
+- Legal contest landing: Updated organizer section layout (wider logos above titles, removed boxed styling for the I/S philosophy block).
+- Admin + student dashboards: Enlarged and centered the logo in left sidebar headers for better visual balance.
+
+### Removed
+- Removed the extra logo divider/auxiliary mark from the shared `FdbLogo` rendering to keep nav branding clean.
+
 ## [1.7.0] - 2026-03-18
 
 ### Added

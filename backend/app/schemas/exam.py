@@ -43,3 +43,17 @@ class ExamInDBBase(ExamBase):
 
 class Exam(ExamInDBBase):
     pass
+
+
+class ExamPublic(BaseModel):
+    id: int
+    title: str
+    description: Optional[str] = None
+    slug: Optional[str] = None
+    cover_image: Optional[str] = None
+    duration: int
+    start_time: datetime
+    created_at: datetime
+    is_published: bool
+    question_count: int
+    participants: int

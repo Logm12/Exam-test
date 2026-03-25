@@ -1,10 +1,10 @@
 import { LanguageProvider } from "@/contexts/LanguageContext";
-import LandingPage from "@/app/landing/page";
+import LegacyLandingPage from "@/components/examos/LegacyLandingPage";
 
 export default function HomePage() {
   return (
     <LanguageProvider>
-      <LandingPage />
+      <LegacyLandingPage />
     </LanguageProvider>
   );
 }

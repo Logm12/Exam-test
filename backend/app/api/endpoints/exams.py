@@ -17,15 +17,57 @@ from app.api.deps import get_current_user, get_current_active_admin
 from app.models.user import User
 from app.models.exam import Exam, Question
 from app.models.submission import Submission, Answer
-from app.schemas.exam import Exam as ExamSchema, ExamCreate, ExamUpdate
+from app.schemas.exam import Exam as ExamSchema, ExamCreate, ExamUpdate, ExamPublic
 from app.schemas.student_exam import StudentExam
 from app.schemas.submission import AnswerDraft, ExamSubmit
 from sqlalchemy.orm import selectinload
+from sqlalchemy import func
 
 UPLOAD_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "..", "uploads")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 router = APIRouter()
+
+
+@router.get("/public", response_model=List[ExamPublic])
+async def read_public_exams(
+    db: AsyncSession = Depends(get_db),
+    skip: int = 0,
+    limit: int = 100,
+) -> Any:
+    """Public endpoint: list published exams with lightweight counts."""
+    result = await db.execute(
+        select(
+            Exam,
+            func.count(func.distinct(Question.id)).label("question_count"),
+            func.count(func.distinct(Submission.id)).label("participants"),
+        )
+        .outerjoin(Question, Question.exam_id == Exam.id)
+        .outerjoin(Submission, Submission.exam_id == Exam.id)
+        .where(Exam.is_published == True)
+        .group_by(Exam.id)
+        .order_by(Exam.start_time.desc())
+        .offset(skip)
+        .limit(limit)
+    )
+
+    rows = result.all()
+    return [
+        {
+            "id": exam.id,
+            "title": exam.title,
+            "description": exam.description,
+            "slug": exam.slug,
+            "cover_image": exam.cover_image,
+            "duration": exam.duration,
+            "start_time": exam.start_time,
+            "created_at": exam.created_at,
+            "is_published": exam.is_published,
+            "question_count": int(question_count or 0),
+            "participants": int(participants or 0),
+        }
+        for exam, question_count, participants in rows
+    ]
 
 @router.get("/", response_model=List[ExamSchema])
 async def read_exams(

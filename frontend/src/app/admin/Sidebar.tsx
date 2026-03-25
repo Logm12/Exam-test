@@ -68,8 +68,8 @@ export default function Sidebar() {
         <aside className="w-[260px] bg-white flex flex-col justify-between border-r border-slate-100 flex-shrink-0">
             {/* Logo */}
             <div>
-                <div className="h-[72px] flex items-center px-6 border-b border-slate-50">
-                    <FdbLogo className="text-[1.15rem]" />
+                <div className="h-[72px] flex items-center justify-center px-6 border-b border-slate-50">
+                    <FdbLogo className="text-[1.5rem]" />
                 </div>
 
                 {/* Nav */}

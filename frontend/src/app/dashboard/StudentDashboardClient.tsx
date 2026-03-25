@@ -552,8 +552,12 @@ export default function StudentDashboardClient({
 
             {/* ═══ SIDEBAR ═══ */}
             <aside className={`${sidebarOpen ? "w-[240px]" : "w-[60px]"} flex-shrink-0 bg-white border-r border-gray-100 flex flex-col transition-all duration-300 z-40 shadow-sm`}>
-                <div className="h-[68px] flex items-center justify-between px-4 border-b border-gray-50 overflow-hidden">
-                    {sidebarOpen && <div className="min-w-0 pr-2"><FdbLogo className="text-[0.95rem]" /></div>}
+                <div className="relative h-[68px] flex items-center px-4 border-b border-gray-50 overflow-hidden">
+                    {sidebarOpen && (
+                        <div className="absolute left-1/2 -translate-x-1/2">
+                            <FdbLogo className="text-[1.25rem]" />
+                        </div>
+                    )}
                     <button onClick={() => setSidebarOpen(!sidebarOpen)} className="w-8 h-8 rounded-xl flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors flex-shrink-0 ml-auto">
                         <IconMenu />
                     </button>

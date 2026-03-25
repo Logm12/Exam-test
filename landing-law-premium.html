@@ -1,0 +1,1501 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cuộc thi Tìm hiểu Pháp luật 2025</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --accent-primary: #1e3a8a;
+            --accent-primary-hover: #1e40af;
+            --accent-secondary: #f59e0b;
+            --accent-gradient: linear-gradient(135deg, #1e3a8a, #172554);
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --border-default: #e2e8f0;
+            --border-accent: rgba(30, 58, 138, 0.3);
+            --border-subtle: #f1f5f9;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: "Inter", sans-serif;
+            color: var(--text-primary);
+            background-color: var(--bg-primary);
+            line-height: 1.6;
+            font-weight: 400;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: "Plus Jakarta Sans", sans-serif;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        button {
+            font-family: "Inter", sans-serif;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Progress bar */
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-secondary), var(--accent-secondary));
+            width: 0%;
+            z-index: 1000;
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 999;
+            background: rgba(248, 250, 252, 0.7);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .navbar-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .navbar-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 700;
+        }
+
+        .navbar-logo-badge {
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--accent-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: var(--accent-primary);
+            background: rgba(30, 58, 138, 0.1);
+        }
+
+        .navbar-logo-text {
+            color: var(--accent-primary);
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .navbar-nav {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .navbar-nav a {
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 500;
+            position: relative;
+        }
+
+        .navbar-nav a::after {
+            content: "";
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent-primary);
+            transition: width 0.3s ease;
+        }
+
+        .navbar-nav a:hover::after {
+            width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .navbar-nav {
+                display: none;
+            }
+        }
+
+        .navbar-cta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn-join {
+            padding: 0.625rem 1.25rem;
+            background: var(--accent-secondary);
+            color: var(--text-primary);
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 13px;
+            letter-spacing: 0.05em;
+        }
+
+        .btn-join:hover {
+            background: #f59e0b;
+            box-shadow: 0 8px 24px rgba(245, 158, 11, 0.25);
+            transform: scale(1.02);
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            background: rgba(30, 58, 138, 0.1);
+            border: 1.5px solid var(--accent-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-primary);
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        /* Hero Section */
+        .hero {
+            margin-top: 80px;
+            position: relative;
+            min-height: 100vh;
+            background: var(--accent-gradient);
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: 
+                repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(30, 58, 138, 0.03) 35px, rgba(30, 58, 138, 0.03) 70px);
+            pointer-events: none;
+        }
+
+        .hero::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, transparent 0%, rgba(23, 37, 84, 0.3) 100%);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 120px 2rem 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-height: 100vh;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: 1.5px solid var(--bg-secondary);
+            border-radius: 30px;
+            color: var(--bg-secondary);
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.1);
+            animation: fadeInUp 0.8s ease 0.1s both;
+        }
+
+        .hero-badge::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-secondary);
+        }
+
+        .hero-icon {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.8s ease 0.2s both, float 3s ease-in-out infinite;
+            animation-delay: 0.2s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px) rotateZ(0deg);
+            }
+            50% {
+                transform: translateY(-20px) rotateZ(2deg);
+            }
+        }
+
+        .hero h1 {
+            font-size: clamp(3rem, 8vw, 5rem);
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+            color: var(--bg-secondary);
+            animation: fadeInUp 0.8s ease 0.3s both;
+        }
+
+        .hero h1 .gold-text {
+            background: linear-gradient(135deg, #f59e0b, #fbbf24);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 3rem;
+            max-width: 600px;
+            animation: fadeInUp 0.8s ease 0.4s both;
+            font-weight: 400;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.8s ease 0.5s both;
+        }
+
+        .btn-primary {
+            padding: 1.25rem 3rem;
+            background: var(--accent-secondary);
+            color: var(--text-primary);
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 15px;
+            letter-spacing: 0.05em;
+        }
+
+        .btn-primary:hover {
+            background: #f59e0b;
+            box-shadow: 0 20px 40px rgba(245, 158, 11, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            padding: 1.25rem 3rem;
+            border: 1.5px solid var(--bg-secondary);
+            color: var(--bg-secondary);
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 15px;
+            letter-spacing: 0.05em;
+            background: transparent;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 20px 40px rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Section styles */
+        .section {
+            padding: 120px 2rem;
+            max-width: 1280px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        section {
+            position: relative;
+        }
+
+        section::before {
+            content: "";
+            position: absolute;
+            top: -1px;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: linear-gradient(to bottom, rgba(248, 250, 252, 0.5) 0%, rgba(248, 250, 252, 0) 100%);
+            pointer-events: none;
+        }
+
+        section::after {
+            content: "";
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-secondary), transparent);
+            opacity: 0.3;
+        }
+
+        .section-label {
+            font-size: 12px;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent-secondary);
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 4rem;
+            color: var(--text-primary);
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title::after {
+            content: "";
+            position: absolute;
+            bottom: -12px;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-secondary), rgba(245, 158, 11, 0));
+            border-radius: 2px;
+        }
+
+        /* Countdown Section */
+        .countdown-section {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .countdown-section .section-label {
+            color: var(--accent-secondary);
+        }
+
+        .countdown-section .section-title {
+            color: var(--text-primary);
+            text-align: center;
+        }
+
+        .countdown-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 2rem;
+            margin-top: 4rem;
+        }
+
+        .countdown-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-top: 3px solid var(--accent-secondary);
+            border-radius: 12px;
+            padding: 2.5rem 1.75rem;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .countdown-card:hover {
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+            transform: translateY(-4px);
+        }
+
+        .countdown-number {
+            font-size: 2.5rem;
+            font-family: "Inter", monospace;
+            color: var(--accent-primary);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .countdown-label {
+            font-size: 12px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: var(--bg-secondary);
+            position: relative;
+            color: var(--text-primary);
+            border-top: 1px solid var(--border-default);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.02);
+        }
+
+        .cta-section::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 300px;
+            height: 300px;
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50,50 L150,50 L150,150 L50,150 Z M60,60 L140,60 M60,80 L140,80 M60,100 L140,100 M60,120 L140,120 M60,140 L140,140' stroke='%231e3a8a' stroke-width='1' fill='none' opacity='0.05'/%3E%3C/svg%3E");
+            pointer-events: none;
+            opacity: 0.5;
+        }
+
+        .cta-content {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .cta-text h3 {
+            font-size: 2rem;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .cta-text p {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+            font-weight: 400;
+        }
+
+        .attempts-badge {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid var(--accent-secondary);
+            border-radius: 30px;
+            color: var(--accent-secondary);
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 768px) {
+            .cta-content {
+                grid-template-columns: 1fr;
+            }
+
+            .cta-section::before {
+                display: none;
+            }
+        }
+
+        /* Stats Section */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            border-top: 4px solid var(--accent-secondary);
+            border-radius: 12px;
+            padding: 3rem 2.5rem;
+            position: relative;
+            color: var(--text-primary);
+            border: 1px solid var(--border-default);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow: hidden;
+        }
+
+        .stat-card::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, transparent 0%, rgba(245, 158, 11, 0.05) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .stat-card:hover {
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+            transform: translateY(-4px);
+        }
+
+        .stat-card:hover::after {
+            opacity: 1;
+        }
+
+        .stat-card::before {
+            content: "";
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            width: 60px;
+            height: 60px;
+            background: rgba(30, 58, 138, 0.08);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+        }
+
+        .stat-icon {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            filter: drop-shadow(0 0 10px rgba(201, 168, 76, 0.3));
+        }
+
+        .stat-values {
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            color: var(--accent-primary);
+            font-weight: 700;
+            font-family: "Inter", monospace;
+            margin-bottom: 0.5rem;
+            position: relative;
+            display: inline-block;
+            animation: subtleShimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes subtleShimmer {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.85;
+            }
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        /* Leaderboard */
+        .leaderboard-section {
+            background: var(--bg-primary);
+        }
+
+        .leaderboard-container {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            border-radius: 12px;
+            padding: 2.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .leaderboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .leaderboard-tabs {
+            display: flex;
+            gap: 0.5rem;
+            background: var(--bg-primary);
+            padding: 0.25rem;
+            border-radius: 6px;
+        }
+
+        .tab-btn {
+            padding: 0.625rem 1.25rem;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .tab-btn.active {
+            color: var(--text-primary);
+        }
+
+        .tab-btn.active::after {
+            content: "";
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--accent-secondary);
+            border-radius: 2px;
+        }
+
+        .leaderboard-rows {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .rank-row {
+            display: grid;
+            grid-template-columns: 60px 1fr auto auto;
+            gap: 1.5rem;
+            padding: 1.25rem;
+            align-items: center;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            border-radius: 6px;
+        }
+
+        .rank-row:hover {
+            background: var(--bg-tertiary);
+            transform: translateX(4px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+        }
+
+        .rank-number {
+            font-weight: 700;
+            font-family: "Inter", monospace;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .rank-row.top-1 {
+            border-left: 4px solid #FFA500;
+            background: rgba(255, 165, 0, 0.08);
+        }
+
+        .rank-row.top-2 {
+            border-left: 4px solid #C0C0C0;
+            background: rgba(192, 192, 192, 0.08);
+        }
+
+        .rank-row.top-3 {
+            border-left: 4px solid #CD7F32;
+            background: rgba(205, 127, 50, 0.08);
+        }
+
+        .rank-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .rank-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: white;
+        }
+
+        .rank-badge.gold {
+            background: #FFA500;
+        }
+
+        .rank-badge.silver {
+            background: #C0C0C0;
+            color: #333;
+        }
+
+        .rank-badge.bronze {
+            background: #CD7F32;
+        }
+
+        .rank-value {
+            font-weight: 700;
+            color: var(--accent-primary);
+            font-family: "Inter", monospace;
+            text-align: right;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .pagination-info {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .pagination-btn {
+            padding: 0.625rem 1rem;
+            border: 1px solid var(--border-default);
+            background: transparent;
+            color: var(--text-primary);
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            border-color: var(--accent-secondary);
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--accent-secondary);
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Rules Section */
+        .rules-section {
+            background: var(--bg-primary);
+        }
+
+        .rules-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .rule-card {
+            background: var(--bg-secondary);
+            border-left: 4px solid var(--accent-secondary);
+            border-radius: 12px;
+            padding: 2.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-default);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .rule-card:hover {
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+            transform: translateY(-4px);
+            border-left-color: var(--accent-secondary);
+        }
+
+        .rule-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(245, 158, 11, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 1rem;
+        }
+
+        .rule-card h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+        }
+
+        .rule-card p {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            font-weight: 400;
+        }
+
+        @media (max-width: 768px) {
+            .rules-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .leaderboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+
+        /* FAQ / Accordion */
+        .faq-section {
+            background: var(--white);
+        }
+
+        .accordion {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .accordion-item {
+            border: 1px solid var(--border-default);
+            border-left: 4px solid transparent;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+        }
+
+        .accordion-item:hover {
+            border-left-color: var(--accent-secondary);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .accordion-item.active {
+            border-left-color: var(--accent-secondary);
+            box-shadow: 0 8px 24px rgba(245, 158, 11, 0.1);
+        }
+
+        .accordion-header {
+            padding: 1.5rem 1.75rem;
+            background: var(--bg-secondary);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            transition: all 0.3s ease;
+        }
+
+        .accordion-item.active .accordion-header {
+            background: rgba(245, 158, 11, 0.02);
+        }
+
+        .accordion-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        .accordion-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-secondary);
+            font-weight: 700;
+            font-size: 18px;
+            transition: transform 0.3s ease;
+        }
+
+        .accordion-item.active .accordion-icon {
+            transform: rotate(45deg);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1), padding 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            background: rgba(248, 250, 252, 0.5);
+        }
+
+        .accordion-item.active .accordion-content {
+            max-height: 600px;
+        }
+
+        .accordion-text {
+            padding: 1.5rem 1.75rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            font-size: 0.95rem;
+            font-weight: 400;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--bg-secondary);
+            color: var(--text-muted);
+            padding: 4rem 2rem 2rem;
+            border-top: 1px solid var(--border-default);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.02);
+        }
+
+        .footer-content {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-column h4 {
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .footer-links a {
+            color: var(--text-muted);
+            font-size: 14px;
+            transition: all 0.3s ease;
+            font-weight: 400;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-primary);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid var(--border-default);
+            padding-top: 2rem;
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 768px) {
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+
+            .countdown-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .rank-row {
+                grid-template-columns: 40px 1fr auto;
+            }
+
+            .rank-badge {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .navbar-nav {
+                display: none;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+        }
+
+        /* Scroll reveal animation */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .footer-links div {
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+    </style>
+</head>
+<body>
+    <!-- Scroll Progress Bar -->
+    <div class="scroll-progress"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-logo">
+                <div class="navbar-logo-badge">PL</div>
+                <div>
+                    <div class="navbar-logo-text">Cuộc thi Pháp luật</div>
+                </div>
+            </div>
+
+            <ul class="navbar-nav">
+                <li><a href="#hero">Trang chủ</a></li>
+                <li><a href="#rules">Thể lệ</a></li>
+                <li><a href="#leaderboard">Bảng xếp hạng</a></li>
+            </ul>
+
+            <div class="navbar-cta">
+                <button class="btn-join">Tham gia</button>
+                <div class="avatar">SV</div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <div class="hero-content">
+            <div class="hero-badge">
+                Đoàn TNCS Hồ Chí Minh • Trường Quốc tế, ĐHQGHN
+            </div>
+
+            <svg class="hero-icon" viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg">
+                <path d="M100 30 L140 80 L140 220 L60 220 L60 80 Z" stroke="#C9A84C" stroke-width="2" fill="none" />
+                <circle cx="80" cy="100" r="5" fill="#C9A84C" />
+                <circle cx="120" cy="100" r="5" fill="#C9A84C" />
+                <line x1="100" y1="120" x2="100" y2="180" stroke="#C9A84C" stroke-width="2" />
+                <line x1="60" y1="200" x2="140" y2="200" stroke="#C9A84C" stroke-width="2" />
+            </svg>
+
+            <h1>
+                CUỘC THI TÌM HIỂU <br />
+                <span class="gold-text">PHÁP LUẬT NĂM 2025</span>
+            </h1>
+
+            <p class="hero-subtitle">
+                Hưởng ứng ngày pháp luật Việt Nam (09/11/2025) — Hành động, Hiểu biết, Tương lai
+            </p>
+
+            <div class="hero-cta">
+                <button class="btn-primary">Tham gia ngay</button>
+                <button class="btn-secondary">Xem thể lệ</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Countdown Section -->
+    <section class="countdown-section reveal">
+        <div class="section">
+            <div class="section-label">Thời gian</div>
+            <h2 class="section-title">Cuộc thi kết thúc trong</h2>
+
+            <div class="countdown-grid">
+                <div class="countdown-card">
+                    <div class="countdown-number" id="days">45</div>
+                    <div class="countdown-label">Ngày</div>
+                </div>
+                <div class="countdown-card">
+                    <div class="countdown-number" id="hours">12</div>
+                    <div class="countdown-label">Giờ</div>
+                </div>
+                <div class="countdown-card">
+                    <div class="countdown-number" id="minutes">34</div>
+                    <div class="countdown-label">Phút</div>
+                </div>
+                <div class="countdown-card">
+                    <div class="countdown-number" id="seconds">56</div>
+                    <div class="countdown-label">Giây</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section reveal">
+        <div class="section">
+            <div class="cta-content">
+                <div>
+                    <h3>Sẵn sàng tham gia?</h3>
+                    <p>
+                        Làm bài nhanh, nghiêm túc, và tích lũy điểm cho đơn vị của bạn. Hàng nghìn sinh viên đã tham gia và đạt thành tích xuất sắc.
+                    </p>
+                    <div class="attempts-badge">Bạn còn 3 lượt làm bài</div>
+                </div>
+
+                <div class="cta-buttons" style="flex-direction: column;">
+                    <button class="btn-primary" style="width: 100%; text-align: center;">Tham gia</button>
+                    <button class="btn-secondary" style="width: 100%; text-align: center;">Xem thể lệ</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats + Leaderboard Section -->
+    <section class="leaderboard-section reveal" id="leaderboard">
+        <div class="section">
+            <div class="stats-grid">
+                <!-- Stats Card -->
+                <div class="stat-card">
+                    <div class="stat-icon">🏆</div>
+                    <div class="stat-values">
+                        <div class="stat-number">2,847</div>
+                        <div class="stat-label">Tổng lượt thi</div>
+                    </div>
+                </div>
+
+                <!-- Leaderboard Card -->
+                <div class="leaderboard-container">
+                    <div class="leaderboard-header">
+                        <div>
+                            <div class="section-label">Xếp hạng</div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--navy-deep);">Bảng xếp hạng</div>
+                        </div>
+                        <div class="leaderboard-tabs">
+                            <button class="tab-btn active" onclick="switchTab('team')">Tập thể</button>
+                            <button class="tab-btn" onclick="switchTab('individual')">Cá nhân</button>
+                        </div>
+                    </div>
+
+                    <div class="leaderboard-rows" id="leaderboard-rows">
+                        <div class="rank-row top-1">
+                            <div class="rank-number">🥇 1</div>
+                            <div class="rank-name">Khoa CNTT</div>
+                            <span class="rank-badge gold">TOP 1</span>
+                            <div class="rank-value">420</div>
+                        </div>
+                        <div class="rank-row top-2">
+                            <div class="rank-number">🥈 2</div>
+                            <div class="rank-name">Khoa Kinh tế</div>
+                            <span class="rank-badge silver">TOP 2</span>
+                            <div class="rank-value">388</div>
+                        </div>
+                        <div class="rank-row top-3">
+                            <div class="rank-number">🥉 3</div>
+                            <div class="rank-name">Khoa Ngôn ngữ</div>
+                            <span class="rank-badge bronze">TOP 3</span>
+                            <div class="rank-value">355</div>
+                        </div>
+                        <div class="rank-row">
+                            <div class="rank-number">4</div>
+                            <div class="rank-name">Khoa Luật</div>
+                            <div class="rank-value">332</div>
+                        </div>
+                        <div class="rank-row">
+                            <div class="rank-number">5</div>
+                            <div class="rank-name">Khoa Truyền thông</div>
+                            <div class="rank-value">310</div>
+                        </div>
+                        <div class="rank-row">
+                            <div class="rank-number">6</div>
+                            <div class="rank-name">Khoa Du lịch</div>
+                            <div class="rank-value">280</div>
+                        </div>
+                    </div>
+
+                    <div class="pagination">
+                        <div class="pagination-info">Trang 1 / 2</div>
+                        <div class="pagination-controls">
+                            <button class="pagination-btn">← Trước</button>
+                            <button class="pagination-btn">Sau →</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Rules Section -->
+    <section class="rules-section reveal" id="rules">
+        <div class="section">
+            <div class="section-label">Quy định</div>
+            <h2 class="section-title">Thể lệ cuộc thi</h2>
+
+            <div class="rules-grid">
+                <div class="rule-card">
+                    <div class="rule-icon">📋</div>
+                    <h3>Hình thức</h3>
+                    <p>
+                        Thi trắc nghiệm trực tuyến với câu hỏi về luật pháp Việt Nam. Thời gian làm bài có giới hạn, kết quả tính điểm tự động.
+                    </p>
+                </div>
+
+                <div class="rule-card">
+                    <div class="rule-icon">✅</div>
+                    <h3>Quy định</h3>
+                    <p>
+                        Mỗi thí sinh sử dụng một tài khoản duy nhất. Tuân thủ hướng dẫn và quy chế, không được sử dụng công cụ hỗ trợ không phép.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq-section reveal">
+        <div class="section">
+            <div class="section-label">Trợ giúp</div>
+            <h2 class="section-title">Hướng dẫn thường gặp</h2>
+
+            <div class="accordion">
+                <div class="accordion-item active">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <div class="accordion-title">Làm cách nào để tham gia cuộc thi?</div>
+                        <div class="accordion-icon">+</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-text">
+                            Đăng nhập vào tài khoản của bạn, nhấn nút "Tham gia", đọc kỹ hướng dẫn và bắt đầu làm bài trắc nghiệm. Thời gian làm bài sẽ được đếm ngược từ lúc bạn bắt đầu.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <div class="accordion-title">Làm thế nào để xem kết quả?</div>
+                        <div class="accordion-icon">+</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-text">
+                            Sau khi nộp bài, bạn có thể xem kết quả tại trang cá nhân hoặc mục "Kết quả" của cuộc thi. Điểm sẽ được cập nhật ngay lập tức vào bảng xếp hạng.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <div class="accordion-title">Tôi có được đăng nhập bằng nhiều tài khoản không?</div>
+                        <div class="accordion-icon">+</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-text">
+                            Không. Mỗi thí sinh phải sử dụng chỉ một tài khoản duy nhất để đảm bảo tính minh bạch và công bằng trong cuộc thi. Vi phạm quy định này sẽ bị loại.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <div class="accordion-title">Thông tin cá nhân của tôi có được bảo mật không?</div>
+                        <div class="accordion-icon">+</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-text">
+                            Vâng. Hệ thống chỉ thu thập thông tin cần thiết để phục vụ cuộc thi và bảo mật tuân thủ quy định của pháp luật Việt Nam. Thông tin của bạn sẽ không được chia sẻ với bên thứ ba.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-column">
+                <h4>Ban tổ chức</h4>
+                <div class="footer-links">
+                    <div>Cuộc thi Tìm hiểu Pháp luật 2025</div>
+                    <div>Trường Quốc tế, ĐHQGHN</div>
+                    <a href="tel:+841234567890">Điện thoại: (024) 1234 5678</a>
+                    <a href="mailto:btc@example.com">Email: btc@example.com</a>
+                </div>
+            </div>
+
+            <div class="footer-column">
+                <h4>Đơn vị lập trình</h4>
+                <div class="footer-links">
+                    <div>Công ty Công nghệ (Sample)</div>
+                    <div>Giải pháp ICT cho giáo dục</div>
+                    <a href="#">Tìm hiểu thêm</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            © 2026 Cuộc thi Tìm hiểu Pháp luật. All rights reserved.
+        </div>
+    </footer>
+
+    <script>
+        // Scroll Progress Bar
+        window.addEventListener("scroll", () => {
+            const scrolled = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+            document.querySelector(".scroll-progress").style.width = scrolled + "%";
+        });
+
+        // Scroll Reveal Animation
+        const revealElements = document.querySelectorAll(".reveal");
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add("active");
+                    
+                    // Trigger stat number counter animation
+                    const statNumbers = entry.target.querySelectorAll(".stat-number");
+                    statNumbers.forEach((statEl) => {
+                        animateCounter(statEl);
+                    });
+                    
+                    observer.unobserve(entry.target);
+                }
+            });
+        });
+
+        revealElements.forEach((el) => observer.observe(el));
+
+        // Counter animation for stat numbers
+        function animateCounter(element) {
+            const target = parseInt(element.textContent.replace(/,/g, ''));
+            const duration = 2000; // 2 seconds
+            const startTime = Date.now();
+            
+            const animate = () => {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // Easing function
+                const easeOut = 1 - Math.pow(1 - progress, 3);
+                const current = Math.floor(target * easeOut);
+                
+                // Format with comma separator
+                element.textContent = current.toLocaleString('en-US');
+                
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    element.textContent = target.toLocaleString('en-US');
+                }
+            };
+            
+            animate();
+        }
+
+        // Countdown Timer
+        function updateCountdown() {
+            const endDate = new Date("2025-11-09T23:59:59").getTime();
+            const now = new Date().getTime();
+            const distance = endDate - now;
+
+            if (distance < 0) {
+                document.getElementById("days").textContent = "0";
+                document.getElementById("hours").textContent = "00";
+                document.getElementById("minutes").textContent = "00";
+                document.getElementById("seconds").textContent = "00";
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById("days").textContent = days;
+            document.getElementById("hours").textContent = String(hours).padStart(2, "0");
+            document.getElementById("minutes").textContent = String(minutes).padStart(2, "0");
+            document.getElementById("seconds").textContent = String(seconds).padStart(2, "0");
+        }
+
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+
+        // Accordion
+        function toggleAccordion(element) {
+            const item = element.parentElement;
+            const allItems = document.querySelectorAll(".accordion-item");
+
+            allItems.forEach((el) => {
+                if (el !== item) {
+                    el.classList.remove("active");
+                }
+            });
+
+            item.classList.toggle("active");
+        }
+
+        // Tab Switching
+        function switchTab(type) {
+            const tabs = document.querySelectorAll(".tab-btn");
+            tabs.forEach((tab) => {
+                tab.classList.remove("active");
+                if (tab.textContent.toLowerCase().includes(type === "team" ? "tập" : "nhân")) {
+                    tab.classList.add("active");
+                }
+            });
+
+            // Simple animation for rows
+            const rows = document.querySelectorAll(".rank-row");
+            rows.forEach((row, idx) => {
+                row.style.animation = "none";
+                setTimeout(() => {
+                    row.style.animation = `fadeInUp 0.5s ease ${idx * 0.05}s both`;
+                }, 10);
+            });
+        }
+
+        // Navbar scroll effect - enhanced blur and border
+        window.addEventListener("scroll", () => {
+            const navbar = document.querySelector(".navbar");
+            if (window.scrollY > 50) {
+                navbar.style.background = "rgba(248, 250, 252, 0.98)";
+                navbar.style.backdropFilter = "blur(12px)";
+                navbar.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.1)";
+            } else {
+                navbar.style.background = "rgba(248, 250, 252, 0.7)";
+                navbar.style.backdropFilter = "blur(8px)";
+                navbar.style.boxShadow = "none";
+            }
+        });
+    </script>
+</body>
+</html>
