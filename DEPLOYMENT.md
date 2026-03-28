@@ -1,60 +1,53 @@
 # Deployment Guide
 
-This guide explains how to deploy the ExamOS platform, specifically focusing on deploying the Next.js frontend to Vercel without errors.
+This guide describes the procedures for deploying the FDB TALENT platform, focusing on the Next.js frontend deployment to Vercel.
 
-## Deploying Frontend to Vercel
+## Frontend Deployment (Vercel)
 
-Vercel is the optimal hosting platform for Next.js applications. To deploy the frontend successfully without errors, follow these exact steps:
+Vercel is the recommended hosting platform for the Next.js application. Follow these instructions for a successful deployment:
 
-### 1. Prepare Your Repository
-Ensure your code is pushed to a Git repository (GitHub, GitLab, or Bitbucket).
+### 1. Repository Preparation
+Ensure the latest code is pushed to a connected Git repository.
 
-### 2. Import Project to Vercel
-1. Log in to [Vercel](https://vercel.com).
-2. Click **Add New** > **Project**.
-3. Import your ExamOS repository.
+### 2. Vercel Project Import
+1. Log in to the Vercel Dashboard.
+2. Select **Add New** and then **Project**.
+3. Import the FDB TALENT repository.
 
-### 3. Critical Configuration (Do Not Skip)
-Before clicking "Deploy", you **must** configure the following settings:
+### 3. Essential Configuration
+Configure the following settings before initiating the deployment:
 
-#### A. Root Directory
-Since the Next.js app is inside the `frontend/` folder, tell Vercel where to look:
-- Look for the **Root Directory** setting.
-- Click **Edit** and select `frontend`.
+#### Root Directory
+Set the **Root Directory** to `frontend`.
 
-#### B. Framework Preset
-- Ensure **Framework Preset** is set to `Next.js`.
-- Build Command: `npm run build` (Default)
-- Output Directory: `.next` (Default)
-- Install Command: `npm install` (Default)
+#### Framework and Build Settings
+- **Framework Preset**: Next.js.
+- **Build Command**: `npm run build`.
+- **Output Directory**: `.next`.
+- **Install Command**: `npm install`.
 
-#### C. Environment Variables
-Expand the **Environment Variables** section and add the following keys. These are mandatory for authentication and API communication to work:
+#### Environment Variables
+Add the following mandatory environment variables:
 
 | Name | Value | Description |
 |------|-------|-------------|
-| `NEXTAUTH_SECRET` | *(generate a random string)* | Secret for encrypting sessions. Generate via `openssl rand -base64 32` |
-| `NEXTAUTH_URL` | `https://your-app-name.vercel.app` | The exact URL Vercel gives you (or your custom domain). Must start with `https://`. Do not add a trailing slash. |
-| `NEXT_PUBLIC_API_URL` | `https://your-backend-url.com/api/v1` | URL of your production FastAPI backend. |
+| `NEXTAUTH_SECRET` | *(random string)* | Encryption key for session management. |
+| `NEXTAUTH_URL` | `https://your-app.vercel.app` | The production URL of your application. |
+| `NEXT_PUBLIC_API_URL` | `https://your-backend.com/api/v1` | The production URL of the FastAPI backend. |
 
-*(Note: If configuring social logins, also add `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`).*
+### 4. Deployment
+Select **Deploy** to begin the build process.
 
-### 4. Deploy
-Click the **Deploy** button. Vercel will build and assign a URL.
+### 5. Post-Deployment Verification
+If issues occur, verify the following:
+- **Authentication Errors**: Check `NEXTAUTH_URL` and `NEXTAUTH_SECRET`.
+- **Network Failures**: Ensure `NEXT_PUBLIC_API_URL` uses `https://` and that the backend CORS configuration includes the frontend URL.
 
-### 5. Post-Deployment Checklist
-If you encounter errors after deployment, verify these common pitfalls:
-- **500 Internal Server Error on Login**: Your `NEXTAUTH_URL` is likely incorrect or `NEXTAUTH_SECRET` is missing.
-- **Network Errors (CORS or Fetch Failed)**: Ensure `NEXT_PUBLIC_API_URL` correctly points to the backend using `https://`, and the backend has configured CORS `allow_origins` to include your Vercel URL.
+## Backend Deployment
 
----
+The FastAPI backend requires an environment supporting Python and PostgreSQL (e.g., Render, Railway, or AWS).
 
-## Deploying Backend
-
-The FastAPI backend must be deployed to a service that supports Python and PostgreSQL (e.g., Render, Railway, AWS, DigitalOcean).
-
-1. Set up a PostgreSQL database.
-2. Set up a Redis instance.
-3. Configure backend environment variables (`DATABASE_URL`, `REDIS_URL`, `SECRET_KEY`, `CORS_ORIGINS`).
-4. Run migrations: `alembic upgrade head`.
-5. Start server: `uvicorn app.main:app --host 0.0.0.0 --port 8000`.
+1. Provision a PostgreSQL database and a Redis instance.
+2. Configure environment variables (`DATABASE_URL`, `REDIS_URL`, `SECRET_KEY`, `CORS_ORIGINS`).
+3. Execute database migrations using `alembic upgrade head`.
+4. Start the server using Uvicorn on the designated port.

@@ -1,5 +1,5 @@
-from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -11,6 +11,7 @@ from app.schemas.user import UserCreate, User as UserSchema
 
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
+from app.models.student import Student
 
 router = APIRouter()
 
@@ -46,6 +47,10 @@ async def login(
             detail="Incorrect username or password",
         )
     
+    # Check if student profile is completed
+    student_res = await db.execute(select(Student).where(Student.user_id == user.id))
+    student = student_res.scalars().first()
+    
     access_token = create_access_token(subject=user.id)
     return {
         "access_token": access_token,
@@ -53,11 +58,10 @@ async def login(
         "user": {
             "id": user.id,
             "username": user.username,
-            "role": user.role
+            "role": user.role,
+            "profile_completed": student is not None
         }
     }
-
-from pydantic import BaseModel
 
 class GoogleAuthToken(BaseModel):
     token: str
@@ -94,6 +98,10 @@ async def google_auth(
             await db.commit()
             await db.refresh(user)
             
+        # Check profile completion
+        student_res = await db.execute(select(Student).where(Student.user_id == user.id))
+        student = student_res.scalars().first()
+
         access_token = create_access_token(subject=user.id)
         
         return {
@@ -102,7 +110,8 @@ async def google_auth(
             "user": {
                 "id": user.id,
                 "email": user.username,
-                "role": user.role
+                "role": user.role,
+                "profile_completed": student is not None
             }
         }
     except ValueError:

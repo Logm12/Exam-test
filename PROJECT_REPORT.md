@@ -1,8 +1,8 @@
-# Project Report: ExamOS Online Exam Platform
+# Project Report: FDB TALENT Online Exam Platform
 
 ## 1. Summary
 
-This report covers the design, development, and delivery of ExamOS, an online exam platform for educational organizations. The system supports over 150 concurrent users, provides real-time exam monitoring, and includes anti-cheating protections.
+This report covers the design, development, and delivery of FDB TALENT, an online exam platform for educational organizations. The system supports over 150 concurrent users, provides real-time exam monitoring, and includes anti-cheating protections.
 
 The architecture separates the frontend (Next.js) from the backend (FastAPI), connected through a REST API and JWT-based authentication.
 
@@ -35,6 +35,8 @@ The main requirements were handling concurrent exam sessions without data loss. 
 - Public landing page with a central get-started action
 - Unified login interface supporting multi-role authentication
 - Dashboard showing available exams
+- **Mandatory Profile Completion**: Implemented a registration-to-dashboard requirement. New students must provide validated details (CCCD, Address, Phone, School) before accessing the exam list.
+- **Dynamic Exam Landing Pages**: Refactored the rigid landing structure into a per-exam template. Each exam can now host its own customized landing page with specific branding, rules, and guides.
 - Real-time countdown timer synchronized with the server
 - Auto-save every 10 seconds via Redis
 
@@ -80,6 +82,14 @@ The main requirements were handling concurrent exam sessions without data loss. 
 
 11. **Database-Code Realignment (Submission Metrics)**: A discrepancy in the production SQL schema (March 2026 update) resulted in missing columns like `correct_count` in the database while they were expected by the API. Strictly realigned the backend models and reports with the latest production SQL dump, while simultaneously cleaning up the directory structure (moving tests and seeding scripts to dedicated subfolders) to improve project health and auditability.
 
+12. **Dynamic Content and SSR Hydration**: Implementing dynamic landing pages required fetching exam-specific metadata during server-side rendering. Resolved 404 and connectivity issues by standardizing on a robust internal fetcher and ensuring consistent IPv4 loopback handling for Node 18+ environments.
+
+13. **Forced Profile Completion Flow**: Integrating a mandatory profile step post-registration required careful session management to prevent dashboard access bypass. Implemented a `profile_completed` flag in both the JWT session and backend database to enforce secure redirection and data integrity.
+
+14. **Next.js 16 Asynchronous Params**: The transition to Next.js 16 changed dynamic route parameters from synchronous to asynchronous Promises. This caused runtime errors on the exam landing page. Resolved the issue by refactoring `params` access to use contemporary asynchronous patterns.
+
+15. **Python Backend Stabilization**: The backend codebase accumulated over 47 import errors, including circular dependencies and incorrect module-level positioning. Standardized the environment on Python 3.12 and used Ruff to systematically identify and resolve these issues, while pinning dependency versions to prevent further conflicts between `redis` and `fastapi-limiter`.
+
 ## 5. Conclusion
 
-ExamOS is a working exam platform with real-time monitoring, anti-cheating measures, bilingual support, and social login. The decoupled architecture keeps the frontend lightweight and the backend independently scalable. The platform is ready for deployment and further feature development.
+FDB TALENT is a functional online examination platform providing real-time monitoring, anti-cheating measures, bilingual support, and social login. The decoupled architecture maintains a lightweight frontend and an independently scalable backend. The platform is prepared for production deployment and subsequent feature development.

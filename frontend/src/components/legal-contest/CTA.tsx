@@ -3,7 +3,18 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 
-export default function CTA() {
+interface CTAProps {
+  organizerName?: string;
+  organizerDesc?: string;
+  organizerLogo?: string;
+}
+
+export default function CTA({ organizerName, organizerDesc, organizerLogo }: CTAProps) {
+  const backendBase = process.env.NEXT_PUBLIC_API_URL?.replace('/api/v1', '') || 'http://127.0.0.1:8000';
+  const logoUrl = organizerLogo 
+    ? (organizerLogo.startsWith("http") ? organizerLogo : `${backendBase}${organizerLogo}`)
+    : "/logo1.jpeg";
+  
   return (
     <section id="join" className="relative overflow-hidden bg-[var(--bg-secondary)] py-16 sm:py-24">
       {/* Background decorations */}
@@ -25,7 +36,7 @@ export default function CTA() {
             Ban tổ chức
           </p>
           <h2 className="mt-3 text-4xl font-black tracking-tight text-[var(--text-primary)] sm:text-5xl">
-            Ban Tổ Chức Cuộc Thi Tìm Hiểu Pháp Luật 2025
+            {organizerName || "Ban Tổ Chức Cuộc Thi Tìm Hiểu Pháp Luật 2025"}
           </h2>
           <p className="mt-5 text-sm font-medium text-[var(--text-secondary)] sm:text-base leading-relaxed">
             Đơn vị chỉ đạo &amp; Tổ chức
@@ -45,23 +56,29 @@ export default function CTA() {
               <div className="text-center">
                 <div className="mx-auto mb-5">
                   <div className="relative mx-auto h-14 w-full max-w-xl sm:h-16">
-                    <Image
-                      src="/logo1.jpeg"
-                      alt="Logo Trường Quốc Tế - ĐHQGHN"
-                      fill
-                      sizes="(max-width: 640px) 90vw, 576px"
-                      className="object-contain"
+                    <img
+                      src={logoUrl}
+                      alt={organizerName || "Logo"}
+                      className="w-full h-full object-contain"
                     />
                   </div>
                 </div>
 
                 <h3 className="text-xl font-black text-[var(--text-primary)] sm:text-2xl">
-                  Trường Quốc Tế - Đại học Quốc gia Hà Nội
+                  {organizerName || "Trường Quốc Tế - Đại học Quốc gia Hà Nội"}
                 </h3>
               </div>
-              <p className="mt-4 text-sm font-medium text-[var(--text-secondary)] leading-relaxed">
-                Trường Quốc tế trực thuộc Đại học Quốc gia Hà Nội là trung tâm đào tạo, nghiên cứu và đổi mới sáng tạo tiên phong, đạt chuẩn kiểm định quốc tế. Với 100% chương trình giảng dạy bằng ngoại ngữ, VNU-IS tự hào là "Hub" giáo dục đa văn hóa, chuyên cung cấp nguồn nhân lực chất lượng cao, đáp ứng các tiêu chuẩn khắt khe nhất của thị trường lao động toàn cầu.
-              </p>
+              
+              {organizerDesc ? (
+                <div 
+                  className="mt-4 text-sm font-medium text-[var(--text-secondary)] leading-relaxed prose prose-invert"
+                  dangerouslySetInnerHTML={{ __html: organizerDesc }}
+                />
+              ) : (
+                <>
+                  <p className="mt-4 text-sm font-medium text-[var(--text-secondary)] leading-relaxed">
+                    Trường Quốc tế trực thuộc Đại học Quốc gia Hà Nội là trung tâm đào tạo, nghiên cứu và đổi mới sáng tạo tiên phong, đạt chuẩn kiểm định quốc tế. Với 100% chương trình giảng dạy bằng ngoại ngữ, VNU-IS tự hào là "Hub" giáo dục đa văn hóa, chuyên cung cấp nguồn nhân lực chất lượng cao, đáp ứng các tiêu chuẩn khắt khe nhất của thị trường lao động toàn cầu.
+                  </p>
               <p className="mt-4 text-sm font-medium text-[var(--text-secondary)] leading-relaxed">
                 Bản sắc của Trường được đúc kết qua triết lý định danh I-S:
               </p>
@@ -95,8 +112,10 @@ export default function CTA() {
               </div>
 
               <p className="mt-5 text-sm font-medium text-[var(--text-secondary)] leading-relaxed">
-                Mang sứ mệnh kiến tạo một môi trường tự do học thuật và chuyển giao tri thức liên ngành, VNU-IS luôn kiên định với 5 giá trị cốt lõi: Chất lượng cao – Sáng tạo – Tiên phong – Trách nhiệm – Hội nhập quốc tế.
-              </p>
+                  Mang sứ mệnh kiến tạo một môi trường tự do học thuật và chuyển giao tri thức liên ngành, VNU-IS luôn kiên định với 5 giá trị cốt lõi: Chất lượng cao – Sáng tạo – Tiên phong – Trách nhiệm – Hội nhập quốc tế.
+                </p>
+                </>
+              )}
             </div>
           </motion.div>
 
@@ -133,7 +152,7 @@ export default function CTA() {
             <div className="mt-8 h-px bg-[var(--border-default)]" />
 
             <p className="mt-6 text-sm font-medium text-[var(--text-secondary)] leading-relaxed">
-              Đơn vị chỉ đạo &amp; Tổ chức: Trường Quốc Tế - Đại học Quốc gia Hà Nội • Đoàn Trường Quốc tế - ĐHQGHN.
+              Đơn vị chỉ đạo &amp; Tổ chức: {organizerName || "Trường Quốc Tế - Đại học Quốc gia Hà Nội • Đoàn Trường Quốc tế - ĐHQGHN."}
             </p>
           </motion.div>
         </div>

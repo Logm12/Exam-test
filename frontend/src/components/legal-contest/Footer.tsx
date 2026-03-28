@@ -1,6 +1,6 @@
 import type { ContactInfo } from "@/components/legal-contest/types";
 
-export default function Footer({ info }: { info: ContactInfo }) {
+export default function Footer({ info, organizerName }: { info: ContactInfo, organizerName?: string }) {
   return (
     <footer id="contact" className="border-t border-[var(--border-default)] bg-[var(--bg-secondary)] py-10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -8,7 +8,7 @@ export default function Footer({ info }: { info: ContactInfo }) {
           <div className="max-w-xl text-sm text-[var(--text-muted)]">
             <div className="text-sm font-bold text-[var(--text-primary)]">Ban tổ chức</div>
             <div className="mt-3 space-y-1.5 font-semibold text-[var(--text-secondary)]">
-              <div>{info.organizerName}</div>
+              <div>{organizerName || info.organizerName}</div>
               <div>{info.address}</div>
               <div>Điện thoại: {info.phone}</div>
               <div>Email: {info.email}</div>

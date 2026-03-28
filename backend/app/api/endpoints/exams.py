@@ -1,5 +1,5 @@
 from typing import Any, List
-from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -9,10 +9,9 @@ import os
 import tempfile
 import io
 import uuid
-import shutil
 
 from app.db.session import get_db
-from app.db.redis import get_redis, get_optional_redis
+from app.db.redis import get_optional_redis
 from app.api.deps import get_current_user, get_current_active_admin
 from app.models.user import User
 from app.models.exam import Exam, Question
@@ -131,6 +130,34 @@ async def create_exam(
     return exam
 
 
+@router.post("/upload-image-generic")
+async def upload_generic_image(
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_active_admin),
+) -> Any:
+    """Upload a generic image and return its URL. Useful for rich text or landing page configs."""
+    ALLOWED_TYPES = {"image/jpeg", "image/png", "image/webp", "image/gif"}
+    ALLOWED_EXT = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
+    MAX_SIZE = 5 * 1024 * 1024  # 5 MB
+
+    if file.content_type not in ALLOWED_TYPES:
+        raise HTTPException(status_code=400, detail="Only jpg, png, webp, gif images are allowed")
+
+    ext = os.path.splitext(file.filename or "")[1].lower()
+    if ext not in ALLOWED_EXT:
+        raise HTTPException(status_code=400, detail="Invalid file extension")
+
+    contents = await file.read()
+    if len(contents) > MAX_SIZE:
+        raise HTTPException(status_code=400, detail="Image exceeds 5MB limit")
+
+    filename = f"image_{uuid.uuid4().hex[:12]}{ext}"
+    save_path = os.path.join(UPLOAD_DIR, filename)
+    with open(save_path, "wb") as f:
+        f.write(contents)
+
+    return {"url": f"/uploads/{filename}"}
+
 @router.post("/{exam_id}/upload-image", response_model=ExamSchema)
 async def upload_exam_image(
     exam_id: int,
@@ -247,7 +274,35 @@ async def get_exam_by_slug(
         "slug": exam.slug,
         "start_time": str(exam.start_time),
         "duration": exam.duration,
+    }
+
+@router.get("/{exam_id}/landing")
+async def get_exam_landing_info(
+    *,
+    db: AsyncSession = Depends(get_db),
+    exam_id: int,
+) -> Any:
+    """
+    Public endpoint: get exam landing configuration.
+    Does not require user authentication.
+    """
+    result = await db.execute(select(Exam).where(Exam.id == exam_id))
+    exam = result.scalars().first()
+    if not exam:
+        raise HTTPException(status_code=404, detail="Exam not found")
+    
+    return {
+        "id": exam.id,
+        "title": exam.title,
+        "description": exam.description,
+        "slug": exam.slug,
+        "cover_image": exam.cover_image,
+        "start_time": str(exam.start_time) if exam.start_time else None,
+        "end_time": str(exam.end_time) if exam.end_time else None,
+        "duration": exam.duration,
         "is_published": exam.is_published,
+        "theme_config": exam.theme_config,
+        "landing_config": exam.landing_config
     }
 
 @router.get("/{exam_id}", response_model=ExamSchema)

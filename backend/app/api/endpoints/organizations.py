@@ -7,7 +7,7 @@ from app.db.session import get_db
 from app.api.deps import get_current_active_admin
 from app.models.user import User
 from app.models.organization import OrganizationalUnit
-from app.schemas.organization import OrganizationalUnit as OrgSchema, OrganizationalUnitCreate, OrganizationalUnitUpdate
+from app.schemas.organization import OrganizationalUnit as OrgSchema, OrganizationalUnitCreate
 
 router = APIRouter()
 

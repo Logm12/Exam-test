@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, ConfigDict
-from typing import Optional, Any
+from typing import Optional
 from datetime import datetime
 
 HEX_COLOR_REGEX = r"^#(?:[0-9a-fA-F]{3}){1,2}$"
@@ -18,7 +18,9 @@ class ExamBase(BaseModel):
     duration: int
     is_published: Optional[bool] = False
     start_time: datetime
+    end_time: Optional[datetime] = None
     theme_config: Optional[ThemeConfig] = None
+    landing_config: Optional[dict] = None
 
 # Properties to create
 class ExamCreate(ExamBase):
@@ -32,7 +34,9 @@ class ExamUpdate(BaseModel):
     duration: Optional[int] = None
     is_published: Optional[bool] = None
     start_time: Optional[datetime] = None
+    end_time: Optional[datetime] = None
     theme_config: Optional[ThemeConfig] = None
+    landing_config: Optional[dict] = None
 
 class ExamInDBBase(ExamBase):
     id: int

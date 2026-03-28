@@ -11,7 +11,7 @@ No AI engine is used. Extraction is regex + formatting-based only.
 
 import re
 from typing import List, Optional
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 import os
 import shutil
 import subprocess

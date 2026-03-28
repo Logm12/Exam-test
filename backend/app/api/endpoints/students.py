@@ -5,7 +5,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from app.api.deps import get_current_active_admin
+from app.api.deps import get_current_active_admin, get_current_user
 from app.db.session import get_db
 from app.models.student import Student
 from app.models.user import User
@@ -59,6 +59,55 @@ async def create_student(
     await db.refresh(student)
     return student
 
+
+@router.get("/me/profile", response_model=StudentSchema)
+async def get_my_profile(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> Any:
+    result = await db.execute(select(Student).where(Student.user_id == current_user.id))
+    student = result.scalars().first()
+    if not student:
+        raise HTTPException(status_code=404, detail="Student profile not found")
+    return student
+
+@router.put("/me/profile", response_model=StudentSchema)
+async def update_my_profile(
+    *,
+    student_in: StudentUpdate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> Any:
+    result = await db.execute(select(Student).where(Student.user_id == current_user.id))
+    student = result.scalars().first()
+    
+    payload = student_in.model_dump(exclude_unset=True)
+    # Ensure they can't change their user_id
+    if "user_id" in payload:
+        del payload["user_id"]
+        
+    if not student:
+        # Create new profile
+        payload["user_id"] = current_user.id
+        # full_name is required in Student model but might not be in payload if partial update, so fallback
+        if "full_name" not in payload:
+            payload["full_name"] = current_user.full_name or "Unknown"
+        student = Student(**payload)
+        db.add(student)
+    else:
+        # Update existing
+        for key, value in payload.items():
+            setattr(student, key, value)
+        db.add(student)
+        
+    try:
+        await db.commit()
+    except IntegrityError as e:
+        await db.rollback()
+        raise HTTPException(status_code=400, detail="Duplicate or invalid student data") from e
+    
+    await db.refresh(student)
+    return student
 
 @router.get("/{student_id}", response_model=StudentSchema)
 async def get_student(

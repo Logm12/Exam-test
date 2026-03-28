@@ -1,21 +1,21 @@
-# Contributing to ExamOS
+# Contributing to FDB TALENT
 
 ## Development Setup
 
 ### Prerequisites
-- Node.js v18+
-- Python 3.12
-- Docker and Docker Compose
-- Conda (for the `FDBTa` environment)
+- Node.js v18 or higher.
+- Python 3.12.
+- Docker and Docker Compose.
+- Conda (for the `FDBTa` environment).
 
-### First-Time Setup
+### Setup Instructions
 
-1. Start services:
+1. Start infrastructure services:
    ```bash
    docker-compose up -d
    ```
 
-2. Backend:
+2. Backend initialization:
    ```bash
    cd backend
    conda activate FDBTa
@@ -25,51 +25,40 @@
    uvicorn app.main:app --reload
    ```
 
-3. Frontend:
+3. Frontend initialization:
    ```bash
    cd frontend
    npm install
-   cp .env.example .env.local  # Edit with your values
+   cp .env.example .env.local
    npm run dev
    ```
 
-## Code Style
+## Code Guidelines
 
-### TypeScript / React
-- Use functional components with hooks
-- Wrap client components that need i18n in `LanguageProvider`
-- Use `t("key")` from `useLanguage()` for all user-facing text
-- No emoji in UI code — use styled text or SVG icons
-- No AI-generated marketing language in code comments
+### TypeScript and React
+- Utilize functional components and hooks.
+- Wrap client-side components requiring internationalization in `LanguageProvider`.
+- Use the `t("key")` function for all user-facing strings.
+- Standard visual elements only - no emojis in the UI or codebase.
 
-### Python / FastAPI
-- Use async functions for all endpoint handlers
-- Use Pydantic models for request/response validation
-- Keep business logic in endpoint files, not in models
+### Python and FastAPI
+- Implement asynchronous handlers for all endpoints.
+- Use Pydantic models for thorough request and response validation.
+- Separate business logic from database models.
 
 ### Documentation
-- All markdown files in English
-- No emoji in documentation
-- Use tables for structured data
-- Follow the Keep a Changelog format for CHANGELOG.md
+- All markdown documentation must be in English.
+- No emojis are permitted in documentation files.
+- Use tables for structured data presentation.
 
-## Adding Translations
+## Branching Logic
 
-1. Open `frontend/src/lib/translations.ts`
-2. Add a new key with `vi` and `en` values:
-   ```typescript
-   "section.myKey": { vi: "Tiếng Việt", en: "English text" },
-   ```
-3. Use in components: `{t("section.myKey")}`
+- `main`: Production-ready stability.
+- `dev`: Integration and active development.
+- Feature branches: `feature/description`.
+- Bug fixes: `fix/description`.
 
-## Branching
-
-- `main` — production-ready code
-- `dev` — integration branch
-- Feature branches: `feature/description`
-- Bug fixes: `fix/description`
-
-## Testing
+## Testing Procedures
 
 ### Backend
 ```bash
@@ -80,21 +69,15 @@ pytest
 ### Frontend
 ```bash
 cd frontend
-npm run build   # Type-check and build
+npm run build
 ```
 
-### Load Testing
-```bash
-pip install locust
-locust -f backend/load_test.py
-```
+## Commit Message Protocol
 
-## Commit Messages
-
-Use conventional format:
+Use the following conventional format:
 ```
 feat: add exam timer warning
-fix: resolve IPv6 fetch failure
-docs: update API reference
-refactor: simplify middleware routing
+fix: resolve fetch failure
+docs: update technical reference
+refactor: simplify routing logic
 ```

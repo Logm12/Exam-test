@@ -257,7 +257,7 @@ function ExamCard({ exam, themeIdx }: { exam: Exam; themeIdx: number }) {
     );
 
     if (isLocked) return <div className="opacity-70 h-full">{inner}</div>;
-    return <Link href={`/exam/${exam.id}/take`} className="h-full block">{inner}</Link>;
+    return <Link href={`/exam/${exam.id}/landing`} className="h-full block">{inner}</Link>;
 }
 
 /* ═══════ ACCOUNT PAGE ═══════ */

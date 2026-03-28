@@ -25,7 +25,7 @@ const rules = [
   },
 ];
 
-export default function Rules() {
+export default function Rules({ rulesContent }: { rulesContent?: string }) {
   return (
     <section id="rules" className="relative overflow-hidden bg-[var(--bg-primary)] py-16 sm:py-24">
       {/* Background Decoration */}
@@ -57,34 +57,49 @@ export default function Rules() {
         </motion.div>
 
         {/* Rules Grid */}
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-12">
-          {rules.map((rule, idx) => (
-            <motion.div
-              key={rule.title}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: idx * 0.1 }}
-              className="group relative"
-            >
-              {/* Card */}
-              <div className="relative h-full surface-card rounded-2xl p-8 sm:p-10 flex flex-col border-t-2 border-[var(--accent-secondary)] shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                {/* Number Badge */}
-                <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-[var(--accent-secondary)] to-amber-500 mb-6 shadow-lg">
-                  <span className="text-sm font-black text-white">{rule.number}</span>
+        {rulesContent ? (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="mb-12 surface-card rounded-2xl p-8 sm:p-10 border-t-2 border-[var(--accent-secondary)] shadow-md"
+          >
+            <div 
+              className="prose prose-invert max-w-none text-sm font-medium text-[var(--text-secondary)] leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: rulesContent }}
+            />
+          </motion.div>
+        ) : (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-12">
+            {rules.map((rule, idx) => (
+              <motion.div
+                key={rule.title}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: idx * 0.1 }}
+                className="group relative"
+              >
+                {/* Card */}
+                <div className="relative h-full surface-card rounded-2xl p-8 sm:p-10 flex flex-col border-t-2 border-[var(--accent-secondary)] shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                  {/* Number Badge */}
+                  <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-[var(--accent-secondary)] to-amber-500 mb-6 shadow-lg">
+                    <span className="text-sm font-black text-white">{rule.number}</span>
+                  </div>
+
+                  {/* Content */}
+                  <h3 className="text-lg font-black text-[var(--text-primary)]">{rule.title}</h3>
+                  <p className="mt-3 flex-1 text-sm font-medium text-[var(--text-secondary)] leading-relaxed">
+                    {rule.description}
+                  </p>
+
+
                 </div>
-
-                {/* Content */}
-                <h3 className="text-lg font-black text-[var(--text-primary)]">{rule.title}</h3>
-                <p className="mt-3 flex-1 text-sm font-medium text-[var(--text-secondary)] leading-relaxed">
-                  {rule.description}
-                </p>
-
-
-              </div>
-            </motion.div>
-          ))}
-        </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
 
         {/* Important Notice */}
         <motion.div

@@ -59,6 +59,7 @@ export const authOptions: NextAuthOptions = {
                         name: credentials.username,
                         email: credentials.username,
                         role: data.user.role,
+                        profile_completed: data.user.profile_completed,
                         accessToken: data.access_token,
                     };
                 } catch (error: any) {
@@ -122,6 +123,7 @@ export const authOptions: NextAuthOptions = {
                 token.accessToken = (user as any).accessToken;
                 token.role = (user as any).role;
                 token.userId = user.id;
+                token.profile_completed = (user as any).profile_completed;
             }
 
             // Social OAuth flow: exchange token with backend
@@ -143,6 +145,7 @@ export const authOptions: NextAuthOptions = {
                         token.accessToken = backendData.access_token;
                         token.role = backendData.user.role;
                         token.userId = backendData.user.id.toString();
+                        token.profile_completed = backendData.user.profile_completed;
                     }
                 } catch (error) {
                     console.error("Google JWT exchange error:", error);
@@ -161,6 +164,7 @@ export const authOptions: NextAuthOptions = {
                 (session as any).accessToken = token.accessToken;
                 (session.user as any).role = token.role;
                 (session.user as any).id = token.userId;
+                (session.user as any).profile_completed = token.profile_completed;
             }
             return session;
         },

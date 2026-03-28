@@ -66,6 +66,17 @@ export default function CreateExam() {
     const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
     const [coverImagePreview, setCoverImagePreview] = useState<string | null>(null);
 
+    // Landing Config State
+    const [endTime, setEndTime] = useState("");
+    const [posterFile, setPosterFile] = useState<File | null>(null);
+    const [posterPreview, setPosterPreview] = useState<string | null>(null);
+    const [organizerName, setOrganizerName] = useState("");
+    const [organizerLogoFile, setOrganizerLogoFile] = useState<File | null>(null);
+    const [organizerLogoPreview, setOrganizerLogoPreview] = useState<string | null>(null);
+    const [organizerDesc, setOrganizerDesc] = useState("");
+    const [rulesContent, setRulesContent] = useState("");
+    const [guideContent, setGuideContent] = useState("");
+
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0] || null;
         setCoverImageFile(file);
@@ -129,15 +140,43 @@ export default function CreateExam() {
         }
 
         try {
+            // Upload landing images first
+            let posterUrl = "";
+            let logoUrl = "";
+
+            if (posterFile) {
+                const formData = new FormData();
+                formData.append("file", posterFile);
+                const res = await (fetcher as any)("/exams/upload-image-generic", { method: "POST", body: formData });
+                posterUrl = res.url;
+            }
+            if (organizerLogoFile) {
+                const formData = new FormData();
+                formData.append("file", organizerLogoFile);
+                const res = await (fetcher as any)("/exams/upload-image-generic", { method: "POST", body: formData });
+                logoUrl = res.url;
+            }
+
+            const landing_config = {
+                poster_image: posterUrl,
+                organizer_name: organizerName,
+                organizer_logo: logoUrl,
+                organizer_description: organizerDesc,
+                rules: rulesContent,
+                guide: guideContent
+            };
+
             // Create Exam First
             const examPayload = {
                 title: examTitle,
                 duration: examDuration,
                 start_time: new Date().toISOString(),
-                is_published: true
+                end_time: endTime ? new Date(endTime).toISOString() : null,
+                is_published: true,
+                landing_config: landing_config
             };
 
-            const newExam = await fetcher("/exams/", {
+            const newExam = await (fetcher as any)("/exams/", {
                 method: "POST",
                 body: JSON.stringify(examPayload)
             });
@@ -146,14 +185,14 @@ export default function CreateExam() {
             if (coverImageFile) {
                 const formData = new FormData();
                 formData.append("file", coverImageFile);
-                await fetcher(`/exams/${newExam.id}/upload-image`, {
+                await (fetcher as any)(`/exams/${newExam.id}/upload-image`, {
                     method: "POST",
                     body: formData,
                 });
             }
 
             for (const q of sanitizedQuestions) {
-                await fetcher("/questions/", {
+                await (fetcher as any)("/questions/", {
                     method: "POST",
                     body: JSON.stringify({
                         ...q,
@@ -246,6 +285,109 @@ export default function CreateExam() {
                                 </div>
                             )}
                         </div>
+                    </div>
+                </section>
+
+                {/* Landing Page Configuration */}
+                <section className="surface-card p-8 rounded-2xl border border-[var(--border-subtle)] shadow-sm space-y-6">
+                    <h2 className="text-lg font-medium text-[var(--text-primary)] border-b border-[var(--border-subtle)] pb-4">
+                        Cấu hình Landing Page Cuộc thi
+                    </h2>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-[var(--text-secondary)]">Thời gian kết thúc</label>
+                            <input
+                                type="datetime-local"
+                                className="w-full px-4 py-2 border border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--accent-primary)] focus:border-[var(--accent-primary)] outline-none transition-shadow bg-[var(--bg-primary)] text-[var(--text-primary)]"
+                                value={endTime}
+                                onChange={(e) => setEndTime(e.target.value)}
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-[var(--text-secondary)]">Đơn vị tổ chức</label>
+                            <input
+                                type="text"
+                                className="w-full px-4 py-2 border border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--accent-primary)] focus:border-[var(--accent-primary)] outline-none transition-shadow bg-[var(--bg-primary)] text-[var(--text-primary)]"
+                                placeholder="Tên đơn vị tổ chức"
+                                value={organizerName}
+                                onChange={(e) => setOrganizerName(e.target.value)}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-[var(--text-secondary)]">Mô tả đơn vị tổ chức</label>
+                        <textarea
+                            rows={2}
+                            className="w-full px-4 py-2 border border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--accent-primary)] focus:border-[var(--accent-primary)] outline-none transition-shadow bg-[var(--bg-primary)] text-[var(--text-primary)]"
+                            placeholder="Mô tả..."
+                            value={organizerDesc}
+                            onChange={(e) => setOrganizerDesc(e.target.value)}
+                        />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-[var(--text-secondary)]">Ảnh Poster</label>
+                            <div className="flex items-start gap-4">
+                                <label className="flex-1 flex flex-col items-center justify-center h-24 border-2 border-dashed border-[var(--border-default)] rounded-xl cursor-pointer hover:border-[var(--accent-primary)] hover:bg-[var(--accent-glow)] transition-all">
+                                    <input type="file" accept="image/*" className="hidden" onChange={(e) => {
+                                        const file = e.target.files?.[0] || null;
+                                        setPosterFile(file);
+                                        if (file) setPosterPreview(URL.createObjectURL(file));
+                                    }} />
+                                    <span className="text-xs text-[var(--text-muted)]">Tải lên Poster</span>
+                                </label>
+                                {posterPreview && (
+                                    <div className="relative w-24 h-24 rounded-xl overflow-hidden border border-[var(--border-default)] flex-shrink-0">
+                                        <img src={posterPreview} alt="Poster" className="w-full h-full object-cover" />
+                                        <button type="button" onClick={() => { setPosterFile(null); setPosterPreview(null); }} className="absolute py-0.5 px-2 right-0.5 top-0.5 rounded-full bg-black/60 text-white text-xs">✕</button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-[var(--text-secondary)]">Logo Đơn vị</label>
+                            <div className="flex items-start gap-4">
+                                <label className="flex-1 flex flex-col items-center justify-center h-24 border-2 border-dashed border-[var(--border-default)] rounded-xl cursor-pointer hover:border-[var(--accent-primary)] hover:bg-[var(--accent-glow)] transition-all">
+                                    <input type="file" accept="image/*" className="hidden" onChange={(e) => {
+                                        const file = e.target.files?.[0] || null;
+                                        setOrganizerLogoFile(file);
+                                        if (file) setOrganizerLogoPreview(URL.createObjectURL(file));
+                                    }} />
+                                    <span className="text-xs text-[var(--text-muted)]">Tải lên Logo</span>
+                                </label>
+                                {organizerLogoPreview && (
+                                    <div className="relative w-24 h-24 rounded-xl overflow-hidden border border-[var(--border-default)] flex-shrink-0 bg-white">
+                                        <img src={organizerLogoPreview} alt="Logo" className="w-full h-full object-contain" />
+                                        <button type="button" onClick={() => { setOrganizerLogoFile(null); setOrganizerLogoPreview(null); }} className="absolute py-0.5 px-2 right-0.5 top-0.5 rounded-full bg-black/60 text-white text-xs">✕</button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="space-y-2 pt-4">
+                        <label className="text-sm font-medium text-[var(--text-secondary)]">Thể lệ (Markdown/HTML)</label>
+                        <textarea
+                            rows={4}
+                            className="w-full px-4 py-2 border border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--accent-primary)] focus:border-[var(--accent-primary)] outline-none transition-shadow bg-[var(--bg-primary)] text-[var(--text-primary)]"
+                            value={rulesContent}
+                            onChange={(e) => setRulesContent(e.target.value)}
+                        />
+                    </div>
+                    
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-[var(--text-secondary)]">Hướng dẫn thi (Markdown/HTML)</label>
+                        <textarea
+                            rows={4}
+                            className="w-full px-4 py-2 border border-[var(--border-default)] rounded-lg focus:ring-2 focus:ring-[var(--accent-primary)] focus:border-[var(--accent-primary)] outline-none transition-shadow bg-[var(--bg-primary)] text-[var(--text-primary)]"
+                            value={guideContent}
+                            onChange={(e) => setGuideContent(e.target.value)}
+                        />
                     </div>
                 </section>
 

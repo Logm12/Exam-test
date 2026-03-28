@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import Link from "next/link";
 import Image from "next/image";
@@ -39,9 +40,17 @@ export default function RegisterForm() {
                 })
             });
 
+            // Auto login
+            await signIn("credentials", {
+                username,
+                password,
+                role: "student",
+                redirect: false,
+            });
+
             setSuccess(true);
             setTimeout(() => {
-                router.push("/login");
+                router.push("/dashboard/profile");
             }, 2000);
 
         } catch (err: any) {

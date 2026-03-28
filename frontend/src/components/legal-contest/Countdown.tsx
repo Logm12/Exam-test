@@ -14,8 +14,8 @@ function TimeBox({ label, value }: { label: string; value: string }) {
   );
 }
 
-export default function Countdown() {
-  const targetIso = contestInfo.endsAtIso;
+export default function Countdown({ endTime }: { endTime?: string }) {
+  const targetIso = endTime || contestInfo.endsAtIso;
   const [tick, setTick] = useState(0);
 
   useEffect(() => {

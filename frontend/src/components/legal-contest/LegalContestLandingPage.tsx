@@ -10,22 +10,43 @@ import Footer from "@/components/legal-contest/Footer";
 
 import { contactInfo } from "@/components/legal-contest/data";
 
-export default function LegalContestLandingPage() {
+export interface ExamLandingData {
+  id: number;
+  title: string;
+  description: string;
+  slug: string;
+  cover_image: string;
+  start_time: string | null;
+  end_time: string | null;
+  duration: number;
+  is_published: boolean;
+  theme_config?: any;
+  landing_config?: {
+    poster_image?: string;
+    organizer_name?: string;
+    organizer_logo?: string;
+    organizer_description?: string;
+    rules?: string;
+    guide?: string;
+  };
+}
+
+export default function LegalContestLandingPage({ exam }: { exam: ExamLandingData }) {
   return (
     <div
       className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)]"
     >
       <Navbar />
       <main>
-        <Hero />
+        <Hero exam={exam} />
         <Intro />
-        <Countdown />
-        <Highlights />
-        <CTA />
-        <Rules />
+        <Countdown endTime={exam.end_time || ""} />
+        <Highlights guide={exam.landing_config?.guide} />
+        <CTA organizerName={exam.landing_config?.organizer_name} organizerDesc={exam.landing_config?.organizer_description} organizerLogo={exam.landing_config?.organizer_logo} />
+        <Rules rulesContent={exam.landing_config?.rules} />
         <FAQ />
       </main>
-      <Footer info={contactInfo} />
+      <Footer info={contactInfo} organizerName={exam.landing_config?.organizer_name} />
     </div>
   );
 }

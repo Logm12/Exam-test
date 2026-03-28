@@ -9,7 +9,7 @@ import FdbLogo from "@/components/FdbLogo";
 
 function LoginForm() {
     const router = useRouter();
-    const { status } = useSession();
+    const { data: session, status } = useSession();
     const searchParams = useSearchParams();
     const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
     const errorParam = searchParams.get("error");
@@ -19,9 +19,14 @@ function LoginForm() {
 
     useEffect(() => {
         if (status === "authenticated") {
-            router.push(callbackUrl === "/login" || callbackUrl === "/admin/login" ? (role === "admin" ? "/admin" : "/dashboard") : callbackUrl);
+            const user = session?.user as any;
+            if (user?.role === "student" && user?.profile_completed === false) {
+                router.push("/dashboard/profile");
+            } else {
+                router.push(callbackUrl === "/login" || callbackUrl === "/admin/login" ? (role === "admin" ? "/admin" : "/dashboard") : callbackUrl);
+            }
         }
-    }, [status, router, callbackUrl, role]);
+    }, [status, session, router, callbackUrl, role]);
 
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");

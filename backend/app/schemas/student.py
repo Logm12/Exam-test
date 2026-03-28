@@ -12,6 +12,11 @@ class StudentBase(BaseModel):
     mssv: Optional[str] = None
     school: Optional[str] = None
     user_id: Optional[int] = None
+    cccd: Optional[str] = None
+    address: Optional[str] = None
+    phone: Optional[str] = None
+    email: Optional[str] = None
+    lien_chi_doan: Optional[str] = None
 
 
 class StudentCreate(StudentBase):
@@ -26,6 +31,11 @@ class StudentUpdate(BaseModel):
     mssv: Optional[str] = None
     school: Optional[str] = None
     user_id: Optional[int] = None
+    cccd: Optional[str] = None
+    address: Optional[str] = None
+    phone: Optional[str] = None
+    email: Optional[str] = None
+    lien_chi_doan: Optional[str] = None
 
 
 class Student(StudentBase):

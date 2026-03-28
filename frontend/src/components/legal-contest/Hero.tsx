@@ -6,8 +6,22 @@ import { Scale } from "lucide-react";
 
 import LotusDecor from "@/components/legal-contest/LotusDecor";
 import { contestInfo } from "@/components/legal-contest/data";
+import { ExamLandingData } from "@/components/legal-contest/LegalContestLandingPage";
 
-export default function Hero() {
+export default function Hero({ exam }: { exam?: ExamLandingData }) {
+  const backendBase = process.env.NEXT_PUBLIC_API_URL?.replace('/api/v1', '') || 'http://127.0.0.1:8000';
+  
+  const titleDisplay = exam?.title || contestInfo.titleDisplay;
+  const subtitle = exam?.description || contestInfo.subtitle;
+  const organizerName = exam?.landing_config?.organizer_name || "Đoàn TNCS Hồ Chí Minh • Trường Quốc tế, ĐHQGHN";
+  
+  let posterUrl = "/contest.jpg";
+  if (exam?.landing_config?.poster_image) {
+    posterUrl = exam.landing_config.poster_image.startsWith("http") ? exam.landing_config.poster_image : `${backendBase}${exam.landing_config.poster_image}`;
+  } else if (exam?.cover_image) {
+    posterUrl = exam.cover_image.startsWith("http") ? exam.cover_image : `${backendBase}${exam.cover_image}`;
+  }
+
   return (
     <section id="home" className="relative overflow-hidden">
       <div className="absolute inset-0">
@@ -23,12 +37,10 @@ export default function Hero() {
         <div className="absolute inset-0 bg-gradient-to-t from-[rgba(0,0,0,0.35)] via-[rgba(0,0,0,0.15)] to-transparent" />
 
         <div className="absolute inset-x-0 bottom-0 h-56">
-          <Image
-            src="/contest.jpg"
+          <img
+            src={posterUrl}
             alt="Banner cuộc thi"
-            fill
-            priority
-            className="object-cover opacity-25"
+            className="w-full h-full object-cover opacity-25"
           />
         </div>
       </div>
@@ -39,7 +51,7 @@ export default function Hero() {
         <div className="mx-auto max-w-3xl text-center">
           <div className="mx-auto inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-xs font-semibold text-white ring-1 ring-white/25">
             <span className="h-2 w-2 rounded-full bg-white/80" />
-            <span>Đoàn TNCS Hồ Chí Minh • Trường Quốc tế, ĐHQGHN</span>
+            <span>{organizerName}</span>
           </div>
 
           <motion.div
@@ -53,9 +65,9 @@ export default function Hero() {
             </div>
 
             <h1 className="mt-6 text-balance text-3xl font-black tracking-tight text-white sm:text-5xl">
-              {contestInfo.titleDisplay}
+              {titleDisplay}
             </h1>
-            <p className="mt-4 text-pretty text-sm font-semibold text-white/85 sm:text-lg">{contestInfo.subtitle}</p>
+            <p className="mt-4 text-pretty text-sm font-semibold text-white/85 sm:text-lg">{subtitle}</p>
           </motion.div>
 
           <motion.div
@@ -65,7 +77,7 @@ export default function Hero() {
             className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row"
           >
             <a
-              href="#join"
+              href={exam?.id ? `/exam/${exam.id}` : "#join"}
               className="accent-btn inline-flex w-full items-center justify-center px-6 py-3 text-sm font-extrabold sm:w-auto"
             >
               Tham gia

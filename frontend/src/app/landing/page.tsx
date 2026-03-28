@@ -6,6 +6,8 @@ export const metadata: Metadata = {
   description: "Landing page cuộc thi trắc nghiệm trực tuyến (pháp luật) — hiện đại, tối giản, mobile-first.",
 };
 
+import { redirect } from "next/navigation";
+
 export default function LandingPage() {
-  return <LegalContestLandingPage />;
+  redirect("/exam/1/landing");
 }

@@ -1,6 +1,41 @@
 # Changelog
 
-All notable changes to ExamOS are documented here.
+All notable changes to the FDB TALENT platform are documented here.
+
+## [1.9.0] - 2026-03-28
+
+### Fixed
+- **Next.js 16 Compatibility**: Resolved asynchronous `params` errors in `exam/[id]/landing/page.tsx` by converting parameter extraction to the `Promise` API.
+- **Frontend Routing**: Corrected the student dashboard "Enter Exam" link to direct users to the dynamic landing page instead of the examination engine.
+- **Gateway Navigation**: Updated the "Go Back" link in `ExamGatewayClient.tsx` to point to the `/dashboard` route.
+- **Backend Import Stability**: Resolved over 47 Python import errors, including circular dependencies and module-level import ordering, using Ruff and target refactoring.
+- **Dependency Versioning**: Fixed the conflict between `redis` and `fastapi-limiter` by pinning `redis` to `<5.0.0`.
+
+### Changed
+- **Development Environment**: Standardized Python 3.12 environment management within the `FDBTa` Conda environment.
+
+## [1.8.0] - 2026-03-27
+
+### Added
+- **Dynamic Exam Landing Pages**: Implemented a system where each exam can have its own customized landing page.
+    - New backend `landing_config` JSON field on Exam model to store poster, organizer details, rules, and guides.
+    - New public API endpoint `GET /api/v1/exams/{id}/landing` for dynamic data retrieval.
+    - Dynamic route `/exam/[id]/landing` on the frontend that renders the page based on exam-specific configuration.
+- **Mandatory Student Profile Flow**: Implemented a registration-to-dashboard requirement for student profiles.
+    - New student profile fields: CCCD, address, phone, email, and lien_chi_doan.
+    - Automatic redirection to `/dashboard/profile` after secure registration.
+    - Forced profile completion check before accessing the main student dashboard.
+- **Developer Tools**: Added `seed_exam.py` to quickly generate test exams with landing page configurations.
+
+### Changed
+- **Registration Logic**: Updated the registration flow to include automatic login and immediate redirection to profile completion.
+- **Landing UI**: Refactored `Hero`, `Countdown`, `Rules`, and `CTA` components to be props-driven for dynamic rendering.
+- **Standardized API Fetching**: Switched to the internal `fetcher` utility for all dynamic landing page requests to ensure robust `localhost`/`127.0.0.1` handling.
+
+### Fixed
+- **Dependency Versioning**: Pinned `fastapi-limiter==0.1.5` to resolve import errors and ensure API stability.
+- **Schema Validation**: Updated `StudentUpdate` and `ExamUpdate` schemas to handle new metadata fields without failing validation.
+- **Environment Sync**: Fixed issues with session tokens and authorization headers during server-side rendering on the landing page.
 
 ## [1.7.1] - 2026-03-25
 

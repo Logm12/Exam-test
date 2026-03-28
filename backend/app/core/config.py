@@ -1,5 +1,4 @@
-from typing import List, Optional, Any, Union
-from pydantic import AnyHttpUrl, EmailStr, validator
+from typing import List
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):

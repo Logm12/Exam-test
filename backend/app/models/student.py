@@ -19,5 +19,10 @@ class Student(Base):
     class_name = Column(String, nullable=True)
     mssv = Column(String, unique=True, index=True, nullable=True)
     school = Column(String, nullable=True)
+    cccd = Column(String, nullable=True)
+    address = Column(String, nullable=True)
+    phone = Column(String, nullable=True)
+    email = Column(String, nullable=True)
+    lien_chi_doan = Column(String, nullable=True)
 
     user = relationship("User", back_populates="student_profile")

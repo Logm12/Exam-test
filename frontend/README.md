@@ -1,6 +1,6 @@
-# ExamOS Frontend
+# FDB TALENT Frontend
 
-Next.js application serving the student and admin interfaces for the ExamOS examination platform.
+Next.js application serving the student and administrator interfaces for the FDB TALENT examination platform.
 
 ## Quick Start
 
@@ -9,75 +9,66 @@ npm install
 npm run dev
 ```
 
-Open `http://localhost:3000`.
+The application is available at `http://localhost:3000`.
 
-## Stack
+## Technical Stack
 
 - Next.js 16 (App Router)
 - React 19
 - TailwindCSS
-- NextAuth.js (authentication)
+- NextAuth.js (Authentication)
 
 ## Project Structure
 
 ```
 src/
   app/
-    admin/           Admin dashboard, login, exam management
-      login/         Admin login page
-      AdminDashboardClient.tsx
-      Sidebar.tsx
-    dashboard/       Student dashboard
-      StudentDashboardClient.tsx
+    admin/           Administrator dashboard and exam management
+    dashboard/       Student dashboard and profile completion
     exam/
-      [id]/          Exam gateway (pre-exam briefing)
-        take/        Exam engine (questions, timer, anti-cheat)
-        receipt/     Submission confirmation
-    landing/         Public landing page
-    login/           Student login page
-  components/
-    LanguageToggle.tsx    Language switch button (VI/EN)
-  contexts/
-    LanguageContext.tsx   i18n context with localStorage persistence
+      [id]/
+        landing/      Dynamic exam-specific landing page
+        take/         Examination engine (questions, timer, anti-cheat)
+        receipt/      Submission confirmation
+    login/            Unified login interface
+    register/         Registration and profile redirection logic
+  components/         Shared UI components
+  contexts/           React contexts (language management)
   lib/
     api.ts           Isomorphic fetch wrapper with JWT injection
-    auth.ts          NextAuth configuration (credentials, Google, Zalo)
-    translations.ts  Translation dictionary (120+ keys)
-  proxy.ts           Next.js middleware (route protection, CSP headers)
+    auth.ts          NextAuth configuration
+    translations.ts  Translation dictionary
+  proxy.ts           Next.js middleware (route protection and security headers)
 ```
 
-## Environment Variables
+## Environment Configuration
 
-Create `.env.local`:
+Configure the `.env.local` file with the following variables:
 
-| Variable              | Description                | Required |
-|-----------------------|---------------------------|----------|
-| NEXTAUTH_SECRET       | Session encryption key     | Yes      |
-| NEXTAUTH_URL          | App URL (http://localhost:3000) | Yes |
-| NEXT_PUBLIC_API_URL   | Backend API base URL       | Yes      |
-| GOOGLE_CLIENT_ID      | Google OAuth client ID     | No       |
-| GOOGLE_CLIENT_SECRET  | Google OAuth client secret | No       |
+| Variable | Description | Required |
+|----------|-------------|----------|
+| NEXTAUTH_SECRET | Session encryption key | Yes |
+| NEXTAUTH_URL | Application URL (http://localhost:3000) | Yes |
+| NEXT_PUBLIC_API_URL | Backend API base URL | Yes |
 
 ## Internationalization
 
-The app supports Vietnamese (default) and English. Language preference is stored in `localStorage` and persists across sessions.
+The application supports Vietnamese and English. Language preferences are persisted in `localStorage`.
 
-Key files:
-- `src/lib/translations.ts` — all translation keys
-- `src/contexts/LanguageContext.tsx` — React context provider
-- `src/components/LanguageToggle.tsx` — toggle button component
+Key resources:
+- `src/lib/translations.ts`: Translation key mapping.
+- `src/contexts/LanguageContext.tsx`: React context provider for language state.
+- `src/components/LanguageToggle.tsx`: User interface for language switching.
 
-To add a new translation key, add an entry to `translations.ts` with both `vi` and `en` values.
+## Authentication Protocol
 
-## Authentication Flow
+1. User provides credentials via the login interface.
+2. NextAuth verification via the FastAPI `/auth/login` endpoint.
+3. Backend issues a JWT upon successful authentication.
+4. NextAuth persists the token in an encrypted session cookie.
+5. `proxy.ts` middleware validates the session for protected routes.
 
-1. User submits credentials on the login page
-2. NextAuth calls the FastAPI `/auth/login` endpoint via `CredentialsProvider`
-3. Backend returns a JWT
-4. NextAuth stores the token in an encrypted session cookie
-5. `proxy.ts` middleware checks the session on each request
-
-## Build
+## Build and Production
 
 ```bash
 npm run build
