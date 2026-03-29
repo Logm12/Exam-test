@@ -7,46 +7,65 @@ import Highlights from "@/components/legal-contest/Highlights";
 import Rules from "@/components/legal-contest/Rules";
 import FAQ from "@/components/legal-contest/FAQ";
 import Footer from "@/components/legal-contest/Footer";
+import { contestInfo } from "@/components/legal-contest/data";
 
-import { contactInfo } from "@/components/legal-contest/data";
+export interface LandingConfig {
+  poster_image?: string;
+  organizer_name?: string;
+  organizer_logo?: string;
+  organizer_description?: string;
+  rules?: string;
+  guide?: string;
+  slogan?: string;
+  contact_email?: string;
+  contact_phone?: string;
+  faqs?: { q: string; a: string }[];
+  organizers?: { name: string; logo?: string; desc?: string }[];
+}
 
 export interface ExamLandingData {
   id: number;
   title: string;
-  description: string;
+  description?: string;
   slug: string;
-  cover_image: string;
+  cover_image?: string;
   start_time: string | null;
   end_time: string | null;
   duration: number;
   is_published: boolean;
   theme_config?: any;
-  landing_config?: {
-    poster_image?: string;
-    organizer_name?: string;
-    organizer_logo?: string;
-    organizer_description?: string;
-    rules?: string;
-    guide?: string;
-  };
+  landing_config?: LandingConfig;
 }
 
 export default function LegalContestLandingPage({ exam }: { exam: ExamLandingData }) {
+  const lc = exam.landing_config;
   return (
-    <div
-      className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)]"
-    >
-      <Navbar />
+    <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)]">
+      <Navbar examTitle={exam.title} />
       <main>
         <Hero exam={exam} />
-        <Intro />
+        <Intro slogan={lc?.slogan || contestInfo.intro} />
         <Countdown endTime={exam.end_time || ""} />
-        <Highlights guide={exam.landing_config?.guide} />
-        <CTA organizerName={exam.landing_config?.organizer_name} organizerDesc={exam.landing_config?.organizer_description} organizerLogo={exam.landing_config?.organizer_logo} />
-        <Rules rulesContent={exam.landing_config?.rules} />
-        <FAQ />
+        <Highlights guide={lc?.guide} />
+        <CTA
+          organizerName={lc?.organizer_name}
+          organizerDesc={lc?.organizer_description}
+          organizerLogo={lc?.organizer_logo}
+          organizers={lc?.organizers}
+        />
+        <Rules rulesContent={lc?.rules} />
+        <FAQ
+          contactEmail={lc?.contact_email}
+          contactPhone={lc?.contact_phone}
+          organizerName={lc?.organizer_name}
+          faqs={lc?.faqs}
+        />
       </main>
-      <Footer info={contactInfo} organizerName={exam.landing_config?.organizer_name} />
+      <Footer
+        organizerName={lc?.organizer_name}
+        contactEmail={lc?.contact_email}
+        contactPhone={lc?.contact_phone}
+      />
     </div>
   );
 }

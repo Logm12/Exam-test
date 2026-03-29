@@ -25,7 +25,7 @@ function Avatar() {
   );
 }
 
-export default function Navbar() {
+export default function Navbar({ examTitle }: { examTitle?: string }) {
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--border-subtle)] bg-[var(--surface-overlay)] backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
@@ -40,10 +40,13 @@ export default function Navbar() {
               className="object-contain"
             />
           </div>
-          <div className="leading-tight">
-            <div className="text-sm font-extrabold tracking-tight text-[var(--text-primary)]">Cuộc thi Pháp luật</div>
-            <div className="text-[11px] font-semibold text-[var(--text-secondary)]">2025</div>
-          </div>
+          {examTitle && (
+            <div className="leading-tight hidden sm:block max-w-[220px]">
+              <div className="text-sm font-extrabold tracking-tight text-[var(--text-primary)] line-clamp-2">
+                {examTitle}
+              </div>
+            </div>
+          )}
         </a>
 
         <nav className="hidden items-center gap-6 md:flex" aria-label="Main navigation">

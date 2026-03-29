@@ -365,9 +365,13 @@ async def delete_exam(
     exam_id: int,
     current_user: User = Depends(get_current_active_admin),
 ) -> Any:
-    # Use raw SQL DELETE to ensure DB-level ON DELETE CASCADE is triggered reliably
-    # and to bypass potential AsyncSession ORM cascade loading issues.
-    await db.execute(delete(Exam).where(Exam.id == exam_id))
+    # Use ORM delete to properly trigger the relationship cascades defined in models
+    result = await db.execute(select(Exam).where(Exam.id == exam_id))
+    exam = result.scalars().first()
+    if not exam:
+        raise HTTPException(status_code=404, detail="Exam not found")
+        
+    await db.delete(exam)
     await db.commit()
     return {"ok": True}
 

@@ -36,7 +36,7 @@ export default function Highlights({ guide }: { guide?: string }) {
             className="surface-card rounded-2xl p-8 sm:p-10 border border-[var(--border-default)] shadow-md"
           >
             <div 
-              className="prose prose-invert max-w-none text-sm font-medium text-[var(--text-secondary)] leading-relaxed"
+              className="prose max-w-none text-sm font-medium text-[var(--text-secondary)] leading-relaxed"
               dangerouslySetInnerHTML={{ __html: guide }}
             />
           </motion.div>

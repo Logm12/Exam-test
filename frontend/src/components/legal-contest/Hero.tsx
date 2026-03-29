@@ -12,7 +12,7 @@ export default function Hero({ exam }: { exam?: ExamLandingData }) {
   const backendBase = process.env.NEXT_PUBLIC_API_URL?.replace('/api/v1', '') || 'http://127.0.0.1:8000';
   
   const titleDisplay = exam?.title || contestInfo.titleDisplay;
-  const subtitle = exam?.description || contestInfo.subtitle;
+  const subtitle = exam?.landing_config?.slogan || exam?.description || contestInfo.subtitle;
   const organizerName = exam?.landing_config?.organizer_name || "Đoàn TNCS Hồ Chí Minh • Trường Quốc tế, ĐHQGHN";
   
   let posterUrl = "/contest.jpg";

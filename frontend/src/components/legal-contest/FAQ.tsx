@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 import { cn } from "@/components/legal-contest/ui";
 
-const faqs = [
+const DEFAULT_FAQS = [
   {
     q: "🚀 Làm cách nào để bắt đầu tham gia?",
     a: "Đăng nhập vào tài khoản của bạn bằng email hoặc tài khoản Google. Sau đó nhấn nút 'Tham gia', đọc kỹ hướng dẫn, và bắt đầu làm bài trắc nghiệm. Thời gian làm bài sẽ được đếm ngược từ lúc bạn bắt đầu.",
@@ -77,8 +77,19 @@ function Item({
   );
 }
 
-export default function FAQ() {
+interface FAQProps {
+  contactEmail?: string;
+  contactPhone?: string;
+  organizerName?: string;
+  faqs?: { q: string; a: string }[];
+}
+
+export default function FAQ({ contactEmail, contactPhone, organizerName, faqs }: FAQProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
+
+  const email = contactEmail || "btc@example.com";
+  const phone = contactPhone || "(024) 1234 5678";
+  const orgName = organizerName || "Ban tổ chức";
 
   return (
     <section id="faq" className="relative overflow-hidden bg-[var(--bg-secondary)] py-16 sm:py-24">
@@ -112,9 +123,9 @@ export default function FAQ() {
 
         {/* FAQ Grid */}
         <div className="mx-auto max-w-3xl space-y-3">
-          {faqs.map((f, idx) => (
+          {(faqs?.length ? faqs : DEFAULT_FAQS).map((f, idx) => (
             <motion.div
-              key={f.q}
+              key={f.q + idx}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -130,7 +141,7 @@ export default function FAQ() {
           ))}
         </div>
 
-        {/* CTA Box */}
+        {/* CTA Box — dùng dữ liệu thật */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -140,7 +151,11 @@ export default function FAQ() {
         >
           <h3 className="text-2xl font-black sm:text-3xl tracking-tight">Vẫn còn câu hỏi?</h3>
           <p className="mt-3 text-sm font-medium opacity-95 leading-relaxed">
-            Liên hệ Ban tổ chức tại <span className="font-extrabold">btc@example.com</span> hoặc gọi hotline <span className="font-extrabold">(024) 1234 5678</span>
+            Liên hệ {orgName} tại{" "}
+            <a href={`mailto:${email}`} className="font-extrabold underline underline-offset-2">{email}</a>
+            {contactPhone && (
+              <> hoặc gọi hotline <span className="font-extrabold">{phone}</span></>
+            )}
           </p>
         </motion.div>
       </div>

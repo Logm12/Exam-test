@@ -159,10 +159,10 @@ const translations: Record<string, Record<Locale, string>> = {
     "anticheat.warning.understood": { vi: "Đã hiểu", en: "Understood" },
 
     // Import questions
-    "import.title": { vi: "Nhập đề từ file", en: "Import from File" },
-    "import.description": { vi: "Tải lên file Word (.doc/.docx) hoặc PDF để tự động trích xuất câu hỏi.", en: "Upload a Word (.doc/.docx) or PDF file to auto-extract questions." },
+    "import.title": { vi: "Nhập đề từ file .docx", en: "Import from .docx" },
+    "import.description": { vi: "Tải lên file Word (.docx) để tự động trích xuất câu hỏi.", en: "Upload a Word (.docx) file to auto-extract questions." },
     "import.dropzone": { vi: "Kéo thả file vào đây hoặc bấm để chọn", en: "Drag and drop a file here, or click to select" },
-    "import.maxSize": { vi: "Tối đa 10MB, định dạng .doc/.docx hoặc .pdf", en: "Max 10MB, .doc/.docx or .pdf format" },
+    "import.maxSize": { vi: "Tối đa 10MB", en: "Max 10MB" },
     "import.processing": { vi: "Đang xử lý file...", en: "Processing file..." },
     "import.found": { vi: "Tìm thấy {count} câu hỏi", en: "Found {count} questions" },
     "import.addSelected": { vi: "Thêm câu hỏi đã chọn", en: "Add Selected Questions" },

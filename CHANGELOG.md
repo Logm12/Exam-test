@@ -2,6 +2,21 @@
 
 All notable changes to the FDB TALENT platform are documented here.
 
+## [1.9.1] - 2026-03-29
+
+### Added
+- **Multi-Organizer Support**: Refactored the "Edit Exam" and "New Exam" forms to support adding multiple organizing units dynamically.
+- **Organizer Carousel**: Implemented a responsive horizontal scrolling carousel in `CTA.tsx` for exams with more than two organizers, featuring auto-snapping and horizontal navigation arrows.
+
+### Changed
+- **Logo Presentation**: Replaced `next/image` with standard `img` tags in the `CTA` component to prevent vertical clipping of logos within flex layouts.
+- **Logo Dimensions**: Enlarged the logo bounding boxes on the student landing page (`h-24` / 96px) to explicitly match the Admin preview pane's aspect ratio and sizing algorithm.
+- **Locale Updates**: Updated `translations.ts` and `ImportQuestionsModal` to exclusively accept and prompt for `.docx` files instead of `.doc/.pdf`.
+
+### Fixed
+- **Upload Race Condition**: Resolved a critical React state overwriting bug in `updateOrganizer` (`new/page.tsx` & `edit/page.tsx`) by employing functional state updates (`prev => ...`), which previously caused concurrent preview and file-attachment updates to drop the user's `File` object before upload.
+- **Fallback Logic**: Corrected the fallback behavior in `CTA.tsx` so missing organizer logos gracefully render nothing, rather than indiscriminately defaulting to the VNU-IS logo.
+
 ## [1.9.0] - 2026-03-28
 
 ### Fixed

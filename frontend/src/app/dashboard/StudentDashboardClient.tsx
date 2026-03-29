@@ -28,11 +28,10 @@ function deriveStatus(exam: Exam): ExamStatus {
     if (exam.status) return exam.status;
     const now = new Date();
     const start = new Date(exam.start_time);
-    const end = exam.end_time
-        ? new Date(exam.end_time)
-        : new Date(start.getTime() + exam.duration * 60000);
+    // Only mark "completed" if there is an explicit end_time that has passed.
+    // Without end_time, once start is passed the exam is always accessible ("in_progress").
     if (now < start) return "not_started";
-    if (now > end) return "completed";
+    if (exam.end_time && now > new Date(exam.end_time)) return "completed";
     return "in_progress";
 }
 
