@@ -1,3 +1,4 @@
+from typing import List
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
@@ -33,8 +34,19 @@ class Settings(BaseSettings):
         return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}"
     
     # JWT Auth
-    SECRET_KEY: str = "supersecretkey"  # Change in production
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 7 days
+    SECRET_KEY: str = "examOS-super-secret-key-change-in-production-2026"
+    # 60 minutes * 24 hours * 8 days = 8 days
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 30
+    
+    # CORS
+    # BACKEND_CORS_ORIGINS is a JSON-formatted list of strings
+    # e.g: '["http://localhost", "http://localhost:4200", "http://localhost:3000"]'
+    BACKEND_CORS_ORIGINS: List[str] = [
+        "http://localhost:3000",
+        "http://localhost:8000",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:8000",
+    ]
     
     class Config:
         env_file = ".env"

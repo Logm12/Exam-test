@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional, Any, Dict
+from typing import Optional, Dict
 
 # Shared properties
 class QuestionBase(BaseModel):

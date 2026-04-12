@@ -1,97 +1,65 @@
 # Backend Deployment Guide (Render)
 
-This guide provides step-by-step instructions for deploying the FastAPI backend to Render.com using your GitHub repository: `https://github.com/Logm12/Exam-test.git`.
+This guide provides instructions for deploying the FastAPI backend to Render.com.
 
 ## Overview
-The ExamOS backend requires three components to run:
-1. **Web Service** (FastAPI)
-2. **PostgreSQL** (Database)
-3. **Redis** (For rate limiting and temporary draft storage)
 
-Render is an excellent platform because it can host all three natively.
+The FDB TALENT backend requires three components:
+1. **Web Service**: FastAPI application.
+2. **PostgreSQL**: Primary database.
+3. **Redis**: Used for rate limiting and temporary data storage.
 
----
+## Step 1: PostgreSQL Database Creation
 
-## Step 1: Create the Database (PostgreSQL)
+1. Access the Render Dashboard.
+2. Select **New** and then **PostgreSQL**.
+3. Configure the following:
+   - Name: `fdb-talent-db`.
+   - Region: Select the region nearest to your target audience.
+   - Version: PostgreSQL 15 or higher.
+4. Finalize the creation and record the **Internal Database URL**.
 
-1. Log in to your [Render Dashboard](https://dashboard.render.com).
-2. Click **New +** and select **PostgreSQL**.
-3. Fill in the details:
-   - Name: `examos-db`
-   - Region: Select the one closest to you (e.g., Singapore).
-   - PostgreSQL Version: `15` or latest.
-   - Instance Type: Free (if available) or Starter.
-4. Click **Create Database**.
-5. Once created, copy the **Internal Database URL** (it starts with `postgres://...`). You will need this later.
+## Step 2: Redis Instance Creation
 
----
+1. Access the Render Dashboard.
+2. Select **New** and then **Redis**.
+3. Configure the following:
+   - Name: `fdb-talent-redis`.
+   - Region: Matches your PostgreSQL region.
+4. Finalize the creation and record the **Internal Redis URL**.
 
-## Step 2: Create the Redis Instance
+## Step 3: Web Service Deployment (FastAPI)
 
-1. Go back to the Render dashboard.
-2. Click **New +** and select **Redis**.
-3. Fill in the details:
-   - Name: `examos-redis`
-   - Region: Same as your PostgreSQL database.
-   - Instance Type: Free or Starter.
-4. Click **Create Redis**.
-5. Once created, copy the **Internal Redis URL** (it starts with `redis://...`). You will need this later.
+1. Select **New** and then **Web Service**.
+2. Connect your Git repository.
+3. Apply the following configuration:
+   - **Name**: `fdb-talent-backend`.
+   - **Runtime**: `Python`.
+   - **Branch**: `main`.
+   - **Root Directory**: `backend`.
+   - **Build Command**: `pip install -r requirements.txt`.
+   - **Start Command**: `alembic upgrade head && python seed_users.py && uvicorn app.main:app --host 0.0.0.0 --port 10000`.
 
----
+## Step 4: Environment Variables
 
-## Step 3: Deploy the Web Service (FastAPI)
-
-1. Go back to the Render dashboard.
-2. Click **New +** and select **Web Service**.
-3. Choose **Build and deploy from a Git repository**.
-4. Connect your GitHub account (if not already connected) and search for your repository: `Logm12/Exam-test`.
-5. Click **Connect**.
-6. Fill in the configuration details exactly as follows:
-   - **Name**: `examos-backend`
-   - **Environment**: `Python`
-   - **Region**: Same as your database and Redis.
-   - **Branch**: `main`
-   - **Root Directory**: `backend` *(CRITICAL STEP)*
-   - **Build Command**: `pip install -r requirements.txt`
-   - **Start Command**: `alembic upgrade head && python seed_users.py && uvicorn app.main:app --host 0.0.0.0 --port 10000`
-
----
-
-## Step 4: Configure Environment Variables
-
-Before clicking create, scroll down and expand the **Advanced** or **Environment Variables** section. Add the following keys:
+Configure the following environment variables:
 
 | Key | Value | Description |
 |-----|-------|-------------|
-| `PYTHON_VERSION` | `3.12.0` | Force Render to use Python 3.12 |
-| `DATABASE_URL` | *(Paste Internal DB URL from Step 1)* | Connection to PostgreSQL |
-| `REDIS_URL` | *(Paste Internal Redis URL from Step 2)* | Connection to Redis |
-| `SECRET_KEY` | *(Generate a random string)* | Used for JWT signing. Example: `secret_key_examos_2026_production` |
-| `API_V1_STR` | `/api/v1` | API Prefix |
-| `CORS_ORIGINS` | `["https://*.vercel.app", "http://localhost:3000"]` | Allowed frontends |
+| `PYTHON_VERSION` | `3.12.0` | Forces the use of Python 3.12. |
+| `DATABASE_URL` | *(Internal Database URL)* | PostgreSQL connection string. |
+| `REDIS_URL` | *(Internal Redis URL)* | Redis connection string. |
+| `SECRET_KEY` | *(Random string)* | Key for JWT signing. |
+| `API_V1_STR` | `/api/v1` | Application API prefix. |
+| `CORS_ORIGINS` | `["https://*.vercel.app"]` | Allowed frontend domains. |
 
-*Note: Change `postgres://` to `postgresql://` in your DATABASE_URL if you encounter SQLAlchemy connection URL errors.*
+## Step 5: Finalization
 
----
+1. Initiate the service creation.
+2. Monitor the build logs to ensure library installation and database migrations complete without error.
+3. Once the status is "Live," record the public Render URL.
 
-## Step 5: Finalize and Deploy
+## Step 6: Frontend Integration
 
-1. Click **Create Web Service** at the bottom of the page.
-2. Wait for the build and deployment process to finish (this may take 5-10 minutes).
-3. Watch the logs. You should see it install dependencies, run the `alembic` migrations successfully, seed the users, and start Uvicorn.
-4. Once it says "Live", look at the top left of the dashboard for your public Render URL.
-   It will look something like this: `https://examos-backend.onrender.com`
-
----
-
-## Step 6: Connect Frontend to Backend
-
-Now that your backend is live, you must tell your Vercel frontend where it is.
-
-1. Copy your new backend URL (`https://examos-backend.onrender.com`).
-2. Go to your Vercel Dashboard -> Your Project -> Settings -> Environment Variables.
-3. Update or Add the `NEXT_PUBLIC_API_URL` variable:
-   - **Value**: `https://examos-backend.onrender.com/api/v1`
-4. Redeploy your frontend on Vercel.
-
-**Done! Your full-stack application is now live on the internet.**
+Update your frontend environment configuration (e.g., on Vercel) to point to the new backend:
+- **NEXT_PUBLIC_API_URL**: `https://your-app.onrender.com/api/v1`.

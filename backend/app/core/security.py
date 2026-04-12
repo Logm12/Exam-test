@@ -4,7 +4,7 @@ from jose import jwt
 from app.core.config import settings
 
 import bcrypt
-from typing import Any, Union, Optional
+from typing import Optional
 
 def create_access_token(
     subject: Union[str, Any], expires_delta: Optional[timedelta] = None

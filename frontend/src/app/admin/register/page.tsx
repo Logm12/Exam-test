@@ -2,10 +2,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/contexts/LanguageContext";
-import LanguageToggle from "@/components/LanguageToggle";
-import ThemeToggle from "@/components/ThemeToggle";
 import Link from "next/link";
 import { fetcher } from "@/lib/api";
+import FdbLogo from "@/components/FdbLogo";
 
 export default function AdminRegisterPage() {
     const router = useRouter();
@@ -56,14 +55,11 @@ export default function AdminRegisterPage() {
     return (
         <div className="min-h-screen bg-[var(--bg-primary)] flex flex-col justify-center py-12 sm:px-6 lg:px-8 font-sans">
             {/* Toggles top-right */}
-            <div className="absolute top-6 right-6 flex items-center space-x-3">
-                <ThemeToggle />
-                <LanguageToggle />
-            </div>
+
 
             <div className="sm:mx-auto sm:w-full sm:max-w-md animate-fade-in text-center relative z-10">
-                <div className="inline-flex justify-center items-center w-14 h-14 rounded-2xl mb-6 shadow-lg border-2 border-[var(--accent-primary)] bg-[var(--bg-secondary)]">
-                    <span className="text-[var(--accent-primary)] font-bold text-xl tracking-tighter">FDB</span>
+                <div className="flex items-center justify-center mb-6">
+                    <FdbLogo className="text-4xl" />
                 </div>
                 <h2 className="text-center text-3xl font-bold tracking-tight text-[var(--text-primary)]">
                     {t("admin.register.title") || "Create Admin Account"}

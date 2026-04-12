@@ -1,6 +1,101 @@
 # Changelog
 
-All notable changes to ExamOS are documented here.
+All notable changes to the FDB TALENT platform are documented here.
+
+## [1.9.1] - 2026-03-29
+
+### Added
+- **Multi-Organizer Support**: Refactored the "Edit Exam" and "New Exam" forms to support adding multiple organizing units dynamically.
+- **Organizer Carousel**: Implemented a responsive horizontal scrolling carousel in `CTA.tsx` for exams with more than two organizers, featuring auto-snapping and horizontal navigation arrows.
+
+### Changed
+- **Logo Presentation**: Replaced `next/image` with standard `img` tags in the `CTA` component to prevent vertical clipping of logos within flex layouts.
+- **Logo Dimensions**: Enlarged the logo bounding boxes on the student landing page (`h-24` / 96px) to explicitly match the Admin preview pane's aspect ratio and sizing algorithm.
+- **Locale Updates**: Updated `translations.ts` and `ImportQuestionsModal` to exclusively accept and prompt for `.docx` files instead of `.doc/.pdf`.
+
+### Fixed
+- **Upload Race Condition**: Resolved a critical React state overwriting bug in `updateOrganizer` (`new/page.tsx` & `edit/page.tsx`) by employing functional state updates (`prev => ...`), which previously caused concurrent preview and file-attachment updates to drop the user's `File` object before upload.
+- **Fallback Logic**: Corrected the fallback behavior in `CTA.tsx` so missing organizer logos gracefully render nothing, rather than indiscriminately defaulting to the VNU-IS logo.
+
+## [1.9.0] - 2026-03-28
+
+### Fixed
+- **Next.js 16 Compatibility**: Resolved asynchronous `params` errors in `exam/[id]/landing/page.tsx` by converting parameter extraction to the `Promise` API.
+- **Frontend Routing**: Corrected the student dashboard "Enter Exam" link to direct users to the dynamic landing page instead of the examination engine.
+- **Gateway Navigation**: Updated the "Go Back" link in `ExamGatewayClient.tsx` to point to the `/dashboard` route.
+- **Backend Import Stability**: Resolved over 47 Python import errors, including circular dependencies and module-level import ordering, using Ruff and target refactoring.
+- **Dependency Versioning**: Fixed the conflict between `redis` and `fastapi-limiter` by pinning `redis` to `<5.0.0`.
+
+### Changed
+- **Development Environment**: Standardized Python 3.12 environment management within the `FDBTa` Conda environment.
+
+## [1.8.0] - 2026-03-27
+
+### Added
+- **Dynamic Exam Landing Pages**: Implemented a system where each exam can have its own customized landing page.
+    - New backend `landing_config` JSON field on Exam model to store poster, organizer details, rules, and guides.
+    - New public API endpoint `GET /api/v1/exams/{id}/landing` for dynamic data retrieval.
+    - Dynamic route `/exam/[id]/landing` on the frontend that renders the page based on exam-specific configuration.
+- **Mandatory Student Profile Flow**: Implemented a registration-to-dashboard requirement for student profiles.
+    - New student profile fields: CCCD, address, phone, email, and lien_chi_doan.
+    - Automatic redirection to `/dashboard/profile` after secure registration.
+    - Forced profile completion check before accessing the main student dashboard.
+- **Developer Tools**: Added `seed_exam.py` to quickly generate test exams with landing page configurations.
+
+### Changed
+- **Registration Logic**: Updated the registration flow to include automatic login and immediate redirection to profile completion.
+- **Landing UI**: Refactored `Hero`, `Countdown`, `Rules`, and `CTA` components to be props-driven for dynamic rendering.
+- **Standardized API Fetching**: Switched to the internal `fetcher` utility for all dynamic landing page requests to ensure robust `localhost`/`127.0.0.1` handling.
+
+### Fixed
+- **Dependency Versioning**: Pinned `fastapi-limiter==0.1.5` to resolve import errors and ensure API stability.
+- **Schema Validation**: Updated `StudentUpdate` and `ExamUpdate` schemas to handle new metadata fields without failing validation.
+- **Environment Sync**: Fixed issues with session tokens and authorization headers during server-side rendering on the landing page.
+
+## [1.7.1] - 2026-03-25
+
+### Changed
+- Landing routes: `/landing` now serves the Legal Contest landing page; `/landing-law` redirects to `/landing`.
+- Branding: Standardized navbar/logo usage to use `frontend/public/logofdb.jpeg` across key nav components and `FdbLogo`.
+- Legal contest landing: Updated organizer section layout (wider logos above titles, removed boxed styling for the I/S philosophy block).
+- Admin + student dashboards: Enlarged and centered the logo in left sidebar headers for better visual balance.
+
+### Removed
+- Removed the extra logo divider/auxiliary mark from the shared `FdbLogo` rendering to keep nav branding clean.
+
+## [1.7.0] - 2026-03-18
+
+### Added
+- Unified development environment: Added a root `package.json` with a `npm run dev` script that starts Docker, Backend, and Frontend concurrently.
+- Integrated `concurrently` to manage multiple server processes with automatic cleanup.
+- Dedicated `tests/` and `scripts/` directories in both Backend and Frontend for better project organization.
+
+### Changed
+- Standardized Backend runtime: Configured uvicorn to use a consistent Python environment path, resolving "Conda command not found" issues in terminal launchers.
+- Restored `correct_count` property to the `Submission` model to align with the latest database schema (2026-03-18 update).
+
+### Fixed
+- Database Synchronization: Resolved `UndefinedColumnError` regarding `submissions.correct_count` by resyncing the PostgreSQL schema with the latest SQL dump.
+- Dependency Resolution: Fixed `fastapi-limiter` import errors by pinning to a stable version (`0.1.5`) and updating the internal initialization logic.
+- Answer Schema Alignment: Removed deprecated `UniqueConstraint` on questions per submission in the database model to match the production schema definition.
+- Cache Management: Performed deep cache purges for both `pip` and `npm` to prevent resource-heavy core dumps and stale build artifacts.
+
+## [1.6.0] - 2026-03-16
+
+### Added
+- Integrated `start.bat` launcher for simultaneous Frontend (port 3000), Backend (port 8000), and Docker service startup.
+- Added comprehensive coverage for optional `start_time` and `cover_image` handling in exam creation/editing flows.
+
+### Changed
+- Refactored `ExamUpdate` Pydantic schema to make all fields truly optional, resolving 422 Validation Errors during partial updates.
+- Decoupled `ExamUpdate` from `ExamBase` to ensure mandatory base fields do not block surgical updates (e.g., toggling publish status).
+- Updated admin exam editing UI to use environment-aware API URLs for cover image previews.
+
+### Fixed
+- Applied missing `a1b2c3d4e5f6` migration adding the `cover_image` column to the `exams` table, resolving SQL persistence errors.
+- Fixed `togglePublish` logic in the admin portal to only transmit modified fields, drastically reducing payload size and validation overhead.
+- Resolved "Admin cannot create exam" bug caused by strict schema validation on non-critical metadata.
+- Fixed broken image upload flow where validation errors prevented retrieval of newly created exam IDs.
 
 ## [1.5.0] - 2026-03-09
 

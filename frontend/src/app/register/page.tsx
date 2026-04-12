@@ -1,11 +1,11 @@
 "use client";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import LanguageToggle from "@/components/LanguageToggle";
-import ThemeToggle from "@/components/ThemeToggle";
 import Link from "next/link";
 import Image from "next/image";
+import FdbLogo from "@/components/FdbLogo";
 import { fetcher } from "@/lib/api";
 
 export default function RegisterForm() {
@@ -40,9 +40,17 @@ export default function RegisterForm() {
                 })
             });
 
+            // Auto login
+            await signIn("credentials", {
+                username,
+                password,
+                role: "student",
+                redirect: false,
+            });
+
             setSuccess(true);
             setTimeout(() => {
-                router.push("/login");
+                router.push("/dashboard/profile");
             }, 2000);
 
         } catch (err: any) {
@@ -68,14 +76,11 @@ export default function RegisterForm() {
             {/* Right side: Form */}
             <div className="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-20 xl:px-32 relative bg-[var(--bg-primary)]">
                 {/* Toggles top-right */}
-                <div className="absolute top-6 right-6 flex items-center space-x-3">
-                    <ThemeToggle />
-                    <LanguageToggle />
-                </div>
+
 
                 <div className="w-full max-w-sm mx-auto sm:max-w-md animate-fade-in text-center lg:text-left">
-                    <div className="lg:hidden inline-flex items-center justify-center w-16 h-16 bg-[#1e3a8a] text-white rounded-2xl mb-8 shadow-xl">
-                        <span className="font-black text-2xl">FDB</span>
+                    <div className="lg:hidden mb-8">
+                        <FdbLogo className="text-4xl" />
                     </div>
 
                     <h2 className="text-3xl font-bold tracking-tight text-[var(--text-primary)] mb-2">

@@ -1,4 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@800&family=Inter:wght@300&display=swap');
 @import "tailwindcss";
+
+/* ===== FDB TALENT LOGO STYLES ===== */
+.f-jakarta-extra { 
+    font-family: 'Plus Jakarta Sans', sans-serif; 
+    font-weight: 800; 
+}
+.f-inter-light { 
+    font-family: 'Inter', sans-serif; 
+    font-weight: 300; 
+}
+.box-cut {
+    clip-path: polygon(0 0, 100% 0, 82% 100%, 0% 100%);
+    margin-right: 0.35em; 
+}
 
 /* ===== DESIGN TOKENS ===== */
 /* Aesthetic: "Bright Hub" - Energetic, Clean, FDB TALENT Cyan */
@@ -78,6 +93,12 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
+/* Minimal dark theme tokens removed to enforce light mode only */
+
 /* ===== UTILITY CLASSES ===== */
 .glass-card {
   background: var(--glass-bg);
@@ -147,4 +168,26 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-secondary);
+}
+
+/* Ripple effect for CTA buttons */
+.ripple-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple-ink {
+  position: absolute;
+  border-radius: 9999px;
+  transform: scale(0);
+  animation: ripple 600ms ease-out;
+  background: rgba(255, 255, 255, 0.35);
+  pointer-events: none;
+}
+
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
 }

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FDB TALENT - Logo (FDB Right)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@800&family=Inter:wght@300&display=swap" rel="stylesheet">
+    <style>
+        .f-jakarta-extra {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 800;
+        }
+        .f-inter-light {
+            font-family: 'Inter', sans-serif;
+            font-weight: 300;
+        }
+
+        /* Khối FDB cắt vát về trái (đặt bên phải) */
+        .box-cut-right {
+            clip-path: polygon(18% 0, 100% 0, 100% 100%, 0 100%);
+            margin-left: 18px; /* đủ khoảng an toàn so với chữ TALENT */
+        }
+
+        .logo-wrapper {
+            display: inline-flex;
+            align-items: center;
+            background: white;
+            padding: 1.25rem 1.5rem;
+            border-radius: 0.75rem;
+        }
+
+        /* Responsive sizing */
+        @media (max-width: 640px) {
+            .logo-text { font-size: 1.25rem; }
+            .logo-fdb { font-size: 1.25rem; padding: 0.5rem 0.75rem; }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+    <div class="logo-wrapper shadow-sm" role="img" aria-label="FDB Talent logo">
+        <div class="flex items-center">
+            <!-- Chữ TALENT bên trái -->
+            <div class="text-4xl text-[#1e3a8a] tracking-[0.18em] f-inter-light uppercase logo-text">
+                TALENT
+            </div>
+
+            <!-- Khối FDB bên phải, nền xanh, cắt vát trái -->
+            <div class="bg-[#1e3a8a] text-white px-8 py-3 text-4xl box-cut-right shadow-md logo-fdb f-jakarta-extra">
+                FDB
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,62 +1,54 @@
-# ExamOS Enhancement Proposal
+# FDB TALENT Enhancement Proposal
 
-This document outlines potential improvements and future features for the ExamOS platform.
+This document outlines potential improvements and future features for the FDB TALENT platform.
 
 ## Current State
 
-ExamOS is a working exam platform with:
-- FastAPI + Next.js architecture
-- Social login (Google, Zalo) via NextAuth.js
-- Client-side anti-cheating (tab tracking, clipboard blocking, fullscreen enforcement)
-- Redis-backed auto-save and rate limiting
-- Bilingual UI (Vietnamese / English)
-- Role-separated portals (admin dashboard, student portal)
+FDB TALENT is a functional examination platform with the following core capabilities:
+- Decoupled FastAPI and Next.js architecture.
+- Social login integration via NextAuth.js.
+- Client-side monitoring for tab tracking, clipboard blocking, and fullscreen enforcement.
+- Redis-supported auto-save and rate limiting.
+- Mandatory student profile registration flow.
+- Dynamic, exam-specific landing pages with configurable posters and rules.
+- Full bilingual support (Vietnamese and English).
+- Role-separated administrative and student portals.
 
 ## Proposed Enhancements
 
 ### 1. Webcam-Based Proctoring
+Present anti-cheating measures rely on browser events. Integrating webcam monitoring would provide a more robust solution.
+- Stream webcam video during examinations via WebRTC.
+- Authenticate the live feed against a student identification photo at the start of the session.
+- Implement automated flags for off-screen gazing or the presence of multiple individuals using edge-side processing.
 
-Current anti-cheating relies on browser events, which can be bypassed with a second device.
+### 2. Automated Essay Evaluation
+Objective questions are graded instantly, but subjective essay questions currently require manual review.
+- Develop an evaluation service using language models.
+- Score essays against a defined rubric and ideal answer template.
+- Provide suggested scores and highlight key concepts for administrative approval.
 
-- Stream webcam video during exams via WebRTC
-- Compare live feed against a student ID photo at exam start
-- Flag off-screen gazing or multiple faces in frame using edge-side processing
+### 3. Learning Management System Integration (LTI 1.3)
+Supporting LTI 1.3 would allow for seamless integration into existing educational infrastructures.
+- Implement LTI 1.3 protocol support.
+- Allow students to launch examinations directly from platforms such as Canvas or Moodle.
+- Synchronize final scores with the LMS gradebook automatically.
 
-### 2. Automated Essay Grading
+### 4. Advanced Question Analytics
+Implementing Item Response Theory (IRT) would allow for more sophisticated performance analysis.
+- Apply IRT modeling to identify questions that are statistically miscalibrated.
+- Identify questions that are exceptionally simple or unfairly difficult.
+- Establish a foundation for adaptive testing where difficulty scales based on student performance.
 
-Multiple-choice and short-answer questions are graded instantly, but essay questions still need manual review.
+### 5. Offline Capability (Progressive Web App)
+To mitigate connectivity issues, the platform could support offline examination modes.
+- Cache the examination payload using service workers.
+- Store encrypted answers locally within indexedDB during disconnected periods.
+- Synchronize local data with the server once connectivity is restored.
 
-- Build a grading microservice using language models
-- Score essays against a rubric and ideal answer
-- Return a suggested score with highlighted matching concepts for reviewer approval
+## Documentation Reference
 
-### 3. LMS Integration (LTI 1.3)
-
-Many institutions use centralized Learning Management Systems and prefer not to use standalone tools.
-
-- Implement LTI 1.3 protocol support
-- Allow students to launch exams directly from Canvas, Moodle, or Blackboard
-- Push final scores back to the LMS gradebook automatically
-
-### 4. Question Analytics (IRT)
-
-Simple percentage scores don't distinguish between genuine knowledge and lucky guesses.
-
-- Apply Item Response Theory modeling to identify poorly calibrated questions
-- Flag questions that are statistically too easy or unfairly difficult
-- Lay groundwork for adaptive testing where question difficulty adjusts based on prior answers
-
-### 5. Offline Support (PWA)
-
-In regions with unreliable connectivity, mid-exam disconnections are common.
-
-- Cache the exam payload on the client via service workers
-- Store answers in IndexedDB during offline periods
-- Sync encrypted answers back to the server when the connection is restored
-
-## Related Files
-
-See `CHANGELOG.md` for historical patches and completed integrations.
+Refer to the `CHANGELOG.md` for historical updates and completed features.
 
 ---
-*Prepared for future architectural review.*
+*Prepared for architectural review.*

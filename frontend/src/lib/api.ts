@@ -4,51 +4,74 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1
 
 export async function fetcher(endpoint: string, options: RequestInit = {}) {
     const headers = new Headers(options.headers || {});
-    if (!headers.has('Content-Type')) {
+    
+    // Don't set Content-Type for FormData – browser sets it automatically with boundary
+    const isFormData = options.body instanceof FormData;
+    if (!isFormData && !headers.has('Content-Type')) {
         headers.set('Content-Type', 'application/json');
     }
 
-    // Isomorphic Token Injection (Works on both Client and Server Components)
+    // Isomorphic Token Injection
     let token = null;
-    if (typeof window === "undefined") {
-        // Server-side
+    const isServer = typeof window === "undefined";
+
+    if (isServer) {
         try {
             const { getServerSession } = await import("next-auth");
             const { authOptions } = await import("@/lib/auth");
             const session = await getServerSession(authOptions);
             token = (session as any)?.accessToken;
         } catch (e) {
-            console.warn("Failed to get server session in fetcher", e);
+            console.warn("[Fetcher] Failed to get server session:", e);
         }
     } else {
-        // Client-side
         const session = await getSession();
         token = (session as any)?.accessToken;
+        if (!token) {
+            console.warn(`[Fetcher] No token found for endpoint: ${endpoint}. Session status:`, session ? "Session exists but no accessToken" : "No session");
+        }
     }
 
     if (token) {
         headers.set('Authorization', `Bearer ${token}`);
     }
 
-    // Ensure the endpoint starts with a slash
     const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
-
-    // Fix Node 18+ strict IPv6 resolution bug for localhost by directly targeting IPv4 loopback on server
     let finalUrl = `${API_URL}${cleanEndpoint}`;
-    if (typeof window === "undefined" && finalUrl.includes("localhost")) {
+    
+    // Fix Node 18+ strict IPv6 resolution bug for localhost
+    if (isServer && finalUrl.includes("localhost")) {
         finalUrl = finalUrl.replace("localhost", "127.0.0.1");
     }
 
-    const response = await fetch(finalUrl, {
-        cache: "no-store", // Explicitly opt out of Next.js aggressive cache to prevent build-time static errors
-        ...options,
-        headers,
-    });
+    try {
+        const response = await fetch(finalUrl, {
+            ...options,
+            headers,
+        });
 
-    if (!response.ok) {
-        const error = await response.json().catch(() => ({}));
-        throw new Error(error.detail || 'An error occurred while fetching the data.');
+        if (!response.ok) {
+            const errorText = await response.text();
+            let errorDetail = "An error occurred while fetching the data.";
+            try {
+                const errorJson = JSON.parse(errorText);
+                errorDetail = errorJson.detail || errorDetail;
+            } catch (p) {
+                errorDetail = errorText || errorDetail;
+            }
+            
+            console.error(`[Fetcher Error] ${response.status} ${response.statusText} at ${endpoint}:`, errorDetail);
+            
+            const error = new Error(errorDetail);
+            (error as any).status = response.status;
+            throw error;
+        }
+
+        return response.json();
+    } catch (err: any) {
+        if (err.status === 401) {
+            console.error("[Fetcher] Unauthorized request. Token might be invalid or expired.");
+        }
+        throw err;
     }
-
-    return response.json();
 }

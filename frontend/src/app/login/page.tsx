@@ -3,14 +3,13 @@ import React, { useState, Suspense, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import LanguageToggle from "@/components/LanguageToggle";
-import ThemeToggle from "@/components/ThemeToggle";
 import Link from "next/link";
 import Image from "next/image";
+import FdbLogo from "@/components/FdbLogo";
 
 function LoginForm() {
     const router = useRouter();
-    const { status } = useSession();
+    const { data: session, status } = useSession();
     const searchParams = useSearchParams();
     const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
     const errorParam = searchParams.get("error");
@@ -20,9 +19,14 @@ function LoginForm() {
 
     useEffect(() => {
         if (status === "authenticated") {
-            router.push(callbackUrl === "/login" || callbackUrl === "/admin/login" ? (role === "admin" ? "/admin" : "/dashboard") : callbackUrl);
+            const user = session?.user as any;
+            if (user?.role === "student" && user?.profile_completed === false) {
+                router.push("/dashboard/profile");
+            } else {
+                router.push(callbackUrl === "/login" || callbackUrl === "/admin/login" ? (role === "admin" ? "/admin" : "/dashboard") : callbackUrl);
+            }
         }
-    }, [status, router, callbackUrl, role]);
+    }, [status, session, router, callbackUrl, role]);
 
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -82,6 +86,7 @@ function LoginForm() {
                     src="/login-bg.jpg"
                     alt="Login Background"
                     fill
+                    sizes="50vw"
                     className="object-cover"
                     priority
                 />
@@ -90,14 +95,11 @@ function LoginForm() {
             {/* Right side: Form */}
             <div className="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-20 xl:px-32 relative bg-[var(--bg-primary)]">
                 {/* Toggles top-right */}
-                <div className="absolute top-6 right-6 flex items-center space-x-3">
-                    <ThemeToggle />
-                    <LanguageToggle />
-                </div>
+
 
                 <div className="w-full max-w-sm mx-auto sm:max-w-md animate-fade-in text-center lg:text-left">
-                    <div className="lg:hidden inline-flex items-center justify-center w-16 h-16 bg-[#1e3a8a] text-white rounded-2xl mb-8 shadow-xl">
-                        <span className="font-black text-2xl">FDB</span>
+                    <div className="lg:hidden mb-8">
+                        <FdbLogo className="text-4xl" />
                     </div>
 
                     <h2 className="text-3xl font-bold tracking-tight text-[var(--text-primary)] mb-2">

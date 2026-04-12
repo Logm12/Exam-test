@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Float, JSON
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, JSON
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from .user import Base
@@ -12,11 +12,14 @@ class Exam(Base):
     title = Column(String, nullable=False)
     slug = Column(String(12), unique=True, index=True, nullable=True)
     description = Column(String, nullable=True)
+    cover_image = Column(String, nullable=True)
     start_time = Column(DateTime(timezone=True), nullable=False)
     duration = Column(Integer, nullable=False)  # Duration in minutes
     is_published = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    cover_image = Column(String, nullable=True)
+    end_time = Column(DateTime(timezone=True), nullable=True)
+    theme_config = Column(JSON, nullable=True)
+    landing_config = Column(JSON, nullable=True)
 
     @staticmethod
     def generate_slug() -> str:

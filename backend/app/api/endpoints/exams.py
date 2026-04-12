@@ -1,5 +1,5 @@
 from typing import Any, List
-from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -8,19 +8,65 @@ import json
 import os
 import tempfile
 import io
+import uuid
 
 from app.db.session import get_db
-from app.db.redis import get_redis
+from app.db.redis import get_optional_redis
 from app.api.deps import get_current_user, get_current_active_admin
 from app.models.user import User
 from app.models.exam import Exam, Question
 from app.models.submission import Submission, Answer
-from app.schemas.exam import Exam as ExamSchema, ExamCreate, ExamUpdate
+from app.schemas.exam import Exam as ExamSchema, ExamCreate, ExamUpdate, ExamPublic
 from app.schemas.student_exam import StudentExam
 from app.schemas.submission import AnswerDraft, ExamSubmit
 from sqlalchemy.orm import selectinload
+from sqlalchemy import func
+
+UPLOAD_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "..", "uploads")
+os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 router = APIRouter()
+
+
+@router.get("/public", response_model=List[ExamPublic])
+async def read_public_exams(
+    db: AsyncSession = Depends(get_db),
+    skip: int = 0,
+    limit: int = 100,
+) -> Any:
+    """Public endpoint: list published exams with lightweight counts."""
+    result = await db.execute(
+        select(
+            Exam,
+            func.count(func.distinct(Question.id)).label("question_count"),
+            func.count(func.distinct(Submission.id)).label("participants"),
+        )
+        .outerjoin(Question, Question.exam_id == Exam.id)
+        .outerjoin(Submission, Submission.exam_id == Exam.id)
+        .where(Exam.is_published == True)
+        .group_by(Exam.id)
+        .order_by(Exam.start_time.desc())
+        .offset(skip)
+        .limit(limit)
+    )
+
+    rows = result.all()
+    return [
+        {
+            "id": exam.id,
+            "title": exam.title,
+            "description": exam.description,
+            "slug": exam.slug,
+            "cover_image": exam.cover_image,
+            "duration": exam.duration,
+            "start_time": exam.start_time,
+            "created_at": exam.created_at,
+            "is_published": exam.is_published,
+            "question_count": int(question_count or 0),
+            "participants": int(participants or 0),
+        }
+        for exam, question_count, participants in rows
+    ]
 
 @router.get("/", response_model=List[ExamSchema])
 async def read_exams(
@@ -55,10 +101,11 @@ async def get_my_exams(
             "description": e.description,
             "duration": e.duration,
             "start_time": e.start_time,
-            "end_time": None,
+            "created_at": e.created_at,
+            "end_time": getattr(e, "end_time", None),
             "is_published": e.is_published,
-            "cover_image": str(getattr(e, "cover_image", "")) if getattr(e, "cover_image", "") is not None else "",
-            "slug": e.slug
+            "slug": e.slug,
+            "cover_image": e.cover_image,
         }
         if e.id in sub_map:
             s_obj = sub_map[e.id]
@@ -84,6 +131,80 @@ async def create_exam(
     return exam
 
 
+@router.post("/upload-image-generic")
+async def upload_generic_image(
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_active_admin),
+) -> Any:
+    """Upload a generic image and return its URL. Useful for rich text or landing page configs."""
+    ALLOWED_TYPES = {"image/jpeg", "image/png", "image/webp", "image/gif"}
+    ALLOWED_EXT = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
+    MAX_SIZE = 5 * 1024 * 1024  # 5 MB
+
+    if file.content_type not in ALLOWED_TYPES:
+        raise HTTPException(status_code=400, detail="Only jpg, png, webp, gif images are allowed")
+
+    ext = os.path.splitext(file.filename or "")[1].lower()
+    if ext not in ALLOWED_EXT:
+        raise HTTPException(status_code=400, detail="Invalid file extension")
+
+    contents = await file.read()
+    if len(contents) > MAX_SIZE:
+        raise HTTPException(status_code=400, detail="Image exceeds 5MB limit")
+
+    filename = f"image_{uuid.uuid4().hex[:12]}{ext}"
+    save_path = os.path.join(UPLOAD_DIR, filename)
+    with open(save_path, "wb") as f:
+        f.write(contents)
+
+    return {"url": f"/uploads/{filename}"}
+
+@router.post("/{exam_id}/upload-image", response_model=ExamSchema)
+async def upload_exam_image(
+    exam_id: int,
+    file: UploadFile = File(...),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_active_admin),
+) -> Any:
+    """Upload a cover image for an exam. Accepts jpg/png/webp, max 5MB."""
+    result = await db.execute(select(Exam).where(Exam.id == exam_id))
+    exam = result.scalars().first()
+    if not exam:
+        raise HTTPException(status_code=404, detail="Exam not found")
+
+    ALLOWED_TYPES = {"image/jpeg", "image/png", "image/webp", "image/gif"}
+    ALLOWED_EXT = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
+    MAX_SIZE = 5 * 1024 * 1024  # 5 MB
+
+    if file.content_type not in ALLOWED_TYPES:
+        raise HTTPException(status_code=400, detail="Only jpg, png, webp, gif images are allowed")
+
+    ext = os.path.splitext(file.filename or "")[1].lower()
+    if ext not in ALLOWED_EXT:
+        raise HTTPException(status_code=400, detail="Invalid file extension")
+
+    contents = await file.read()
+    if len(contents) > MAX_SIZE:
+        raise HTTPException(status_code=400, detail="Image exceeds 5MB limit")
+
+    # Delete old image file if exists
+    if exam.cover_image:
+        old_filename = exam.cover_image.split("/uploads/")[-1]
+        old_path = os.path.join(UPLOAD_DIR, old_filename)
+        if os.path.exists(old_path):
+            os.remove(old_path)
+
+    filename = f"exam_{exam_id}_{uuid.uuid4().hex[:8]}{ext}"
+    save_path = os.path.join(UPLOAD_DIR, filename)
+    with open(save_path, "wb") as f:
+        f.write(contents)
+
+    exam.cover_image = f"/uploads/{filename}"
+    await db.commit()
+    await db.refresh(exam)
+    return exam
+
+
 @router.post("/import-questions", dependencies=[Depends(get_current_active_admin)])
 async def import_questions_from_file(
     file: UploadFile = File(...),
@@ -93,14 +214,14 @@ async def import_questions_from_file(
     Returns a list of parsed questions for review before adding to an exam.
     """
     MAX_SIZE = 10 * 1024 * 1024  # 10 MB
-    allowed_types = (".docx", ".pdf")
+    allowed_types = (".doc", ".docx", ".pdf")
 
     if not file.filename:
         raise HTTPException(status_code=400, detail="No file provided")
 
     ext = os.path.splitext(file.filename)[1].lower()
     if ext not in allowed_types:
-        raise HTTPException(status_code=400, detail="Only .docx and .pdf files are supported")
+        raise HTTPException(status_code=400, detail="Only .doc, .docx and .pdf files are supported")
 
     contents = await file.read()
     if len(contents) > MAX_SIZE:
@@ -154,7 +275,35 @@ async def get_exam_by_slug(
         "slug": exam.slug,
         "start_time": str(exam.start_time),
         "duration": exam.duration,
+    }
+
+@router.get("/{exam_id}/landing")
+async def get_exam_landing_info(
+    *,
+    db: AsyncSession = Depends(get_db),
+    exam_id: int,
+) -> Any:
+    """
+    Public endpoint: get exam landing configuration.
+    Does not require user authentication.
+    """
+    result = await db.execute(select(Exam).where(Exam.id == exam_id))
+    exam = result.scalars().first()
+    if not exam:
+        raise HTTPException(status_code=404, detail="Exam not found")
+    
+    return {
+        "id": exam.id,
+        "title": exam.title,
+        "description": exam.description,
+        "slug": exam.slug,
+        "cover_image": exam.cover_image,
+        "start_time": str(exam.start_time) if exam.start_time else None,
+        "end_time": str(exam.end_time) if exam.end_time else None,
+        "duration": exam.duration,
         "is_published": exam.is_published,
+        "theme_config": exam.theme_config,
+        "landing_config": exam.landing_config
     }
 
 @router.get("/{exam_id}", response_model=ExamSchema)
@@ -217,6 +366,7 @@ async def delete_exam(
     exam_id: int,
     current_user: User = Depends(get_current_active_admin),
 ) -> Any:
+    # Use ORM delete to properly trigger the relationship cascades defined in models
     result = await db.execute(select(Exam).where(Exam.id == exam_id))
     exam = result.scalars().first()
     if not exam:
@@ -228,26 +378,35 @@ async def delete_exam(
 
 
 @router.post("/{exam_id}/draft")
-async def save_draft(
+async def save_exam_draft(
     *,
+    db: AsyncSession = Depends(get_db),
+    redis_client = Depends(get_optional_redis),
     exam_id: int,
     draft_in: AnswerDraft,
     current_user: User = Depends(get_current_user),
-    redis_client = Depends(get_redis)
 ):
     """
-    Save answers draft to Redis. Key format: draft:exam_id:user_id
-    Strict Rate Limiting: Max 10 drafts per minute to prevent Redis exhaustion.
+    Save exam draft to Redis.
     """
-    key = f"draft:{exam_id}:{current_user.id}"
-    await redis_client.set(key, json.dumps(draft_in.answers))
-    return {"status": "saved"}
+    if not redis_client:
+        # Silently fail for drafts if Redis is down, or return error?
+        # User requested robustness, so we just return success but don't save.
+        return {"status": "skipped", "message": "Redis unavailable"}
+    
+    try:
+        key = f"draft:{exam_id}:{current_user.id}"
+        await redis_client.set(key, json.dumps(draft_in.answers))
+        return {"status": "saved"}
+    except Exception as e:
+        print(f"Error saving draft: {e}")
+        return {"status": "error", "message": str(e)}
 
 @router.post("/{exam_id}/submit")
 async def submit_exam(
     *,
     db: AsyncSession = Depends(get_db),
-    redis_client = Depends(get_redis),
+    redis_client = Depends(get_optional_redis),
     exam_id: int,
     submit_in: ExamSubmit,
     current_user: User = Depends(get_current_user),
@@ -283,7 +442,8 @@ async def submit_exam(
             user_id=current_user.id, 
             status="submitted",
             violation_count=submit_in.violation_count,
-            forced_submit=str(submit_in.forced_submit).lower()
+            forced_submit=str(submit_in.forced_submit).lower(),
+            time_spent_seconds=submit_in.time_spent_seconds,
         )
         db.add(submission)
         await db.flush() # get ID
@@ -292,6 +452,7 @@ async def submit_exam(
         submission.status = "submitted"
         submission.violation_count = submit_in.violation_count
         submission.forced_submit = str(submit_in.forced_submit).lower()
+        submission.time_spent_seconds = submit_in.time_spent_seconds
         
         # Clear existing answers to avoid duplication and unique constraint errors
         await db.execute(delete(Answer).where(Answer.submission_id == submission.id))
@@ -319,11 +480,18 @@ async def submit_exam(
     if total_mcq > 0:
         submission.score = (correct_count / total_mcq) * 10.0 # Scale to 10
         
+    submission.correct_count = correct_count
+
     db.add_all(answers_to_insert)
     
-    # Clear Redis Draft
-    key = f"draft:{exam_id}:{current_user.id}"
-    await redis_client.delete(key)
+    # Clear Redis Draft (Wrap in try/except for long-term deployment stability 
+    # if Redis is temporarily unavailable)
+    if redis_client:
+        try:
+            key = f"draft:{exam_id}:{current_user.id}"
+            await redis_client.delete(key)
+        except Exception as e:
+            print(f"Warning: Failed to clear Redis draft: {e}")
     
     from datetime import datetime, timezone
     submission.submitted_at = datetime.now(timezone.utc)

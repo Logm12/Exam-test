@@ -1,11 +1,11 @@
-import { AuthOptions } from "next-auth";
+import { AuthOptions, NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import FacebookProvider from "next-auth/providers/facebook";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api/v1";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
 
-export const authOptions: AuthOptions = {
+export const authOptions: NextAuthOptions = {
     providers: [
         CredentialsProvider({
             name: "Credentials",
@@ -15,17 +15,16 @@ export const authOptions: AuthOptions = {
                 role: { label: "Role", type: "text" },
             },
             async authorize(credentials) {
-                if (!credentials?.username || !credentials?.password) {
-                    return null;
-                }
+                if (!credentials?.username || !credentials?.password) return null;
 
                 try {
+                    // Use IPv4 loopback for Node 18+ SSR if localhost
+                    const loginUrl = `${API_URL}/auth/login`.replace("localhost", "127.0.0.1");
                     // Authenticate against FastAPI backend
                     const formData = new URLSearchParams();
                     formData.append("username", credentials.username);
                     formData.append("password", credentials.password);
 
-                    const loginUrl = `${API_URL}/auth/login`;
 
                     const res = await fetch(loginUrl, {
                         method: "POST",
@@ -60,6 +59,7 @@ export const authOptions: AuthOptions = {
                         name: credentials.username,
                         email: credentials.username,
                         role: data.user.role,
+                        profile_completed: data.user.profile_completed,
                         accessToken: data.access_token,
                     };
                 } catch (error: any) {
@@ -123,6 +123,7 @@ export const authOptions: AuthOptions = {
                 token.accessToken = (user as any).accessToken;
                 token.role = (user as any).role;
                 token.userId = user.id;
+                token.profile_completed = (user as any).profile_completed;
             }
 
             // Social OAuth flow: exchange token with backend
@@ -144,6 +145,7 @@ export const authOptions: AuthOptions = {
                         token.accessToken = backendData.access_token;
                         token.role = backendData.user.role;
                         token.userId = backendData.user.id.toString();
+                        token.profile_completed = backendData.user.profile_completed;
                     }
                 } catch (error) {
                     console.error("Google JWT exchange error:", error);
@@ -162,6 +164,7 @@ export const authOptions: AuthOptions = {
                 (session as any).accessToken = token.accessToken;
                 (session.user as any).role = token.role;
                 (session.user as any).id = token.userId;
+                (session.user as any).profile_completed = token.profile_completed;
             }
             return session;
         },

@@ -8,6 +8,8 @@ const translations: Record<string, Record<Locale, string>> = {
     "app.register": { vi: "Đăng ký", en: "Register" },
     "app.processing": { vi: "Đang xử lý...", en: "Processing..." },
     "app.language": { vi: "EN", en: "VI" },
+    "common.prev": { vi: "Câu trước", en: "Previous" },
+    "common.next": { vi: "Câu tiếp", en: "Next" },
 
     // Trang chủ
     "landing.hero.title": { vi: "Cổng đánh giá năng lực FDB TALENT", en: "FDB TALENT Assessment Portal" },
@@ -130,11 +132,13 @@ const translations: Record<string, Record<Locale, string>> = {
     "exam.take.warnings": { vi: "Cảnh báo vi phạm", en: "Integrity Warnings" },
     "exam.take.finishExam": { vi: "Nộp bài", en: "Finish Exam" },
     "exam.take.submitting": { vi: "Đang nộp...", en: "Submitting..." },
+    "exam.take.submitSuccess": { vi: "Nộp bài thành công!", en: "Submission successful!" },
     "exam.take.confirmSubmit": { vi: "Bạn có chắc chắn muốn nộp bài sớm? Hành động này không thể hoàn tác.", en: "Are you sure you want to finalize and submit early? You cannot undo this." },
     "exam.take.typeAnswer": { vi: "Nhập câu trả lời...", en: "Type your answer here..." },
     "exam.take.characters": { vi: "ký tự", en: "characters" },
     "exam.take.noQuestions": { vi: "Không tìm thấy câu hỏi cho bài thi này.", en: "No questions found for this exam." },
     "exam.take.submitFailed": { vi: "Nộp bài thất bại. Vui lòng kiểm tra kết nối mạng.", en: "Submission failed. Please check your network connection." },
+    "exam.take.alreadySubmitted": { vi: "Bài thi này đã được nộp rồi. Bạn không thể nộp lại.", en: "This exam has already been submitted. You cannot submit again." },
 
     // Receipt
     "exam.receipt.title": { vi: "Đã nhận bài làm", en: "Submission Received" },
@@ -155,10 +159,10 @@ const translations: Record<string, Record<Locale, string>> = {
     "anticheat.warning.understood": { vi: "Đã hiểu", en: "Understood" },
 
     // Import questions
-    "import.title": { vi: "Nhập đề từ file", en: "Import from File" },
-    "import.description": { vi: "Tải lên file Word (.docx) hoặc PDF để tự động trích xuất câu hỏi.", en: "Upload a Word (.docx) or PDF file to auto-extract questions." },
+    "import.title": { vi: "Nhập đề từ file .docx", en: "Import from .docx" },
+    "import.description": { vi: "Tải lên file Word (.docx) để tự động trích xuất câu hỏi.", en: "Upload a Word (.docx) file to auto-extract questions." },
     "import.dropzone": { vi: "Kéo thả file vào đây hoặc bấm để chọn", en: "Drag and drop a file here, or click to select" },
-    "import.maxSize": { vi: "Tối đa 10MB, định dạng .docx hoặc .pdf", en: "Max 10MB, .docx or .pdf format" },
+    "import.maxSize": { vi: "Tối đa 10MB", en: "Max 10MB" },
     "import.processing": { vi: "Đang xử lý file...", en: "Processing file..." },
     "import.found": { vi: "Tìm thấy {count} câu hỏi", en: "Found {count} questions" },
     "import.addSelected": { vi: "Thêm câu hỏi đã chọn", en: "Add Selected Questions" },

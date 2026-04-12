@@ -4,8 +4,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useLanguage } from "@/contexts/LanguageContext";
-import LanguageToggle from "@/components/LanguageToggle";
-import ThemeToggle from "@/components/ThemeToggle";
 
 interface ExamInfo {
     id: number;
@@ -87,10 +85,7 @@ export default function ExamLandingPage() {
                         </div>
                         <span className="font-bold text-lg tracking-tight">{t("app.name")}</span>
                     </Link>
-                    <div className="flex items-center space-x-3">
-                        <ThemeToggle />
-                        <LanguageToggle />
-                    </div>
+
                 </nav>
             </header>
 

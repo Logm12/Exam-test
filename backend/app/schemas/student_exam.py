@@ -1,6 +1,6 @@
 from pydantic import BaseModel
-from typing import Optional, Any, Dict, List
-from .question import QuestionBase
+from typing import Optional, Dict, List
+from datetime import datetime
 
 # Question for student (hidden correct_answer)
 class StudentQuestion(BaseModel):
@@ -13,7 +13,6 @@ class StudentQuestion(BaseModel):
     class Config:
         from_attributes = True
 
-from datetime import datetime
 class StudentExam(BaseModel):
     id: int
     title: str

@@ -23,6 +23,15 @@ async function getRecentExams() {
     }
 }
 
+async function getUsers() {
+    try {
+        const users = await fetcher(`/users/`);
+        return users || [];
+    } catch (error) {
+        return [];
+    }
+}
+
 export default async function AdminDashboard() {
     const session = await getServerSession(authOptions);
 
@@ -36,11 +45,12 @@ export default async function AdminDashboard() {
     }
 
     const exams = await getRecentExams();
+    const users = await getUsers();
     let metrics = { total_submissions: 0, average_score: 0, high_violations: [], accuracy_rate: 0 };
 
     if (exams && exams.length > 0) {
         metrics = await getAdminMetrics(exams[0].id);
     }
 
-    return <AdminDashboardClient metrics={metrics} exams={exams} />;
+    return <AdminDashboardClient metrics={metrics} exams={exams} users={users} />;
 }

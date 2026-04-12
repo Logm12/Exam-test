@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { getSession } from "next-auth/react";
 
 interface ParsedQuestion {
     number: number;
@@ -30,7 +31,7 @@ export default function ImportQuestionsModal({ isOpen, onClose, onImport, examId
 
     const handleFile = useCallback(async (file: File) => {
         const ext = file.name.split(".").pop()?.toLowerCase();
-        if (!["docx", "pdf"].includes(ext || "")) {
+        if (!["doc", "docx", "pdf"].includes(ext || "")) {
             setError(t("import.error"));
             return;
         }
@@ -47,21 +48,37 @@ export default function ImportQuestionsModal({ isOpen, onClose, onImport, examId
         formData.append("file", file);
 
         try {
+            const session = await getSession();
+            const token = (session as any)?.accessToken as string | undefined;
+            if (!token) {
+                throw new Error("Missing access token");
+            }
+
             const res = await fetch("/api/proxy/exams/import-questions", {
                 method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
                 body: formData,
             });
 
             if (!res.ok) {
-                const data = await res.json();
-                throw new Error(data.detail || "Parse failed");
+                let detail = "Parse failed";
+                try {
+                    const data = await res.json();
+                    detail = data.detail || detail;
+                } catch {
+                    // ignore
+                }
+                throw new Error(detail);
             }
 
             const data = await res.json();
             setParsedQuestions(data.questions);
             setSelectedIds(new Set(data.questions.map((_: ParsedQuestion, i: number) => i)));
         } catch (err) {
-            setError(t("import.error"));
+            const message = err instanceof Error ? err.message : "";
+            setError(message || t("import.error"));
         } finally {
             setIsProcessing(false);
         }
@@ -146,7 +163,7 @@ export default function ImportQuestionsModal({ isOpen, onClose, onImport, examId
                             <input
                                 ref={fileInputRef}
                                 type="file"
-                                accept=".docx,.pdf"
+                                accept=".docx"
                                 className="hidden"
                                 onChange={(e) => {
                                     const file = e.target.files?.[0];
@@ -162,8 +179,8 @@ export default function ImportQuestionsModal({ isOpen, onClose, onImport, examId
                             ) : (
                                 <div className="space-y-3">
                                     <svg className="mx-auto text-[var(--text-muted)]" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
-                                    <p className="text-sm text-[var(--text-secondary)]">{t("import.dropzone")}</p>
-                                    <p className="text-xs text-[var(--text-muted)]">{t("import.maxSize")}</p>
+                                    <p className="text-sm font-semibold text-[var(--text-secondary)]">{t("import.dropzone")}</p>
+                                    <p className="text-xs font-medium text-[var(--text-muted)]">Hỗ trợ file: .docx ({t("import.maxSize")})</p>
                                 </div>
                             )}
                         </div>
@@ -175,7 +192,7 @@ export default function ImportQuestionsModal({ isOpen, onClose, onImport, examId
                                     {t("import.found").replace("{count}", String(parsedQuestions.length))}
                                 </p>
                                 <button onClick={selectAll} className="text-xs text-[var(--accent-primary)] hover:underline cursor-pointer">
-                                    {selectedIds.size === parsedQuestions.length ? "Deselect All" : "Select All"}
+                                    {selectedIds.size === parsedQuestions.length ? "Bỏ chọn tất cả" : "Chọn tất cả"}
                                 </button>
                             </div>
                             {parsedQuestions.map((q, idx) => (
@@ -197,7 +214,7 @@ export default function ImportQuestionsModal({ isOpen, onClose, onImport, examId
                                             <div className="mt-2 space-y-1">
                                                 {Object.entries(q.options).map(([letter, text]) => (
                                                     <p key={letter} className={`text-xs ${letter === q.correct_answer ? 'text-[var(--status-success)] font-semibold' : 'text-[var(--text-secondary)]'}`}>
-                                                        {letter}. {text} {letter === q.correct_answer ? " (correct)" : ""}
+                                                        {letter}. {text} {letter === q.correct_answer ? " (đáp án đúng)" : ""}
                                                     </p>
                                                 ))}
                                             </div>
@@ -222,7 +239,7 @@ export default function ImportQuestionsModal({ isOpen, onClose, onImport, examId
                             onClick={() => { resetState(); }}
                             className="text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
                         >
-                            Upload a different file
+                            Tải lên tệp khác
                         </button>
                         <button
                             onClick={handleImport}

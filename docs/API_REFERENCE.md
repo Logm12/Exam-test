@@ -73,6 +73,14 @@ Get a single exam by ID.
 - `200`: Exam object
 - `404`: Exam not found
 
+### GET /exams/{exam_id}/landing
+
+Get landing page data for an exam (title, description, poster, rules, guides). Public endpoint.
+
+**Response:**
+- `200`: `{ "id": 1, "title": "...", "landing_config": { ... }, "start_time": "...", "end_time": "..." }`
+- `404`: Exam not found
+
 ### GET /exams/{exam_id}/student
 
 Get exam details with questions for a student. Correct answers are excluded from the response.
@@ -154,6 +162,40 @@ List all users. Admin only.
 ### GET /users/{user_id}
 
 Get a user by ID. Admin only.
+
+---
+
+## Student Profile
+
+### GET /students/me/profile
+
+Get the student profile for the currently authenticated user.
+
+**Response:**
+- `200`: Student profile object (cccd, address, phone, email, etc.)
+- `404`: Profile not found
+
+### PUT /students/me/profile
+
+Create or update the student profile for the currently authenticated user.
+
+**Request Body:**
+| Field          | Type   | Required | Description                |
+|----------------|--------|----------|----------------------------|
+| full_name      | string | Yes      | Legal name                 |
+| birth_date     | string | Yes      | ISO 8601 date             |
+| cccd           | string | Yes      | Citizenship ID number      |
+| address        | string | Yes      | Current address            |
+| phone          | string | Yes      | Contact phone number       |
+| email          | string | Yes      | Contact email              |
+| school         | string | Yes      | Educational institution    |
+| student_code   | string | No       | Student ID number          |
+| class_name     | string | No       | Class or group             |
+| lien_chi_doan  | string | No       | Youth Union branch         |
+
+**Response:**
+- `200`: Updated student profile object
+- `400`: Invalid data or duplicate record
 
 ---
 

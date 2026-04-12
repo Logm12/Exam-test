@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { LanguageProvider, useLanguage } from "@/contexts/LanguageContext";
-import LanguageToggle from "@/components/LanguageToggle";
 
 type Exam = {
     id: number;
@@ -22,7 +21,7 @@ function GatewayContent({ exam }: { exam: Exam | null; examId: string }) {
                     <div className="w-12 h-12 bg-red-50 text-red-600 rounded-full flex items-center justify-center mx-auto text-xl font-bold dark:bg-red-900/30 dark:text-red-400">!</div>
                     <h1 className="text-xl font-semibold text-[var(--text-primary)]">{t("exam.gateway.unavailable")}</h1>
                     <p className="text-[var(--text-secondary)] text-sm">{t("exam.gateway.unavailableDesc")}</p>
-                    <Link href="/landing" className="inline-block mt-4 text-[var(--accent-primary)] font-medium hover:underline text-sm">
+                    <Link href="/dashboard" className="inline-block mt-4 text-[var(--accent-primary)] font-medium hover:underline text-sm">
                         {t("exam.gateway.returnDashboard")}
                     </Link>
                 </div>
@@ -40,7 +39,6 @@ function GatewayContent({ exam }: { exam: Exam | null; examId: string }) {
                         </Link>
                     </div>
                     <div className="flex items-center space-x-4">
-                        <LanguageToggle />
                         <span className="font-semibold text-[var(--text-primary)] tracking-tight text-sm">
                             {t("exam.gateway.header")}
                         </span>
