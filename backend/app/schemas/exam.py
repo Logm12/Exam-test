@@ -20,7 +20,11 @@ class ExamBase(BaseModel):
     start_time: datetime
     end_time: Optional[datetime] = None
     theme_config: Optional[ThemeConfig] = None
+<<<<<<< HEAD
     landing_config: Optional[dict] = None
+=======
+    cover_image: Optional[str] = None
+>>>>>>> 682b9fa2abaf4464adc8bfe74aad9ef679313257
 
 # Properties to create
 class ExamCreate(ExamBase):

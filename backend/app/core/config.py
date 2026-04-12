@@ -28,6 +28,10 @@ class Settings(BaseSettings):
     # Cache (Redis)
     REDIS_HOST: str = "localhost"
     REDIS_PORT: str = "6379"
+
+    @property
+    def REDIS_URL(self) -> str:
+        return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}"
     
     # JWT Auth
     SECRET_KEY: str = "examOS-super-secret-key-change-in-production-2026"

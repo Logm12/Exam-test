@@ -102,6 +102,7 @@ async def get_my_exams(
             "duration": e.duration,
             "start_time": e.start_time,
             "created_at": e.created_at,
+            "end_time": getattr(e, "end_time", None),
             "is_published": e.is_published,
             "slug": e.slug,
             "cover_image": e.cover_image,

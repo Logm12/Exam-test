@@ -39,9 +39,15 @@ import traceback
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request, exc: Exception):
-    err_msg = "".join(traceback.format_exception(type(exc), exc, exc.__traceback__))
-    print(f"GLOBAL ERROR: {err_msg}")
-    return JSONResponse(status_code=500, content={"detail": str(exc), "traceback": err_msg})
+    try:
+        err_msg = "".join(traceback.format_exception(type(exc), value=exc, tb=exc.__traceback__))
+    except:
+        err_msg = "".join(traceback.format_exception(exc))
+    
+    with open("crash.log", "a", encoding="utf-8") as f:
+        f.write(f"GLOBAL ERROR: {err_msg}\n====\n")
+        
+    return JSONResponse(status_code=500, content={"detail": "An internal server error occurred."})
 
 # Configure CORS
 app.add_middleware(

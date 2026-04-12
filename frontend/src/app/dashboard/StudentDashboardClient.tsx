@@ -587,7 +587,7 @@ export default function StudentDashboardClient({
                 </nav>
 
                 <div className="px-3 pb-4">
-                    <button onClick={() => signOut({ callbackUrl: "/" })}
+                    <button onClick={() => signOut({ redirect: true, callbackUrl: "/login" })}
                         className="w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium text-gray-400 hover:bg-red-50 hover:text-red-500 transition-colors">
                         <IconLogout />
                         {sidebarOpen && <span>Đăng xuất</span>}
