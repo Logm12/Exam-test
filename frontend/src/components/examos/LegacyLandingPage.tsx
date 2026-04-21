@@ -29,8 +29,6 @@ export default function LegacyLandingPage() {
                         <FdbLogo className="text-[2.2rem] drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)] invert brightness-200" />
                     </div>
                     <div className="flex items-center space-x-6">
-                        <ThemeToggle />
-                        <LanguageToggle />
                         <Link
                             href="/login"
                             className="bg-white/10 hover:bg-white/20 backdrop-blur-md text-white border border-white/30 px-8 py-2.5 rounded-full text-sm font-bold transition-all"

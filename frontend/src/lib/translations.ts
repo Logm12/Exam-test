@@ -10,6 +10,7 @@ const translations: Record<string, Record<Locale, string>> = {
     "app.language": { vi: "EN", en: "VI" },
     "common.prev": { vi: "Câu trước", en: "Previous" },
     "common.next": { vi: "Câu tiếp", en: "Next" },
+    "common.cancel": { vi: "Hủy", en: "Cancel" },
 
     // Trang chủ
     "landing.hero.title": { vi: "Cổng đánh giá năng lực FDB TALENT", en: "FDB TALENT Assessment Portal" },
@@ -134,6 +135,7 @@ const translations: Record<string, Record<Locale, string>> = {
     "exam.take.submitting": { vi: "Đang nộp...", en: "Submitting..." },
     "exam.take.submitSuccess": { vi: "Nộp bài thành công!", en: "Submission successful!" },
     "exam.take.confirmSubmit": { vi: "Bạn có chắc chắn muốn nộp bài sớm? Hành động này không thể hoàn tác.", en: "Are you sure you want to finalize and submit early? You cannot undo this." },
+    "exam.take.confirmSubmitTitle": { vi: "Xác nhận nộp bài", en: "Confirm Submission" },
     "exam.take.typeAnswer": { vi: "Nhập câu trả lời...", en: "Type your answer here..." },
     "exam.take.characters": { vi: "ký tự", en: "characters" },
     "exam.take.noQuestions": { vi: "Không tìm thấy câu hỏi cho bài thi này.", en: "No questions found for this exam." },

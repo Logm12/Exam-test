@@ -12,10 +12,7 @@ interface CTAProps {
 
 export default function CTA({ organizerName, organizerDesc, organizerLogo, organizers }: CTAProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const backendBase = process.env.NEXT_PUBLIC_API_URL?.replace('/api/v1', '') || 'http://127.0.0.1:8000';
-  const defaultLogoUrl = organizerLogo 
-    ? (organizerLogo.startsWith("http") ? organizerLogo : `${backendBase}${organizerLogo}`)
-    : "/logo1.jpeg";
+  const defaultLogoUrl = organizerLogo || "/logo1.jpeg";
   
   const scroll = (direction: "left" | "right") => {
     if (scrollRef.current) {
@@ -28,7 +25,7 @@ export default function CTA({ organizerName, organizerDesc, organizerLogo, organ
   const cards: any[] = [];
   if (organizers && organizers.length > 0) {
     organizers.forEach((org) => {
-       const orgLogoUrl = org.logo ? (org.logo.startsWith("http") ? org.logo : `${backendBase}${org.logo}`) : "";
+       const orgLogoUrl = org.logo || "";
        cards.push({
           logo: orgLogoUrl,
           name: org.name || "Đơn vị tổ chức",

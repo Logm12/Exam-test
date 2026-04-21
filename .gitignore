@@ -35,3 +35,10 @@ dist/
 
 # Local workspace copies
 Exam-test/
+
+# Archives
+*.tar
+*.tar.gz
+*.zip
+*.rar
+*.7z

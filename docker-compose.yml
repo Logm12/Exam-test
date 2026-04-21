@@ -49,6 +49,7 @@ services:
     environment:
       - NODE_ENV=production
       - NEXT_PUBLIC_API_URL=http://112.137.143.139:8000/api/v1
+      - INTERNAL_API_URL=http://online-exam-backend:8000/api/v1
       - INTERNAL_API_URL=http://backend:8000/api/v1
       - NEXTAUTH_URL=https://fdbtalent.vnuis.edu.vn
       - NEXTAUTH_SECRET=vnuis_nextauth_secret

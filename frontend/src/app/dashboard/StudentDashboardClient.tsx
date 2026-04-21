@@ -95,9 +95,7 @@ function ExamCard({ exam, themeIdx }: { exam: Exam; themeIdx: number }) {
     const answered = exam.answered_questions || 0;
     const isLocked = status === "completed" || status === "submitted";
 
-    const coverSrc = exam.cover_image
-        ? (exam.cover_image.startsWith("http") ? exam.cover_image : `http://127.0.0.1:8000${exam.cover_image}`)
-        : null;
+    const coverSrc = exam.cover_image || null;
 
     const inner = (
         <div

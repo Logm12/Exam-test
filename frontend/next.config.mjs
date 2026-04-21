@@ -26,6 +26,15 @@ const nextConfig = {
       },
     ],
   },
+  async rewrites() {
+    const backendHost = process.env.NODE_ENV === 'production' ? 'http://backend:8000' : 'http://127.0.0.1:8000';
+    return [
+      {
+        source: '/uploads/:path*',
+        destination: `${backendHost}/uploads/:path*`,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

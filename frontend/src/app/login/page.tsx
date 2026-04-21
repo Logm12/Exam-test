@@ -19,14 +19,12 @@ function LoginForm() {
 
     useEffect(() => {
         if (status === "authenticated") {
-            const user = session?.user as any;
-            if (user?.role === "student" && user?.profile_completed === false) {
-                router.push("/dashboard/profile");
-            } else {
-                router.push(callbackUrl === "/login" || callbackUrl === "/admin/login" ? (role === "admin" ? "/admin" : "/dashboard") : callbackUrl);
-            }
+            // "vào trang đăng nhập là kể cả student hay admin đều phải login"
+            // So if they somehow land on /login while authenticated, we can optionally sign them out
+            // signOut({ redirect: false });
+            // Alternatively, we just do not auto-redirect them, letting them see the login form.
         }
-    }, [status, session, router, callbackUrl, role]);
+    }, [status]);
 
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
