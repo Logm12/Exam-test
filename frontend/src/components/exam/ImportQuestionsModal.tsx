@@ -74,8 +74,9 @@ export default function ImportQuestionsModal({ isOpen, onClose, onImport, examId
             }
 
             const data = await res.json();
-            setParsedQuestions(data.questions);
-            setSelectedIds(new Set(data.questions.map((_: ParsedQuestion, i: number) => i)));
+            const qs = Array.isArray(data?.questions) ? data.questions : [];
+            setParsedQuestions(qs);
+            setSelectedIds(new Set(qs.map((_: ParsedQuestion, i: number) => i)));
         } catch (err) {
             const message = err instanceof Error ? err.message : "";
             setError(message || t("import.error"));

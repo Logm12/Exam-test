@@ -24,5 +24,6 @@ class Student(Base):
     phone = Column(String, nullable=True)
     email = Column(String, nullable=True)
     lien_chi_doan = Column(String, nullable=True)
+    team_name = Column(String, nullable=True)
 
     user = relationship("User", back_populates="student_profile")

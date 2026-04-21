@@ -9,17 +9,15 @@ import { contestInfo } from "@/components/legal-contest/data";
 import { ExamLandingData } from "@/components/legal-contest/LegalContestLandingPage";
 
 export default function Hero({ exam }: { exam?: ExamLandingData }) {
-  const backendBase = process.env.NEXT_PUBLIC_API_URL?.replace('/api/v1', '') || 'http://127.0.0.1:8000';
-  
   const titleDisplay = exam?.title || contestInfo.titleDisplay;
   const subtitle = exam?.landing_config?.slogan || exam?.description || contestInfo.subtitle;
   const organizerName = exam?.landing_config?.organizer_name || "Đoàn TNCS Hồ Chí Minh • Trường Quốc tế, ĐHQGHN";
   
   let posterUrl = "/contest.jpg";
   if (exam?.landing_config?.poster_image) {
-    posterUrl = exam.landing_config.poster_image.startsWith("http") ? exam.landing_config.poster_image : `${backendBase}${exam.landing_config.poster_image}`;
+    posterUrl = exam.landing_config.poster_image;
   } else if (exam?.cover_image) {
-    posterUrl = exam.cover_image.startsWith("http") ? exam.cover_image : `${backendBase}${exam.cover_image}`;
+    posterUrl = exam.cover_image;
   }
 
   return (

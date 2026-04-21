@@ -20,6 +20,8 @@ class Exam(Base):
     end_time = Column(DateTime(timezone=True), nullable=True)
     theme_config = Column(JSON, nullable=True)
     landing_config = Column(JSON, nullable=True)
+    shuffle_questions = Column(Boolean, default=False)
+    shuffle_options = Column(Boolean, default=False)
 
     @staticmethod
     def generate_slug() -> str:

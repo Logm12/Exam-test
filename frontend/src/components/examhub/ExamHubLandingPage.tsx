@@ -34,9 +34,6 @@ function apiBase() {
   return process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api/v1";
 }
 
-function apiOrigin() {
-  return apiBase().replace(/\/api\/v1\/?$/, "");
-}
 
 function classifyCategory(text: string): ExamCategory {
   const t = text.toLowerCase();
@@ -122,12 +119,10 @@ export default function ExamHubLandingPage() {
         if (!res.ok) throw new Error(`Failed to load exams (${res.status})`);
 
         const data: ApiExam[] = await res.json();
-        const origin = apiOrigin();
-
         const mapped: Exam[] = data.map((e) => {
           const category = classifyCategory(`${e.title} ${e.description ?? ""}`);
           const status = deriveStatus(e.start_time, e.duration);
-          const coverImageUrl = e.cover_image ? `${origin}${e.cover_image}` : undefined;
+          const coverImageUrl = e.cover_image || undefined;
 
           return {
             id: String(e.id),

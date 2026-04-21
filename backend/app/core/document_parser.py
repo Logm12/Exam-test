@@ -85,9 +85,17 @@ def parse_docx(file_path: str) -> List[ParsedQuestion]:
 
         # Check if this paragraph is an option line
         o_match = OPTION_PATTERN.match(text)
-        if o_match and current_question is not None:
-            option_letter = o_match.group(1).upper()
-            option_text = o_match.group(2).strip()
+        is_list = bool(para._element.xpath('.//w:numPr'))
+        
+        if (o_match or is_list) and current_question is not None:
+            if o_match:
+                option_letter = o_match.group(1).upper()
+                option_text = o_match.group(2).strip()
+            else:
+                idx = len(current_question.options)
+                option_letter = chr(ord('A') + min(idx, 25))
+                option_text = text.strip()
+                
             current_question.options[option_letter] = option_text
 
             # Detect if this option is bold (correct answer)

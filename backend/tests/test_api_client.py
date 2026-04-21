@@ -1,12 +1,16 @@
 import asyncio
+import os
 from fastapi.testclient import TestClient
 from app.main import app
 
+ADMIN_USERNAME = os.environ.get("TEST_ADMIN_USERNAME", "admin")
+ADMIN_PASSWORD = os.environ.get("TEST_ADMIN_PASSWORD", "admin123")
+
 def test():
     client = TestClient(app)
-    
+
     # 1. Login
-    res = client.post("/api/v1/auth/login", data={"username":"admin", "password":"admin123"})
+    res = client.post("/api/v1/auth/login", data={"username": ADMIN_USERNAME, "password": ADMIN_PASSWORD})
     
     if res.status_code != 200:
         print("Login Failed:", res.status_code, res.text)

@@ -49,6 +49,8 @@ class Settings(BaseSettings):
         "http://localhost:8000",
         "http://127.0.0.1:3000",
         "http://127.0.0.1:8000",
+        "http://112.137.143.139:3000",
+        "http://112.137.143.139:8000",
     ]
     
     class Config:

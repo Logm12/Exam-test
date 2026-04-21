@@ -335,6 +335,35 @@ async def get_exam_for_student(
     exam = result.scalars().first()
     if not exam or not exam.is_published:
         raise HTTPException(status_code=404, detail="Exam not found or not published")
+    
+    # Shuffle logic
+    import random
+    # Use a stable seed for this user and exam so the shuffle is consistent for them
+    seed_val = f"{current_user.id}_{exam.id}"
+    rng = random.Random(seed_val)
+
+    # We need toReturn a copy to avoid mutating the original objects in the session if possible,
+    # but for Pydantic serialization, we can just modify the in-memory list.
+    if exam.shuffle_questions:
+        # Create a shallow copy of the list to shuffle
+        shuffled_questions = list(exam.questions)
+        rng.shuffle(shuffled_questions)
+        exam.questions = shuffled_questions
+
+    if exam.shuffle_options:
+        for q in exam.questions:
+            if q.type == "multiple_choice" and q.options:
+                # Shuffle options dict
+                items = list(q.options.items()) # [("A", "text"), ("B", "text")]
+                rng.shuffle(items)
+                # Re-assign keys A, B, C, D to the shuffled items
+                new_options = {}
+                keys = sorted(q.options.keys())
+                for i, (old_key, text) in enumerate(items):
+                    if i < len(keys):
+                        new_options[keys[i]] = text
+                q.options = new_options
+
     return exam
 
 @router.put("/{exam_id}", response_model=ExamSchema)
@@ -458,13 +487,37 @@ async def submit_exam(
         await db.execute(delete(Answer).where(Answer.submission_id == submission.id))
         await db.flush()
     
+    import random
+    seed_val = f"{current_user.id}_{exam.id}"
+    
     for q in exam.questions:
         ans_value = submit_in.answers.get(str(q.id))
         if q.type == "multiple_choice":
             total_mcq += 1
-            # Strict validation for correct answer
-            if ans_value is not None and q.correct_answer is not None and str(ans_value).strip() != "" and str(ans_value).strip() == str(q.correct_answer).strip():
-                correct_count += 1
+            
+            # Grading logic with shuffle support
+            correct_text = q.options.get(q.correct_answer) if q.options and q.correct_answer else None
+            
+            if exam.shuffle_options:
+                # Standardize what "A", "B", etc. mean for THIS user
+                rng = random.Random(seed_val)
+                items = list(q.options.items())
+                rng.shuffle(items)
+                
+                # Find which key the student sent and what text it corresponds to in their shuffled view
+                student_view_options = {}
+                keys = sorted(q.options.keys())
+                for i, (old_key, text) in enumerate(items):
+                    if i < len(keys):
+                        student_view_options[keys[i]] = text
+                
+                student_selected_text = student_view_options.get(str(ans_value))
+                if student_selected_text and correct_text and student_selected_text == correct_text:
+                    correct_count += 1
+            else:
+                # Normal grading
+                if ans_value is not None and q.correct_answer is not None and str(ans_value).strip() != "" and str(ans_value).strip() == str(q.correct_answer).strip():
+                    correct_count += 1
                 
         # Prepare Answer record
         is_mcq = q.type == "multiple_choice"

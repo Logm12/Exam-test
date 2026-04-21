@@ -1,8 +1,12 @@
+import os
 import requests
+
+ADMIN_USERNAME = os.environ.get("TEST_ADMIN_USERNAME", "admin")
+ADMIN_PASSWORD = os.environ.get("TEST_ADMIN_PASSWORD", "admin123")
 
 def test():
     # 1. Login
-    res = requests.post("http://127.0.0.1:8000/api/v1/auth/login", data={"username":"admin", "password":"admin123"})
+    res = requests.post("http://127.0.0.1:8000/api/v1/auth/login", data={"username": ADMIN_USERNAME, "password": ADMIN_PASSWORD})
     token = res.json()["access_token"]
     
     # 2. Get Exams

@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+// Use INTERNAL_API_URL for server-side proxying if available (to reach backend via Docker network)
+const BACKEND_URL = process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
     return proxyRequest(request, await params);
@@ -53,6 +54,10 @@ async function proxyRequest(request: NextRequest, params: { path: string[] }) {
             fetchOptions.body = await request.text();
         } else if (contentType.includes("application/x-www-form-urlencoded")) {
             fetchOptions.body = await request.text();
+        } else if (contentType.includes("multipart/form-data")) {
+            fetchOptions.body = await request.arrayBuffer();
+            // Important: Preserve the boundary in the content-type header
+            headers["content-type"] = contentType;
         } else {
             fetchOptions.body = await request.arrayBuffer();
         }

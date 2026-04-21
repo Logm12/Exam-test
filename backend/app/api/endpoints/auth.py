@@ -32,6 +32,15 @@ async def register(user_in: UserCreate, db: AsyncSession = Depends(get_db)):
         role=user_in.role or "student"
     )
     db.add(db_user)
+    await db.flush()
+
+    if user_in.team_name:
+        db.add(Student(
+            user_id=db_user.id,
+            full_name=user_in.username,
+            team_name=user_in.team_name,
+        ))
+
     await db.commit()
     await db.refresh(db_user)
     return db_user

@@ -17,6 +17,7 @@ class StudentBase(BaseModel):
     phone: Optional[str] = None
     email: Optional[str] = None
     lien_chi_doan: Optional[str] = None
+    team_name: Optional[str] = None
 
 
 class StudentCreate(StudentBase):
@@ -36,6 +37,7 @@ class StudentUpdate(BaseModel):
     phone: Optional[str] = None
     email: Optional[str] = None
     lien_chi_doan: Optional[str] = None
+    team_name: Optional[str] = None
 
 
 class Student(StudentBase):

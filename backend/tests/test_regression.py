@@ -7,10 +7,16 @@ Covers:
   4. 404 for non-existent exam metrics
   5. RBAC -- student cannot access admin metrics
 """
+import os
 import requests, sys
 
 BASE = "http://127.0.0.1:8000/api/v1"
 results = []
+
+ADMIN_USERNAME = os.environ.get("TEST_ADMIN_USERNAME", "admin")
+ADMIN_PASSWORD = os.environ.get("TEST_ADMIN_PASSWORD", "admin123")
+STUDENT_USERNAME = os.environ.get("TEST_STUDENT_USERNAME", "student")
+STUDENT_PASSWORD = os.environ.get("TEST_STUDENT_PASSWORD", "password123")
 
 def report(name, ok, detail=""):
     tag = "PASS" if ok else "FAIL"
@@ -22,13 +28,13 @@ print("FDB TALENT Backend Regression Tests")
 print("=" * 60)
 
 # --- 1. Admin Login ---
-r = requests.post(f"{BASE}/auth/login", data={"username": "admin", "password": "admin123"})
+r = requests.post(f"{BASE}/auth/login", data={"username": ADMIN_USERNAME, "password": ADMIN_PASSWORD})
 report("Admin login returns 200", r.status_code == 200, f"status={r.status_code}")
 admin_token = r.json().get("access_token", "") if r.status_code == 200 else ""
 admin_headers = {"Authorization": f"Bearer {admin_token}"}
 
 # --- 2. Student Login ---
-r = requests.post(f"{BASE}/auth/login", data={"username": "student", "password": "password123"})
+r = requests.post(f"{BASE}/auth/login", data={"username": STUDENT_USERNAME, "password": STUDENT_PASSWORD})
 report("Student login returns 200", r.status_code == 200, f"status={r.status_code}")
 student_token = r.json().get("access_token", "") if r.status_code == 200 else ""
 student_headers = {"Authorization": f"Bearer {student_token}"}

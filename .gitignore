@@ -25,8 +25,20 @@ node_modules/
 out/
 dist/
 
+# Environment / secrets
+.env
+.env.local
+.env.*.local
+
 # OS
 .DS_Store
 
 # Local workspace copies
 Exam-test/
+
+# Archives
+*.tar
+*.tar.gz
+*.zip
+*.rar
+*.7z
