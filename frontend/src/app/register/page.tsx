@@ -15,6 +15,7 @@ export default function RegisterForm() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [teamName, setTeamName] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState(false);
@@ -36,7 +37,8 @@ export default function RegisterForm() {
                 body: JSON.stringify({
                     username,
                     password,
-                    role: "student"
+                    role: "student",
+                    team_name: teamName
                 })
             });
 
@@ -140,6 +142,17 @@ export default function RegisterForm() {
                                     onChange={(e) => setConfirmPassword(e.target.value)}
                                     className="block w-full appearance-none rounded-xl border border-[var(--border-default)] px-4 py-3.5 sm:text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]/40 focus:border-[#1e3a8a] bg-[var(--surface-card)] text-[var(--text-primary)] shadow-sm"
                                     placeholder="••••••••"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-2">Tên đội thi</label>
+                                <input
+                                    type="text"
+                                    value={teamName}
+                                    onChange={(e) => setTeamName(e.target.value)}
+                                    className="block w-full appearance-none rounded-xl border border-[var(--border-default)] px-4 py-3.5 sm:text-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]/40 focus:border-[#1e3a8a] bg-[var(--surface-card)] text-[var(--text-primary)] shadow-sm"
+                                    placeholder="Nhập tên đội thi của bạn"
                                 />
                             </div>
 

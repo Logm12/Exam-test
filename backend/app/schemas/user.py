@@ -9,6 +9,7 @@ class UserBase(BaseModel):
 # Properties to receive via API on creation
 class UserCreate(UserBase):
     password: str
+    team_name: Optional[str] = None
 
 # Properties to receive via API on update
 class UserUpdate(UserBase):

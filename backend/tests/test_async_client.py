@@ -1,12 +1,16 @@
 import asyncio
+import os
 import httpx
 from app.main import app
+
+ADMIN_USERNAME = os.environ.get("TEST_ADMIN_USERNAME", "admin")
+ADMIN_PASSWORD = os.environ.get("TEST_ADMIN_PASSWORD", "admin123")
 
 async def test():
     transport = httpx.ASGITransport(app=app)
     async with httpx.AsyncClient(transport=transport, base_url="http://test") as client:
         # 1. Login
-        res = await client.post("/api/v1/auth/login", data={"username":"admin", "password":"admin123"})
+        res = await client.post("/api/v1/auth/login", data={"username": ADMIN_USERNAME, "password": ADMIN_PASSWORD})
         if res.status_code != 200:
             print("Login Failed:", res.status_code, res.text)
             return
