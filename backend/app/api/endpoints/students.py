@@ -55,7 +55,16 @@ async def create_student(
         await db.commit()
     except IntegrityError as e:
         await db.rollback()
-        raise HTTPException(status_code=400, detail="Duplicate or invalid student data") from e
+        err_msg = str(e).lower()
+        if "mssv" in err_msg:
+            raise HTTPException(status_code=400, detail="Mã số sinh viên (MSSV) đã tồn tại")
+        if "cccd" in err_msg:
+            raise HTTPException(status_code=400, detail="Số CCCD đã tồn tại")
+        if "phone" in err_msg:
+            raise HTTPException(status_code=400, detail="Số điện thoại đã tồn tại")
+        if "email" in err_msg:
+            raise HTTPException(status_code=400, detail="Email đã tồn tại")
+        raise HTTPException(status_code=400, detail="Dữ liệu sinh viên bị trùng lặp hoặc không hợp lệ") from e
     await db.refresh(student)
     return student
 
@@ -91,7 +100,7 @@ async def update_my_profile(
         payload["user_id"] = current_user.id
         # full_name is required in Student model but might not be in payload if partial update, so fallback
         if "full_name" not in payload:
-            payload["full_name"] = current_user.full_name or "Unknown"
+            payload["full_name"] = "Unknown"
         student = Student(**payload)
         db.add(student)
     else:
@@ -104,7 +113,16 @@ async def update_my_profile(
         await db.commit()
     except IntegrityError as e:
         await db.rollback()
-        raise HTTPException(status_code=400, detail="Duplicate or invalid student data") from e
+        err_msg = str(e).lower()
+        if "mssv" in err_msg:
+            raise HTTPException(status_code=400, detail="Mã số sinh viên (MSSV) đã tồn tại")
+        if "cccd" in err_msg:
+            raise HTTPException(status_code=400, detail="Số CCCD đã tồn tại")
+        if "phone" in err_msg:
+            raise HTTPException(status_code=400, detail="Số điện thoại đã tồn tại")
+        if "email" in err_msg:
+            raise HTTPException(status_code=400, detail="Email đã tồn tại")
+        raise HTTPException(status_code=400, detail="Dữ liệu sinh viên bị trùng lặp hoặc không hợp lệ") from e
     
     await db.refresh(student)
     return student
@@ -160,7 +178,16 @@ async def update_student(
         await db.commit()
     except IntegrityError as e:
         await db.rollback()
-        raise HTTPException(status_code=400, detail="Duplicate or invalid student data") from e
+        err_msg = str(e).lower()
+        if "mssv" in err_msg:
+            raise HTTPException(status_code=400, detail="Mã số sinh viên (MSSV) đã tồn tại")
+        if "cccd" in err_msg:
+            raise HTTPException(status_code=400, detail="Số CCCD đã tồn tại")
+        if "phone" in err_msg:
+            raise HTTPException(status_code=400, detail="Số điện thoại đã tồn tại")
+        if "email" in err_msg:
+            raise HTTPException(status_code=400, detail="Email đã tồn tại")
+        raise HTTPException(status_code=400, detail="Dữ liệu sinh viên bị trùng lặp hoặc không hợp lệ") from e
     await db.refresh(student)
     return student
 

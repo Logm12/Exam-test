@@ -3,7 +3,16 @@ import GoogleProvider from "next-auth/providers/google";
 import FacebookProvider from "next-auth/providers/facebook";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+const getApiUrl = () => {
+    const isServer = typeof window === "undefined";
+    if (isServer) {
+        // Use internal Docker network URL if available, otherwise fallback to public
+        return process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api/v1";
+    }
+    return process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+};
+
+const API_URL = getApiUrl();
 
 export const authOptions: NextAuthOptions = {
     providers: [
@@ -18,8 +27,9 @@ export const authOptions: NextAuthOptions = {
                 if (!credentials?.username || !credentials?.password) return null;
 
                 try {
-                    // Use IPv4 loopback for Node 18+ SSR if localhost
-                    const loginUrl = `${API_URL}/auth/login`.replace("localhost", "127.0.0.1");
+                    // Internal communication (server-to-server)
+                    const loginUrl = `${API_URL}/auth/login`;
+                    console.log(`[NextAuth] Authorizing via: ${loginUrl}`);
                     // Authenticate against FastAPI backend
                     const formData = new URLSearchParams();
                     formData.append("username", credentials.username);
@@ -117,7 +127,12 @@ export const authOptions: NextAuthOptions = {
             : []),
     ],
     callbacks: {
-        async jwt({ token, user, account }) {
+        async jwt({ token, user, account, trigger, session }) {
+            // Handle update trigger from useSession().update()
+            if (trigger === "update" && session?.profile_completed !== undefined) {
+                token.profile_completed = session.profile_completed;
+            }
+
             // On first sign-in, pack user data into the JWT
             if (user) {
                 token.accessToken = (user as any).accessToken;
@@ -173,6 +188,18 @@ export const authOptions: NextAuthOptions = {
         strategy: "jwt",
         maxAge: 8 * 60 * 60, // 8 Hours
     },
+    useSecureCookies: process.env.NODE_ENV === "production",
+    cookies: process.env.NODE_ENV === "production" ? {
+        sessionToken: {
+            name: `__Secure-next-auth.session-token`,
+            options: {
+                httpOnly: true,
+                sameSite: 'lax',
+                path: '/',
+                secure: true
+            }
+        }
+    } : undefined,
     secret: process.env.NEXTAUTH_SECRET,
     pages: {
         signIn: "/login",

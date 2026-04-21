@@ -21,7 +21,7 @@ echo.
 
 REM Start Backend in a new window
 echo [2/3] Starting Backend (FastAPI @ port 8000)...
-start "FDB TALENT - Backend" cmd /k "title FDB TALENT Backend && cd /d "%~dp0backend" && call conda activate FDBTa && python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload"
+start "FDB TALENT - Backend" cmd /k "title FDB TALENT Backend && cd /d "%~dp0backend" && .\venv\Scripts\python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload"
 echo       Backend starting in new window...
 timeout /t 3 /nobreak >nul
 echo.
