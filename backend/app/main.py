@@ -9,19 +9,9 @@ import os
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup
-    try:
-        import redis.asyncio as aioredis
-        from fastapi_limiter import FastAPILimiter
-        redis_url = getattr(settings, 'REDIS_URL', "redis://localhost:6379")
-        redis_conn = aioredis.from_url(redis_url, encoding="utf-8", decode_responses=True)
-        await redis_conn.ping()
-        await FastAPILimiter.init(redis_conn)
-        print("[OK] Redis rate limiter initialized successfully")
-    except Exception as e:
-        print(f"[WARN] Redis not available, rate limiting disabled: {e}")
+    # Startup (Rate limiting disabled for stability)
     yield
-    # Shutdown (nothing to clean up)
+    # Shutdown
 
 
 app = FastAPI(

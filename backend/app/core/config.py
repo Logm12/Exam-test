@@ -42,6 +42,9 @@ class Settings(BaseSettings):
     # BACKEND_CORS_ORIGINS is a JSON-formatted list of strings
     # e.g: '["http://localhost", "http://localhost:4200", "http://localhost:3000"]'
     BACKEND_CORS_ORIGINS: List[str] = [
+        "https://fdbtalent.vnuis.edu.vn",
+        "http://fdbtalent.vnuis.edu.vn",
+        "https://vnuis.edu.vn",
         "http://localhost:3000",
         "http://localhost:8000",
         "http://127.0.0.1:3000",
