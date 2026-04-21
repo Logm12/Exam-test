@@ -21,6 +21,8 @@ class ExamBase(BaseModel):
     end_time: Optional[datetime] = None
     theme_config: Optional[ThemeConfig] = None
     landing_config: Optional[dict] = None
+    shuffle_questions: bool = False
+    shuffle_options: bool = False
 
 # Properties to create
 class ExamCreate(ExamBase):
@@ -37,6 +39,8 @@ class ExamUpdate(BaseModel):
     end_time: Optional[datetime] = None
     theme_config: Optional[ThemeConfig] = None
     landing_config: Optional[dict] = None
+    shuffle_questions: Optional[bool] = None
+    shuffle_options: Optional[bool] = None
 
 class ExamInDBBase(ExamBase):
     id: int

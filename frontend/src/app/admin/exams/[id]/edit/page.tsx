@@ -65,6 +65,8 @@ export default function EditExam() {
     const [examTitle, setExamTitle] = useState("");
     const [examDuration, setExamDuration] = useState(60);
     const [questions, setQuestions] = useState<QuestionForm[]>([]);
+    const [shuffleQuestions, setShuffleQuestions] = useState(false);
+    const [shuffleOptions, setShuffleOptions] = useState(false);
     const [isImportModalOpen, setIsImportModalOpen] = useState(false);
     const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
     const [coverImagePreview, setCoverImagePreview] = useState<string | null>(null);
@@ -131,6 +133,8 @@ export default function EditExam() {
                 const exam = await fetcher(`/exams/${params.id}`);
                 setExamTitle(exam.title);
                 setExamDuration(exam.duration);
+                setShuffleQuestions(exam.shuffle_questions || false);
+                setShuffleOptions(exam.shuffle_options || false);
                 const backendBase = process.env.NEXT_PUBLIC_API_URL?.replace('/api/v1', '') || 'http://127.0.0.1:8000';
                 if (exam.cover_image) setExistingCoverImage(`${backendBase}${exam.cover_image}`);
 
@@ -292,7 +296,9 @@ export default function EditExam() {
                     start_time: startTime ? new Date(startTime).toISOString() : new Date().toISOString(),
                     end_time: endTime ? new Date(endTime).toISOString() : null,
                     is_published: true,
-                    landing_config: landing_config
+                    landing_config: landing_config,
+                    shuffle_questions: shuffleQuestions,
+                    shuffle_options: shuffleOptions
                 })
             });
 
@@ -393,6 +399,27 @@ export default function EditExam() {
                                 }}
                             />
                         </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-6 pt-2">
+                        <label className="flex items-center gap-2 text-sm text-[var(--text-primary)] cursor-pointer bg-[var(--bg-tertiary)] px-4 py-2 rounded-lg border border-[var(--border-default)] hover:border-[var(--accent-primary)] transition-all">
+                            <input 
+                                type="checkbox" 
+                                className="w-4 h-4 rounded border-[var(--border-default)] text-[var(--accent-primary)] focus:ring-[var(--accent-primary)]"
+                                checked={shuffleQuestions}
+                                onChange={(e) => setShuffleQuestions(e.target.checked)}
+                            />
+                            Trộn thứ tự câu hỏi
+                        </label>
+                        <label className="flex items-center gap-2 text-sm text-[var(--text-primary)] cursor-pointer bg-[var(--bg-tertiary)] px-4 py-2 rounded-lg border border-[var(--border-default)] hover:border-[var(--accent-primary)] transition-all">
+                            <input 
+                                type="checkbox" 
+                                className="w-4 h-4 rounded border-[var(--border-default)] text-[var(--accent-primary)] focus:ring-[var(--accent-primary)]"
+                                checked={shuffleOptions}
+                                onChange={(e) => setShuffleOptions(e.target.checked)}
+                            />
+                            Trộn thứ tự đáp án (Trắc nghiệm)
+                        </label>
                     </div>
 
                     {/* Cover Image Upload */}

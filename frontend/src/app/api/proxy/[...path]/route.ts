@@ -53,6 +53,10 @@ async function proxyRequest(request: NextRequest, params: { path: string[] }) {
             fetchOptions.body = await request.text();
         } else if (contentType.includes("application/x-www-form-urlencoded")) {
             fetchOptions.body = await request.text();
+        } else if (contentType.includes("multipart/form-data")) {
+            fetchOptions.body = await request.arrayBuffer();
+            // Important: Preserve the boundary in the content-type header
+            headers["content-type"] = contentType;
         } else {
             fetchOptions.body = await request.arrayBuffer();
         }
