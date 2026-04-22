@@ -75,6 +75,15 @@ export default function ExamSubmissionsPage() {
             alert(err.message || "Reset hàng loạt thất bại");
         } finally {
             setIsLoading(false);
+    const handleDelete = async (subId: number) => {
+        if (!confirm("Bạn có chắc chắn muốn xoá bài làm của thí sinh này để họ làm lại không?")) {
+            return;
+        }
+        try {
+            await fetcher(`/exams/${examId}/submissions/${subId}`, { method: "DELETE" });
+            setSubmissions(submissions.filter(s => s.id !== subId));
+        } catch (err: any) {
+            alert(err.message || "Xoá thất bại");
         }
     };
 
@@ -226,6 +235,7 @@ export default function ExamSubmissionsPage() {
                                     <th className="px-6 py-4 text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Vi phạm</th>
                                     <th className="px-6 py-4 text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Thời gian nộp</th>
                                     <th className="px-6 py-4 text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider text-right">Thao tác</th>
+                                    <th className="px-6 py-4 text-right text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Hành động</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-[var(--border-default)]">
@@ -296,6 +306,10 @@ export default function ExamSubmissionsPage() {
                                             >
                                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/></svg>
                                                 Xóa & Reset
+                                                onClick={() => handleDelete(sub.id)}
+                                                className="text-red-500 hover:text-red-700 hover:bg-red-50 px-3 py-1.5 rounded-md text-sm font-medium transition-colors border border-transparent hover:border-red-200"
+                                            >
+                                                Xoá bài
                                             </button>
                                         </td>
                                     </tr>

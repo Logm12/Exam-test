@@ -8,7 +8,7 @@ const getApiUrl = () => {
     if (isServer) {
         return process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || "http://backend:8000/api/v1";
     }
-    return process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+    return process.env.NEXT_PUBLIC_API_URL || "https://fdbtalent.vnuis.edu.vn/api/v1";
 };
 
 const API_URL = getApiUrl();
@@ -90,6 +90,7 @@ export const authOptions: NextAuthOptions = {
     },
     session: {
         strategy: "jwt",
+        maxAge: 24 * 60 * 60, // 1 day
     },
     cookies: {
         sessionToken: {
