@@ -577,7 +577,7 @@ export default function StudentDashboardClient({
                 <nav className="flex-1 py-3 px-3 space-y-0.5">
                     {navItems.map((item) => (
                         <button key={item.key} onClick={() => setActiveMenu(item.key)}
-                            className={`w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-bold transition-all duration-150 ${activeMenu === item.key ? "bg-[#2563EB] text-white shadow-md" : "text-gray-500 hover:bg-gray-100 hover:text-gray-900"}`}>
+                            className={`w-full flex items-center ${sidebarOpen ? 'justify-start px-3' : 'justify-center'} gap-3 rounded-xl py-2.5 text-[13px] font-bold transition-all duration-150 ${activeMenu === item.key ? "bg-[#2563EB] text-white shadow-md" : "text-gray-500 hover:bg-gray-100 hover:text-gray-900"}`}>
                             <span className={activeMenu === item.key ? "text-white" : "text-gray-400"}>{item.icon}</span>
                             {sidebarOpen && <span>{item.label}</span>}
                         </button>
@@ -586,7 +586,7 @@ export default function StudentDashboardClient({
 
                 <div className="px-3 pb-4">
                     <button onClick={() => signOut({ redirect: true, callbackUrl: "/login" })}
-                        className="w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium text-gray-400 hover:bg-red-50 hover:text-red-500 transition-colors">
+                        className={`w-full flex items-center ${sidebarOpen ? 'justify-start px-3' : 'justify-center'} gap-3 rounded-xl py-2.5 text-[13px] font-medium text-gray-400 hover:bg-red-50 hover:text-red-500 transition-colors`}>
                         <IconLogout />
                         {sidebarOpen && <span>Đăng xuất</span>}
                     </button>
