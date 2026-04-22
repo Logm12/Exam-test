@@ -356,9 +356,11 @@ async def get_exam_for_student(
     if exam.shuffle_options:
         for q in exam.questions:
             if q.type == "multiple_choice" and q.options:
-                # Shuffle options dict
-                items = list(q.options.items()) # [("A", "text"), ("B", "text")]
+                # Sort items by key before shuffling to ensure deterministic results 
+                # across different environments and calls.
+                items = sorted(q.options.items()) # e.g., [("A", "text"), ("B", "text")]
                 rng.shuffle(items)
+                
                 # Re-assign keys A, B, C, D to the shuffled items
                 new_options = {}
                 keys = sorted(q.options.keys())
@@ -495,8 +497,13 @@ async def submit_exam(
     
     for q in exam.questions:
         ans_value = submit_in.answers.get(str(q.id))
-        if q.type == "multiple_choice":
-            total_mcq += 1
+        if q.type and q.type.lower() == "multiple_choice":
+            # Only count towards total if a correct answer is actually set in the DB
+            # This prevents "dead questions" from lowering the total score improperly.
+            if q.correct_answer and str(q.correct_answer).strip():
+                total_mcq += 1
+            else:
+                continue # Skip questions with no correct answer set
             
             # Grading logic with shuffle support
             correct_text = q.options.get(q.correct_answer) if q.options and q.correct_answer else None
@@ -504,23 +511,26 @@ async def submit_exam(
             if exam.shuffle_options:
                 # Standardize what "A", "B", etc. mean for THIS user
                 rng = random.Random(seed_val)
-                items = list(q.options.items())
+                # MUST sort items by key to match the order in get_exam_for_student
+                items = sorted(q.options.items())
                 rng.shuffle(items)
                 
-                # Find which key the student sent and what text it corresponds to in their shuffled view
-                student_view_options = {}
+                # Map the letter the student saw (e.g., 'A') back to the original key (e.g., 'C')
+                shuffled_to_original_map = {}
                 keys = sorted(q.options.keys())
-                for i, (old_key, text) in enumerate(items):
+                for i, (original_key, text) in enumerate(items):
                     if i < len(keys):
-                        student_view_options[keys[i]] = text
+                        shuffled_to_original_map[keys[i]] = original_key
                 
-                student_selected_text = student_view_options.get(str(ans_value))
-                if student_selected_text and correct_text and student_selected_text == correct_text:
+                # Compare original keys directly
+                original_mapped_key = shuffled_to_original_map.get(str(ans_value))
+                if original_mapped_key and str(original_mapped_key).strip().upper() == str(q.correct_answer).strip().upper():
                     correct_count += 1
             else:
-                # Normal grading
-                if ans_value is not None and q.correct_answer is not None and str(ans_value).strip() != "" and str(ans_value).strip() == str(q.correct_answer).strip():
-                    correct_count += 1
+                # Normal grading (no shuffle)
+                if ans_value is not None and q.correct_answer is not None:
+                    if str(ans_value).strip().upper() == str(q.correct_answer).strip().upper():
+                        correct_count += 1
                 
         # Prepare Answer record
         is_mcq = q.type == "multiple_choice"
@@ -534,7 +544,8 @@ async def submit_exam(
         )
         
     if total_mcq > 0:
-        submission.score = (correct_count / total_mcq) * 10.0 # Scale to 10
+        raw_score = (correct_count / total_mcq) * 10.0
+        submission.score = round(raw_score, 2)
         
     submission.correct_count = correct_count
 
@@ -555,6 +566,7 @@ async def submit_exam(
     
     return {"status": "submitted", "score": submission.score}
 
+
 @router.get("/{exam_id}/report")
 async def export_exam_report(
     *,
@@ -565,15 +577,19 @@ async def export_exam_report(
     """
     Generate CSV Report of submissions.
     """
-    result = await db.execute(
-        select(Submission).where(Submission.exam_id == exam_id)
+    # Join with User table to include usernames in the report
+    query = (
+        select(Submission, User.username)
+        .join(User, Submission.user_id == User.id)
+        .where(Submission.exam_id == exam_id)
     )
-    submissions = result.scalars().all()
+    result = await db.execute(query)
+    rows = result.all()
     
     output = io.StringIO()
-    output.write("Submission ID, User ID, Score, Status, Submitted At\n")
-    for sub in submissions:
-        output.write(f"{sub.id},{sub.user_id},{sub.score},{sub.status},{sub.submitted_at}\n")
+    output.write("Submission ID, User ID, Username, Score, Status, Submitted At\n")
+    for sub, username in rows:
+        output.write(f"{sub.id},{sub.user_id},{username},{sub.score},{sub.status},{sub.submitted_at}\n")
         
     response = StreamingResponse(iter([output.getvalue()]), media_type="text/csv")
     response.headers["Content-Disposition"] = f"attachment; filename=exam_{exam_id}_report.csv"
