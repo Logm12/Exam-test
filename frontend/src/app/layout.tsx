@@ -13,8 +13,8 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ExamOS - Online Exam Platform",
-  description: "Professional online exam platform with anti-cheating, real-time monitoring, and multi-format question support",
+  title: "FDB Talent by VNUIS",
+  description: "FDB Talent Online Exam Platform by VNUIS",
 };
 
 import AuthProvider from "@/components/providers/AuthProvider";
