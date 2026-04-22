@@ -4,6 +4,10 @@ import FacebookProvider from "next-auth/providers/facebook";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 const getApiUrl = () => {
+    const isServer = typeof window === "undefined";
+    if (isServer) {
+        return process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || "http://backend:8000/api/v1";
+    }
     return process.env.NEXT_PUBLIC_API_URL || "https://fdbtalent.vnuis.edu.vn/api/v1";
 };
 
