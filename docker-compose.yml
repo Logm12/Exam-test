@@ -38,6 +38,10 @@ services:
     restart: unless-stopped
     volumes:
       - ./backend/uploads:/app/uploads
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
 
   frontend:
     build:
@@ -56,6 +60,10 @@ services:
       - INTERNAL_API_URL=http://backend:8000/api/v1
       - NEXTAUTH_URL=https://fdbtalent.vnuis.edu.vn
       - NEXTAUTH_SECRET=vnuis_nextauth_secret
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
     restart: unless-stopped
 
 volumes:
