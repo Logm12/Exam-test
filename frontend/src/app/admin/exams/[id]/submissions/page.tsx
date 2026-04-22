@@ -37,6 +37,18 @@ export default function ExamSubmissionsPage() {
         loadSubmissions();
     }, [examId]);
 
+    const handleDelete = async (subId: number) => {
+        if (!confirm("Bạn có chắc chắn muốn xoá bài làm của thí sinh này để họ làm lại không?")) {
+            return;
+        }
+        try {
+            await fetcher(`/exams/${examId}/submissions/${subId}`, { method: "DELETE" });
+            setSubmissions(submissions.filter(s => s.id !== subId));
+        } catch (err: any) {
+            alert(err.message || "Xoá thất bại");
+        }
+    };
+
     return (
         <div className="p-8 max-w-7xl mx-auto space-y-6 animate-fade-in pb-20 font-sans w-full">
             <div className="flex justify-between items-center mb-6">
@@ -149,6 +161,7 @@ export default function ExamSubmissionsPage() {
                                     <th className="px-6 py-4 text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Trạng thái</th>
                                     <th className="px-6 py-4 text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Vi phạm</th>
                                     <th className="px-6 py-4 text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Thời gian nộp</th>
+                                    <th className="px-6 py-4 text-right text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Hành động</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-[var(--border-default)]">
@@ -181,6 +194,14 @@ export default function ExamSubmissionsPage() {
                                         </td>
                                         <td className="px-6 py-4 text-sm text-[var(--text-secondary)]">
                                             {sub.submitted_at ? new Date(sub.submitted_at).toLocaleString('vi-VN') : "—"}
+                                        </td>
+                                        <td className="px-6 py-4 text-right">
+                                            <button
+                                                onClick={() => handleDelete(sub.id)}
+                                                className="text-red-500 hover:text-red-700 hover:bg-red-50 px-3 py-1.5 rounded-md text-sm font-medium transition-colors border border-transparent hover:border-red-200"
+                                            >
+                                                Xoá bài
+                                            </button>
                                         </td>
                                     </tr>
                                 ))}

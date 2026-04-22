@@ -605,3 +605,23 @@ async def get_exam_submissions(
         })
     return res
 
+@router.delete("/{exam_id}/submissions/{submission_id}")
+async def delete_submission(
+    db: AsyncSession = Depends(get_db),
+    exam_id: int = 0,
+    submission_id: int = 0,
+    current_user: User = Depends(get_current_active_admin),
+) -> Any:
+    """
+    Delete a specific submission (Admin only), allowing the student to retake the exam.
+    Cascade deletes associated answers.
+    """
+    result = await db.execute(select(Submission).where(Submission.id == submission_id, Submission.exam_id == exam_id))
+    submission = result.scalars().first()
+    if not submission:
+        raise HTTPException(status_code=404, detail="Submission not found")
+    
+    await db.delete(submission)
+    await db.commit()
+    return {"status": "ok", "message": "Submission deleted successfully"}
+
