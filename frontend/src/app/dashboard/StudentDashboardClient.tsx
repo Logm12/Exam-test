@@ -601,9 +601,9 @@ export default function StudentDashboardClient({
 
                     {/* Top Nav — Learnify style */}
                     <header className="h-[68px] bg-white border-b border-gray-100 flex items-center justify-between px-8 flex-shrink-0 shadow-sm">
-                        {/* Filter pill tabs */}
+                        {/* Filter pill tabs or Page Title */}
                         <div className="flex items-center gap-2">
-                            {tabs.map((tab) => (
+                            {activeMenu === "exams" && tabs.map((tab) => (
                                 <button key={tab} onClick={() => setActiveTab(tab)}
                                     className={`px-4 py-2 rounded-full text-[13px] font-black transition-all duration-200 border-2 ${activeTab === tab
                                         ? "bg-gray-900 text-white border-gray-900"
@@ -616,12 +616,14 @@ export default function StudentDashboardClient({
 
                         {/* Right controls */}
                         <div className="flex items-center gap-3">
-                            <div className="relative hidden md:block">
-                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"><IconSearch /></span>
-                                <input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-                                    placeholder="Tìm kiếm kỳ thi..."
-                                    className="w-48 pl-9 pr-4 py-2 rounded-xl border-2 border-gray-200 bg-gray-50 text-[13px] text-gray-800 placeholder:text-gray-400 focus:outline-none focus:border-[#2563EB] focus:bg-white transition-all font-medium" />
-                            </div>
+                            {activeMenu === "exams" && (
+                                <div className="relative hidden md:block">
+                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"><IconSearch /></span>
+                                    <input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
+                                        placeholder="Tìm kiếm kỳ thi..."
+                                        className="w-48 pl-9 pr-4 py-2 rounded-xl border-2 border-gray-200 bg-gray-50 text-[13px] text-gray-800 placeholder:text-gray-400 focus:outline-none focus:border-[#2563EB] focus:bg-white transition-all font-medium" />
+                                </div>
+                            )}
                             <button className="w-10 h-10 rounded-xl border-2 border-gray-200 bg-white flex items-center justify-center text-gray-600 hover:border-gray-400 relative transition-all">
                                 <IconBell />
                                 <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-[#FF5722] rounded-full border-2 border-white" />
