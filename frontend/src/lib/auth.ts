@@ -4,12 +4,7 @@ import FacebookProvider from "next-auth/providers/facebook";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 const getApiUrl = () => {
-    const isServer = typeof window === "undefined";
-    if (isServer) {
-        // Use internal Docker network URL if available, otherwise fallback to public
-        return process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api/v1";
-    }
-    return process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+    return process.env.NEXT_PUBLIC_API_URL || "https://fdbtalent.vnuis.edu.vn/api/v1";
 };
 
 const API_URL = getApiUrl();
@@ -186,7 +181,7 @@ export const authOptions: NextAuthOptions = {
     },
     session: {
         strategy: "jwt",
-        maxAge: 8 * 60 * 60, // 8 Hours
+        maxAge: 24 * 60 * 60, // 1 day
     },
     useSecureCookies: process.env.NODE_ENV === "production",
     cookies: process.env.NODE_ENV === "production" ? {
