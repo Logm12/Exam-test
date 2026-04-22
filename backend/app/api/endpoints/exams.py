@@ -341,25 +341,25 @@ async def get_exam_for_student(
     
     # Shuffle logic
     import random
-    # Use a stable seed for this user and exam so the shuffle is consistent for them
-    seed_val = f"{current_user.id}_{exam.id}"
-    rng = random.Random(seed_val)
+    # Use stable seeds so the rendered order and grading mapping are always identical.
+    question_order_rng = random.Random(f"{current_user.id}_{exam.id}_question_order")
 
     # We need toReturn a copy to avoid mutating the original objects in the session if possible,
     # but for Pydantic serialization, we can just modify the in-memory list.
     if exam.shuffle_questions:
         # Create a shallow copy of the list to shuffle
         shuffled_questions = list(exam.questions)
-        rng.shuffle(shuffled_questions)
+        question_order_rng.shuffle(shuffled_questions)
         exam.questions = shuffled_questions
 
     if exam.shuffle_options:
         for q in exam.questions:
             if q.type == "multiple_choice" and q.options:
+                option_rng = random.Random(f"{current_user.id}_{exam.id}_{q.id}_options")
                 # Sort items by key before shuffling to ensure deterministic results 
                 # across different environments and calls.
                 items = sorted(q.options.items()) # e.g., [("A", "text"), ("B", "text")]
-                rng.shuffle(items)
+                option_rng.shuffle(items)
                 
                 # Re-assign keys A, B, C, D to the shuffled items
                 new_options = {}
@@ -493,7 +493,6 @@ async def submit_exam(
         await db.flush()
     
     import random
-    seed_val = f"{current_user.id}_{exam.id}"
     
     for q in exam.questions:
         ans_value = submit_in.answers.get(str(q.id))
@@ -510,10 +509,10 @@ async def submit_exam(
             
             if exam.shuffle_options:
                 # Standardize what "A", "B", etc. mean for THIS user
-                rng = random.Random(seed_val)
+                option_rng = random.Random(f"{current_user.id}_{exam.id}_{q.id}_options")
                 # MUST sort items by key to match the order in get_exam_for_student
                 items = sorted(q.options.items())
-                rng.shuffle(items)
+                option_rng.shuffle(items)
                 
                 # Map the letter the student saw (e.g., 'A') back to the original key (e.g., 'C')
                 shuffled_to_original_map = {}
