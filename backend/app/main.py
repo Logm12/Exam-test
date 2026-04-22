@@ -1,9 +1,12 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from app.core.config import settings
 from app.api import api_router
+from app.db.session import get_db
+from app.db.redis import get_optional_redis
+from sqlalchemy.ext.asyncio import AsyncSession
 import os
 
 
@@ -57,5 +60,45 @@ app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
 
 @app.get("/")
+@app.head("/")
 def read_root():
     return {"message": "Welcome to Online Exam API"}
+
+
+@app.get(f"{settings.API_V1_STR}/health")
+@app.head(f"{settings.API_V1_STR}/health")
+async def health_check(
+    db: AsyncSession = Depends(get_db),
+    redis = Depends(get_optional_redis)
+):
+    """
+    System health check. Verifies DB and Redis connectivity.
+    Supports HEAD requests for monitoring tools.
+    """
+    health_status = {
+        "status": "online",
+        "database": "offline",
+        "redis": "offline"
+    }
+    
+    # Check Database
+    try:
+        from sqlalchemy import text
+        await db.execute(text("SELECT 1"))
+        health_status["database"] = "online"
+    except Exception as e:
+        health_status["status"] = "unhealthy"
+        health_status["database"] = f"error: {str(e)}"
+        
+    # Check Redis
+    if redis:
+        try:
+            await redis.ping()
+            health_status["redis"] = "online"
+        except Exception as e:
+            health_status["redis"] = f"error: {str(e)}"
+    
+    if health_status["status"] == "unhealthy":
+        return JSONResponse(status_code=503, content=health_status)
+        
+    return health_status
