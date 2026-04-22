@@ -18,7 +18,7 @@ from app.models.exam import Exam, Question
 from app.models.submission import Submission, Answer
 from app.schemas.exam import Exam as ExamSchema, ExamCreate, ExamUpdate, ExamPublic
 from app.schemas.student_exam import StudentExam
-from app.schemas.submission import AnswerDraft, ExamSubmit
+from app.schemas.submission import AnswerDraft, ExamSubmit, BulkResetRequest
 from sqlalchemy.orm import selectinload
 from sqlalchemy import func
 
@@ -605,6 +605,77 @@ async def get_exam_submissions(
         })
     return res
 
+
+@router.delete("/{exam_id}/submissions/{user_id}", dependencies=[Depends(get_current_active_admin)])
+async def delete_exam_submission(
+    *,
+    db: AsyncSession = Depends(get_db),
+    redis_client = Depends(get_optional_redis),
+    exam_id: int,
+    user_id: int,
+) -> Any:
+    """
+    Reset (Delete) a student's submission for a specific exam. (Admin only)
+    This deletes the Submission record and all associated Answer records.
+    Also clears any draft in Redis.
+    """
+    # Find the submission
+    result = await db.execute(
+        select(Submission).where(Submission.exam_id == exam_id, Submission.user_id == user_id)
+    )
+    submission = result.scalars().first()
+    
+    if not submission:
+        raise HTTPException(status_code=404, detail="Submission not found for this user in this exam")
+    
+    # Delete the submission (cascade will handle Answer records)
+    await db.delete(submission)
+    
+    # Clear Redis Draft if it exists
+    if redis_client:
+        try:
+            key = f"draft:{exam_id}:{user_id}"
+            await redis_client.delete(key)
+        except Exception as e:
+            print(f"Warning: Failed to clear Redis draft during reset: {e}")
+            
+    await db.commit()
+    return {"ok": True, "message": "Submission deleted and exam reset for student"}
+
+
+@router.post("/{exam_id}/submissions/bulk-delete", dependencies=[Depends(get_current_active_admin)])
+async def bulk_delete_exam_submissions(
+    *,
+    db: AsyncSession = Depends(get_db),
+    redis_client = Depends(get_optional_redis),
+    exam_id: int,
+    request: BulkResetRequest,
+) -> Any:
+    """
+    Bulk Reset (Delete) student submissions for a specific exam. (Admin only)
+    """
+    if not request.user_ids:
+        return {"ok": True, "count": 0}
+
+    # Delete submissions (cascade handles Answer records)
+    result = await db.execute(
+        delete(Submission).where(
+            Submission.exam_id == exam_id,
+            Submission.user_id.in_(request.user_ids)
+        )
+    )
+    
+    # Clear Redis Drafts
+    if redis_client:
+        for user_id in request.user_ids:
+            try:
+                key = f"draft:{exam_id}:{user_id}"
+                await redis_client.delete(key)
+            except Exception as e:
+                print(f"Warning: Failed to clear Redis draft for user {user_id}: {e}")
+                
+    await db.commit()
+    return {"ok": True, "count": result.rowcount}
 @router.delete("/{exam_id}/submissions/{submission_id}")
 async def delete_submission(
     db: AsyncSession = Depends(get_db),

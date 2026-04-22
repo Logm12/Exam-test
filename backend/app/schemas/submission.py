@@ -9,3 +9,5 @@ class ExamSubmit(BaseModel):
     forced_submit: bool = False
     violation_count: int = 0
     time_spent_seconds: int | None = None
+class BulkResetRequest(BaseModel):
+    user_ids: list[int]

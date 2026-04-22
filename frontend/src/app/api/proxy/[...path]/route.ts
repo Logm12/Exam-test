@@ -45,6 +45,7 @@ async function proxyRequest(request: NextRequest, params: { path: string[] }) {
     const fetchOptions: RequestInit = {
         method: request.method,
         headers,
+        signal: AbortSignal.timeout(30000), // Prevent server hang by timing out after 30s
     };
 
     // Forward request body for non-GET methods
