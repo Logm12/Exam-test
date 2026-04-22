@@ -9,6 +9,7 @@ import os
 import tempfile
 import io
 import uuid
+import asyncio
 
 from app.db.session import get_db
 from app.db.redis import get_optional_redis
@@ -234,7 +235,9 @@ async def import_questions_from_file(
 
     try:
         from app.core.document_parser import parse_file
-        parsed = parse_file(tmp_path)
+        # Run synchronous and CPU-intensive file parsing in a separate thread
+        # to avoid blocking the FastAPI event loop and causing 504 timeouts.
+        parsed = await asyncio.to_thread(parse_file, tmp_path)
         return {
             "filename": file.filename,
             "total_questions": len(parsed),
@@ -576,34 +579,40 @@ async def export_exam_report(
     response.headers["Content-Disposition"] = f"attachment; filename=exam_{exam_id}_report.csv"
     return response
 
-@router.get("/{exam_id}/submissions")
+@router.get("/{exam_id}/submissions", dependencies=[Depends(get_current_active_admin)])
 async def get_exam_submissions(
     *,
     db: AsyncSession = Depends(get_db),
     exam_id: int,
-    current_user: User = Depends(get_current_active_admin),
 ) -> Any:
     """
     Get all submissions for an exam (Admin only), joined with username.
+    Optimized to avoid N+1 query overhead.
     """
-    result = await db.execute(select(Submission).where(Submission.exam_id == exam_id))
-    submissions = result.scalars().all()
+    # Use a JOIN to get user information alongside submissions in a single query
+    # to prevent 504 Gateway Timeouts on exams with many participants (~200+).
+    query = (
+        select(Submission, User.username)
+        .join(User, Submission.user_id == User.id)
+        .where(Submission.exam_id == exam_id)
+        .order_by(Submission.submitted_at.desc())
+    )
+    result = await db.execute(query)
+    rows = result.all()
     
-    res = []
-    for sub in submissions:
-        user_result = await db.execute(select(User).where(User.id == sub.user_id))
-        user = user_result.scalars().first()
-        res.append({
+    return [
+        {
             "id": sub.id,
             "user_id": sub.user_id,
-            "username": user.username if user else "Unknown",
+            "username": username,
             "score": sub.score,
             "status": sub.status,
             "submitted_at": str(sub.submitted_at) if sub.submitted_at else None,
             "violation_count": sub.violation_count,
             "forced_submit": sub.forced_submit
-        })
-    return res
+        }
+        for sub, username in rows
+    ]
 
 
 @router.delete("/{exam_id}/submissions/{user_id}", dependencies=[Depends(get_current_active_admin)])
