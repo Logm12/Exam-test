@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback, use, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { useSession, signIn } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { fetcher } from "@/lib/api";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -31,7 +31,7 @@ function useAntiCheat(durationMinutes: number, maxViolations: number, onAutoSubm
     // Sync timeLeft when durationMinutes changes (e.g. after exam data loads)
     useEffect(() => {
         if (durationMinutes > 0) {
-            setTimeLeft(durationMinutes * 60);
+            Promise.resolve().then(() => setTimeLeft(durationMinutes * 60));
         }
     }, [durationMinutes]);
 
@@ -73,8 +73,10 @@ function useAntiCheat(durationMinutes: number, maxViolations: number, onAutoSubm
     const [hasAutoSubmitted, setHasAutoSubmitted] = useState(false);
     useEffect(() => {
         if (warnings >= maxViolations && !hasAutoSubmitted) {
-            setHasAutoSubmitted(true);
-            onAutoSubmit();
+            Promise.resolve().then(() => {
+                setHasAutoSubmitted(true);
+                onAutoSubmit();
+            });
         }
     }, [warnings, maxViolations, onAutoSubmit, hasAutoSubmitted]);
 
@@ -233,10 +235,13 @@ function ExamContent({ examId }: { examId: string }) {
                     return;
                 }
 
-                const examData = await fetcher(`/exams/${examId}`);
-                const questionsData = await fetcher(`/questions/exam/${examId}`);
-                setExam(examData);
-                setQuestions(questionsData);
+                const studentExam = await fetcher(`/exams/${examId}/student`);
+                setExam({
+                    id: studentExam.id,
+                    title: studentExam.title,
+                    duration: studentExam.duration,
+                });
+                setQuestions(studentExam.questions || []);
             } catch (err) {
                 console.error("Failed to load exam data", err);
                 window.location.replace('/dashboard');
@@ -287,9 +292,10 @@ function ExamContent({ examId }: { examId: string }) {
             alert(t("exam.take.submitSuccess") || "Nộp bài thành công!");
             // Use full navigation to bypass Next.js router cache so dashboard shows fresh data
             window.location.replace('/dashboard');
-        } catch (err: any) {
-            console.error("Submission failed", err);
-            const errorMessage = err?.message || "";
+        } catch (err: unknown) {
+            const error = err as { message?: string; status?: number };
+            console.error("Submission failed", error);
+            const errorMessage = error?.message || "";
             let alertMessage = t("exam.take.submitFailed") || "Có lỗi xảy ra khi nộp bài. Vui lòng thử lại.";
             
             if (errorMessage.includes("Exam already submitted")) {
@@ -303,8 +309,8 @@ function ExamContent({ examId }: { examId: string }) {
             alert(alertMessage);
             setIsSubmitting(false);
             isSubmittingRef.current = false;
-            }
-            }, [exam, answers, isSubmitting, router, t]);
+        }
+    }, [exam, answers, t]);
 
     const isAnswered = useCallback((q: Question) => {
         const a = answers[q.id];
