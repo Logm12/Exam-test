@@ -16,7 +16,7 @@ async def read_questions_by_exam(
     *,
     db: AsyncSession = Depends(get_db),
     exam_id: int,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_active_admin),
 ) -> Any:
     result = await db.execute(
         select(Question)

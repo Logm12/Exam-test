@@ -21,12 +21,13 @@ async def main():
         exam_id = exams[0]["id"]
         print(f"Selected exam ID: {exam_id}")
         
-        # 3. Get questions
-        r = await client.get(f"/questions/exam/{exam_id}", headers=headers)
+        # 3. Get questions (via student exam endpoint)
+        r = await client.get(f"/exams/{exam_id}/student", headers=headers)
         if r.status_code != 200:
-            print(f"Failed to get questions: {r.text}")
+            print(f"Failed to get student exam: {r.text}")
             return
-        questions = r.json()
+        exam_data = r.json()
+        questions = exam_data.get("questions", [])
         print(f"Found {len(questions)} questions")
         
         # 4. Generate random answers

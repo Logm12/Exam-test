@@ -356,10 +356,15 @@ async def get_exam_for_student(
     if exam.shuffle_options:
         for q in exam.questions:
             if q.type == "multiple_choice" and q.options:
+                # Use a stable, per-question seed to ensure consistency between view and grading
+                # even if question order changes.
+                q_seed = f"{current_user.id}_{exam.id}_{q.id}"
+                q_rng = random.Random(q_seed)
+                
                 # Sort items by key before shuffling to ensure deterministic results 
                 # across different environments and calls.
                 items = sorted(q.options.items()) # e.g., [("A", "text"), ("B", "text")]
-                rng.shuffle(items)
+                q_rng.shuffle(items)
                 
                 # Re-assign keys A, B, C, D to the shuffled items
                 new_options = {}
@@ -510,10 +515,13 @@ async def submit_exam(
             
             if exam.shuffle_options:
                 # Standardize what "A", "B", etc. mean for THIS user
-                rng = random.Random(seed_val)
+                # We use a PER-QUESTION seed that matches get_exam_for_student
+                q_seed = f"{current_user.id}_{exam.id}_{q.id}"
+                q_rng = random.Random(q_seed)
+                
                 # MUST sort items by key to match the order in get_exam_for_student
                 items = sorted(q.options.items())
-                rng.shuffle(items)
+                q_rng.shuffle(items)
                 
                 # Map the letter the student saw (e.g., 'A') back to the original key (e.g., 'C')
                 shuffled_to_original_map = {}
